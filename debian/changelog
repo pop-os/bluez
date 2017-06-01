@@ -1,3 +1,9 @@
+bluez (5.45-0ubuntu1) UNRELEASED; urgency=medium
+
+  * New upstream version
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 01 Jun 2017 15:42:46 +0800
+
 bluez (5.43-0ubuntu1) zesty; urgency=medium
 
   [ Konrad Zapałowicz ]
