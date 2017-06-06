@@ -1,8 +1,12 @@
 bluez (5.45-0ubuntu1) artful; urgency=medium
 
-  * New upstream version
+  * New upstream version 5.45, and also:
+    - Refreshed 0004-obexd-enable-ebook-backend-conditionally.patch
+    - Refreshed migrate_scripts_python3.patch
+    - Explicitly enable 'deprecated' and 'testing' tools that upstream
+      doesn't build by default any more (but Debian/Ubuntu expects).
 
- -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 01 Jun 2017 15:42:46 +0800
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 06 Jun 2017 16:08:34 +0800
 
 bluez (5.43-0ubuntu1) zesty; urgency=medium
 
