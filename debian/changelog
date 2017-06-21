@@ -1,3 +1,9 @@
+bluez (5.45-0ubuntu2) artful; urgency=medium
+
+  * No-change rebuild against evolution-data-server 3.24
+
+ -- Jeremy Bicha <jbicha@ubuntu.com>  Tue, 13 Jun 2017 13:55:31 -0400
+
 bluez (5.45-0ubuntu1) artful; urgency=medium
 
   * New upstream version 5.45, and also:
