@@ -1,3 +1,11 @@
+bluez (5.45-0ubuntu3) artful; urgency=medium
+
+  * debian/bluez-obexd.links:
+    - include a symlink from obex.service to dbus-org.bluez.obex.service
+      which is the name used for dbus activation (lp: #1645631)
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Mon, 24 Jul 2017 17:10:33 +0200
+
 bluez (5.45-0ubuntu2) artful; urgency=medium
 
   * No-change rebuild against evolution-data-server 3.24
