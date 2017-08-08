@@ -1,3 +1,9 @@
+bluez (5.45-0ubuntu4) artful; urgency=medium
+
+  * Drop deprecated rfcomm.conf and upstart config. (LP: #1674680)
+
+ -- Dariusz Gadomski <dariusz.gadomski@canonical.com>  Mon, 07 Aug 2017 13:29:41 +0200
+
 bluez (5.45-0ubuntu3) artful; urgency=medium
 
   * debian/bluez-obexd.links:
