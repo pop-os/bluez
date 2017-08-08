@@ -1,3 +1,11 @@
+bluez (5.46-0ubuntu2) UNRELEASED; urgency=medium
+
+  * TODO
+  * Note: 5.46-0ubuntu1 was what we called the first testing PPA so this is now
+    version 5.46-0ubuntu2
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 08 Aug 2017 12:28:05 +0800
+
 bluez (5.45-0ubuntu4) artful; urgency=medium
 
   * Drop deprecated rfcomm.conf and upstart config. (LP: #1674680)
