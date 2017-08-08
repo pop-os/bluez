@@ -11,10 +11,10 @@ switch. By default still the dummy backend is used.
  configure.ac   | 12 ++++++++++++
  2 files changed, 20 insertions(+), 4 deletions(-)
 
-Index: bluez/Makefile.obexd
+Index: bluez-5.44/Makefile.obexd
 ===================================================================
---- bluez.orig/Makefile.obexd
-+++ bluez/Makefile.obexd
+--- bluez-5.44.orig/Makefile.obexd
++++ bluez-5.44/Makefile.obexd
 @@ -39,8 +39,12 @@ obexd_builtin_sources += obexd/plugins/i
  obexd_builtin_modules += pbap
  obexd_builtin_sources += obexd/plugins/pbap.c \
@@ -49,10 +49,10 @@ Index: bluez/Makefile.obexd
  
  obexd_src_obexd_CPPFLAGS = -I$(builddir)/lib -I$(builddir)/obexd/src
  
-Index: bluez/configure.ac
+Index: bluez-5.44/configure.ac
 ===================================================================
---- bluez.orig/configure.ac
-+++ bluez/configure.ac
+--- bluez-5.44.orig/configure.ac
++++ bluez-5.44/configure.ac
 @@ -223,6 +223,11 @@ if (test "${enable_midi}" = "yes"); then
  	AC_SUBST(ALSA_LIBS)
  fi
@@ -85,10 +85,10 @@ Index: bluez/configure.ac
  fi
  AM_CONDITIONAL(OBEX, test "${enable_obex}" != "no")
  
-Index: bluez/obexd/plugins/phonebook-ebook.c
+Index: bluez-5.44/obexd/plugins/phonebook-ebook.c
 ===================================================================
---- bluez.orig/obexd/plugins/phonebook-ebook.c
-+++ bluez/obexd/plugins/phonebook-ebook.c
+--- bluez-5.44.orig/obexd/plugins/phonebook-ebook.c
++++ bluez-5.44/obexd/plugins/phonebook-ebook.c
 @@ -380,7 +380,11 @@ static GSList *traverse_sources(GSList *
  {
  	GError *gerr = NULL;
