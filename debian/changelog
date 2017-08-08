@@ -1,8 +1,8 @@
-bluez (5.46-0ubuntu2) UNRELEASED; urgency=medium
+bluez (5.46-0ubuntu2) artful; urgency=medium
 
-  * TODO
-  * Note: 5.46-0ubuntu1 was what we called the first testing PPA so this is now
-    version 5.46-0ubuntu2
+  * New upstream release.
+  * Note: 5.46-0ubuntu1 was an experimental PPA, so to avoid conflicts this
+    this is now version 5.46-0ubuntu2
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 08 Aug 2017 12:28:05 +0800
 
