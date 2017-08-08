@@ -107,9 +107,8 @@ DIST_COMMON = $(srcdir)/Makefile.plugins $(srcdir)/Makefile.tools \
 @SAP_TRUE@			profiles/sap/server.c profiles/sap/sap.h \
 @SAP_TRUE@			profiles/sap/sap-dummy.c
 
-@SAP_TRUE@am__append_7 = profiles/sap/libsap.a
-@A2DP_TRUE@am__append_8 = a2dp
-@A2DP_TRUE@am__append_9 = profiles/audio/source.h profiles/audio/source.c \
+@A2DP_TRUE@am__append_7 = a2dp
+@A2DP_TRUE@am__append_8 = profiles/audio/source.h profiles/audio/source.c \
 @A2DP_TRUE@			profiles/audio/sink.h profiles/audio/sink.c \
 @A2DP_TRUE@			profiles/audio/a2dp.h profiles/audio/a2dp.c \
 @A2DP_TRUE@			profiles/audio/avdtp.h profiles/audio/avdtp.c \
@@ -117,53 +116,53 @@ DIST_COMMON = $(srcdir)/Makefile.plugins $(srcdir)/Makefile.tools \
 @A2DP_TRUE@			profiles/audio/transport.h profiles/audio/transport.c \
 @A2DP_TRUE@			profiles/audio/a2dp-codecs.h
 
-@AVRCP_TRUE@am__append_10 = avrcp
-@AVRCP_TRUE@am__append_11 = profiles/audio/control.h profiles/audio/control.c \
+@AVRCP_TRUE@am__append_9 = avrcp
+@AVRCP_TRUE@am__append_10 = profiles/audio/control.h profiles/audio/control.c \
 @AVRCP_TRUE@			profiles/audio/avctp.h profiles/audio/avctp.c \
 @AVRCP_TRUE@			profiles/audio/avrcp.h profiles/audio/avrcp.c \
 @AVRCP_TRUE@			profiles/audio/player.h profiles/audio/player.c
 
-@NETWORK_TRUE@am__append_12 = network
-@NETWORK_TRUE@am__append_13 = profiles/network/manager.c \
+@NETWORK_TRUE@am__append_11 = network
+@NETWORK_TRUE@am__append_12 = profiles/network/manager.c \
 @NETWORK_TRUE@			profiles/network/bnep.h profiles/network/bnep.c \
 @NETWORK_TRUE@			profiles/network/server.h profiles/network/server.c \
 @NETWORK_TRUE@			profiles/network/connection.h \
 @NETWORK_TRUE@			profiles/network/connection.c
 
-@HID_TRUE@am__append_14 = input
-@HID_TRUE@am__append_15 = profiles/input/manager.c \
+@HID_TRUE@am__append_13 = input
+@HID_TRUE@am__append_14 = profiles/input/manager.c \
 @HID_TRUE@			profiles/input/server.h profiles/input/server.c \
 @HID_TRUE@			profiles/input/device.h profiles/input/device.c \
 @HID_TRUE@			profiles/input/hidp_defs.h
 
-@HOG_TRUE@am__append_16 = hog
-@HOG_TRUE@am__append_17 = profiles/input/hog.c profiles/input/uhid_copy.h \
+@HOG_TRUE@am__append_15 = hog
+@HOG_TRUE@am__append_16 = profiles/input/hog.c profiles/input/uhid_copy.h \
 @HOG_TRUE@			profiles/input/hog-lib.c profiles/input/hog-lib.h \
 @HOG_TRUE@			profiles/deviceinfo/dis.c profiles/deviceinfo/dis.h \
 @HOG_TRUE@			profiles/battery/bas.c profiles/battery/bas.h \
 @HOG_TRUE@			profiles/scanparam/scpp.c profiles/scanparam/scpp.h \
 @HOG_TRUE@			profiles/input/suspend.h profiles/input/suspend-none.c
 
-@HOG_TRUE@am__append_18 = profiles/input/suspend-dummy.c
-@HEALTH_TRUE@am__append_19 = health
-@HEALTH_TRUE@am__append_20 = profiles/health/mcap.h profiles/health/mcap.c \
+@HOG_TRUE@am__append_17 = profiles/input/suspend-dummy.c
+@HEALTH_TRUE@am__append_18 = health
+@HEALTH_TRUE@am__append_19 = profiles/health/mcap.h profiles/health/mcap.c \
 @HEALTH_TRUE@			profiles/health/hdp_main.c profiles/health/hdp_types.h \
 @HEALTH_TRUE@			profiles/health/hdp_manager.h \
 @HEALTH_TRUE@			profiles/health/hdp_manager.c \
 @HEALTH_TRUE@			profiles/health/hdp.h profiles/health/hdp.c \
 @HEALTH_TRUE@			profiles/health/hdp_util.h profiles/health/hdp_util.c
 
-@MIDI_TRUE@am__append_21 = midi
-@MIDI_TRUE@am__append_22 = profiles/midi/midi.c \
+@MIDI_TRUE@am__append_20 = midi
+@MIDI_TRUE@am__append_21 = profiles/midi/midi.c \
 @MIDI_TRUE@			profiles/midi/libmidi.h \
 @MIDI_TRUE@			profiles/midi/libmidi.c
 
-@MIDI_TRUE@am__append_23 = @ALSA_LIBS@
-@SIXAXIS_TRUE@am__append_24 = plugins/sixaxis.la
-@MAINTAINER_MODE_TRUE@am__append_25 = plugins/external-dummy.la
-@CLIENT_TRUE@am__append_26 = client/bluetoothctl
-@MONITOR_TRUE@am__append_27 = monitor/btmon
-@TESTING_TRUE@am__append_28 = emulator/btvirt emulator/b1ee emulator/hfp \
+@MIDI_TRUE@am__append_22 = @ALSA_LIBS@
+@SIXAXIS_TRUE@am__append_23 = plugins/sixaxis.la
+@MAINTAINER_MODE_TRUE@am__append_24 = plugins/external-dummy.la
+@CLIENT_TRUE@am__append_25 = client/bluetoothctl
+@MONITOR_TRUE@am__append_26 = monitor/btmon
+@TESTING_TRUE@am__append_27 = emulator/btvirt emulator/b1ee emulator/hfp \
 @TESTING_TRUE@					peripheral/btsensor tools/3dsp \
 @TESTING_TRUE@					tools/mgmt-tester tools/gap-tester \
 @TESTING_TRUE@					tools/l2cap-tester tools/sco-tester \
@@ -171,67 +170,67 @@ DIST_COMMON = $(srcdir)/Makefile.plugins $(srcdir)/Makefile.tools \
 @TESTING_TRUE@					tools/rfcomm-tester tools/bnep-tester \
 @TESTING_TRUE@					tools/userchan-tester
 
-@TOOLS_TRUE@am__append_29 = tools/rctest tools/l2test tools/l2ping tools/bccmd \
+@TOOLS_TRUE@am__append_28 = tools/rctest tools/l2test tools/l2ping tools/bccmd \
 @TOOLS_TRUE@			tools/bluemoon tools/hex2hcd tools/mpris-proxy \
 @TOOLS_TRUE@			tools/btattach
 
-@TOOLS_TRUE@am__append_30 = tools/bdaddr tools/avinfo tools/avtest \
+@TOOLS_TRUE@am__append_29 = tools/bdaddr tools/avinfo tools/avtest \
 @TOOLS_TRUE@			tools/scotest tools/amptest tools/hwdb \
 @TOOLS_TRUE@			tools/hcieventmask tools/hcisecfilter \
 @TOOLS_TRUE@			tools/btinfo \
 @TOOLS_TRUE@			tools/btsnoop tools/btproxy \
 @TOOLS_TRUE@			tools/btiotest tools/bneptest tools/mcaptest \
-@TOOLS_TRUE@			tools/cltest tools/oobtest tools/seq2bseq \
-@TOOLS_TRUE@			tools/nokfw tools/create-image \
+@TOOLS_TRUE@			tools/cltest tools/oobtest tools/advtest \
+@TOOLS_TRUE@			tools/seq2bseq tools/nokfw tools/create-image \
 @TOOLS_TRUE@			tools/eddystone tools/ibeacon \
 @TOOLS_TRUE@			tools/btgatt-client tools/btgatt-server \
 @TOOLS_TRUE@			tools/test-runner tools/check-selftest \
 @TOOLS_TRUE@			tools/gatt-service profiles/iap/iapd
 
-@TOOLS_TRUE@am__append_31 = tools/rctest.1 tools/l2ping.1 tools/bccmd.1 tools/btattach.1
-@TOOLS_TRUE@am__append_32 = tools/bdaddr.1
-@DEPRECATED_TRUE@@TOOLS_TRUE@am__append_33 = tools/hciattach tools/hciconfig tools/hcitool tools/hcidump \
+@TOOLS_TRUE@am__append_30 = tools/rctest.1 tools/l2ping.1 tools/bccmd.1 tools/btattach.1
+@TOOLS_TRUE@am__append_31 = tools/bdaddr.1
+@DEPRECATED_TRUE@@TOOLS_TRUE@am__append_32 = tools/hciattach tools/hciconfig tools/hcitool tools/hcidump \
 @DEPRECATED_TRUE@@TOOLS_TRUE@			tools/rfcomm tools/sdptool tools/ciptool
 
-@DEPRECATED_TRUE@@TOOLS_TRUE@am__append_34 = tools/hciattach.1 tools/hciconfig.1 \
+@DEPRECATED_TRUE@@TOOLS_TRUE@am__append_33 = tools/hciattach.1 tools/hciconfig.1 \
 @DEPRECATED_TRUE@@TOOLS_TRUE@			tools/hcitool.1 tools/hcidump.1 \
 @DEPRECATED_TRUE@@TOOLS_TRUE@			tools/rfcomm.1 tools/sdptool.1 tools/ciptool.1
 
-@DEPRECATED_FALSE@@TOOLS_TRUE@am__append_35 = tools/hciattach.1 tools/hciconfig.1 \
+@DEPRECATED_FALSE@@TOOLS_TRUE@am__append_34 = tools/hciattach.1 tools/hciconfig.1 \
 @DEPRECATED_FALSE@@TOOLS_TRUE@			tools/hcitool.1 tools/hcidump.1 \
 @DEPRECATED_FALSE@@TOOLS_TRUE@			tools/rfcomm.1 tools/sdptool.1 tools/ciptool.1
 
-@TOOLS_FALSE@am__append_36 = tools/rctest.1 tools/l2ping.1 tools/bccmd.1 tools/btattach.1
+@TOOLS_FALSE@am__append_35 = tools/rctest.1 tools/l2ping.1 tools/bccmd.1 tools/btattach.1
 @HID2HCI_TRUE@udev_PROGRAMS = tools/hid2hci$(EXEEXT)
-@HID2HCI_TRUE@am__append_37 = tools/hid2hci.1
-@HID2HCI_FALSE@am__append_38 = tools/hid2hci.1
-@READLINE_TRUE@am__append_39 = tools/btmgmt tools/obex-client-tool tools/obex-server-tool \
+@HID2HCI_TRUE@am__append_36 = tools/hid2hci.1
+@HID2HCI_FALSE@am__append_37 = tools/hid2hci.1
+@READLINE_TRUE@am__append_38 = tools/btmgmt tools/obex-client-tool tools/obex-server-tool \
 @READLINE_TRUE@			tools/bluetooth-player tools/obexctl
 
-@DEPRECATED_TRUE@@READLINE_TRUE@am__append_40 = attrib/gatttool
+@DEPRECATED_TRUE@@READLINE_TRUE@am__append_39 = attrib/gatttool
 @CUPS_TRUE@cups_PROGRAMS = profiles/cups/bluetooth$(EXEEXT)
-@EXPERIMENTAL_TRUE@am__append_41 = pcsuite
-@EXPERIMENTAL_TRUE@am__append_42 = obexd/plugins/pcsuite.c
-@OBEX_TRUE@am__append_43 = irmc pbap
-@OBEX_TRUE@am__append_44 = obexd/plugins/irmc.c obexd/plugins/pbap.c \
+@EXPERIMENTAL_TRUE@am__append_40 = pcsuite
+@EXPERIMENTAL_TRUE@am__append_41 = obexd/plugins/pcsuite.c
+@OBEX_TRUE@am__append_42 = irmc pbap
+@OBEX_TRUE@am__append_43 = obexd/plugins/irmc.c obexd/plugins/pbap.c \
 @OBEX_TRUE@	obexd/plugins/vcard.h obexd/plugins/vcard.c \
 @OBEX_TRUE@	obexd/plugins/phonebook.h \
 @OBEX_TRUE@	obexd/plugins/phonebook-dummy.c
-@ANDROID_TRUE@am__append_45 = -DANDROID_VERSION=0x050100
-@ANDROID_TRUE@am__append_46 = android/system-emulator \
+@ANDROID_TRUE@am__append_44 = -DANDROID_VERSION=0x050100
+@ANDROID_TRUE@am__append_45 = android/system-emulator \
 @ANDROID_TRUE@	android/bluetoothd-snoop android/bluetoothd \
 @ANDROID_TRUE@	android/avdtptest android/haltest \
 @ANDROID_TRUE@	android/android-tester android/ipc-tester
-@ANDROID_TRUE@am__append_47 = android/bluetooth.default.la \
+@ANDROID_TRUE@am__append_46 = android/bluetooth.default.la \
 @ANDROID_TRUE@	android/audio.a2dp.default.la \
 @ANDROID_TRUE@	android/audio.sco.default.la
-@ANDROID_TRUE@am__append_48 = android/test-ipc
-@HID2HCI_TRUE@am__append_49 = $(rules_DATA)
-@MIDI_TRUE@am__append_50 = unit/test-midi
-@MAINTAINER_MODE_TRUE@am__append_51 = $(unit_tests)
+@ANDROID_TRUE@am__append_47 = android/test-ipc
+@HID2HCI_TRUE@am__append_48 = $(rules_DATA)
+@MIDI_TRUE@am__append_49 = unit/test-midi
+@MAINTAINER_MODE_TRUE@am__append_50 = $(unit_tests)
 TESTS = $(am__EXEEXT_12)
-@DBUS_RUN_SESSION_TRUE@am__append_52 = dbus-run-session --
-@MANPAGES_TRUE@am__append_53 = $(manual_pages)
+@DBUS_RUN_SESSION_TRUE@am__append_51 = dbus-run-session --
+@MANPAGES_TRUE@am__append_52 = $(manual_pages)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -245,19 +244,6 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = src/bluetoothd.8 lib/bluez.pc
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-profiles_sap_libsap_a_AR = $(AR) $(ARFLAGS)
-profiles_sap_libsap_a_LIBADD =
-am__profiles_sap_libsap_a_SOURCES_DIST = profiles/sap/sap.h \
-	profiles/sap/sap-u8500.c
-am__dirstamp = $(am__leading_dot)dirstamp
-@SAP_TRUE@am_profiles_sap_libsap_a_OBJECTS =  \
-@SAP_TRUE@	profiles/sap/sap-u8500.$(OBJEXT)
-profiles_sap_libsap_a_OBJECTS = $(am_profiles_sap_libsap_a_OBJECTS)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -303,6 +289,7 @@ am__android_audio_a2dp_default_la_SOURCES_DIST = android/audio-msg.h \
 	android/hal-audio-sbc.c android/hal-audio-aptx.c \
 	android/hardware/audio.h android/hardware/audio_effect.h \
 	android/hardware/hardware.h android/system/audio.h
+am__dirstamp = $(am__leading_dot)dirstamp
 @ANDROID_TRUE@am_android_audio_a2dp_default_la_OBJECTS = android/android_audio_a2dp_default_la-hal-audio.lo \
 @ANDROID_TRUE@	android/android_audio_a2dp_default_la-hal-audio-sbc.lo \
 @ANDROID_TRUE@	android/android_audio_a2dp_default_la-hal-audio-aptx.lo
@@ -475,8 +462,9 @@ src_libshared_mainloop_la_OBJECTS =  \
 @TOOLS_TRUE@	tools/btsnoop$(EXEEXT) tools/btproxy$(EXEEXT) \
 @TOOLS_TRUE@	tools/btiotest$(EXEEXT) tools/bneptest$(EXEEXT) \
 @TOOLS_TRUE@	tools/mcaptest$(EXEEXT) tools/cltest$(EXEEXT) \
-@TOOLS_TRUE@	tools/oobtest$(EXEEXT) tools/seq2bseq$(EXEEXT) \
-@TOOLS_TRUE@	tools/nokfw$(EXEEXT) tools/create-image$(EXEEXT) \
+@TOOLS_TRUE@	tools/oobtest$(EXEEXT) tools/advtest$(EXEEXT) \
+@TOOLS_TRUE@	tools/seq2bseq$(EXEEXT) tools/nokfw$(EXEEXT) \
+@TOOLS_TRUE@	tools/create-image$(EXEEXT) \
 @TOOLS_TRUE@	tools/eddystone$(EXEEXT) tools/ibeacon$(EXEEXT) \
 @TOOLS_TRUE@	tools/btgatt-client$(EXEEXT) \
 @TOOLS_TRUE@	tools/btgatt-server$(EXEEXT) \
@@ -739,7 +727,7 @@ am__client_bluetoothctl_SOURCES_DIST = client/main.c client/display.h \
 @CLIENT_TRUE@	client/gatt.$(OBJEXT) monitor/uuid.$(OBJEXT)
 client_bluetoothctl_OBJECTS = $(am_client_bluetoothctl_OBJECTS)
 @CLIENT_TRUE@client_bluetoothctl_DEPENDENCIES =  \
-@CLIENT_TRUE@	gdbus/libgdbus-internal.la
+@CLIENT_TRUE@	gdbus/libgdbus-internal.la src/libshared-glib.la
 am__emulator_b1ee_SOURCES_DIST = emulator/b1ee.c
 @TESTING_TRUE@am_emulator_b1ee_OBJECTS = emulator/b1ee.$(OBJEXT)
 emulator_b1ee_OBJECTS = $(am_emulator_b1ee_OBJECTS)
@@ -1068,6 +1056,11 @@ am__tools_3dsp_SOURCES_DIST = tools/3dsp.c monitor/bt.h
 @TESTING_TRUE@am_tools_3dsp_OBJECTS = tools/3dsp.$(OBJEXT)
 tools_3dsp_OBJECTS = $(am_tools_3dsp_OBJECTS)
 @TESTING_TRUE@tools_3dsp_DEPENDENCIES = src/libshared-mainloop.la
+am__tools_advtest_SOURCES_DIST = tools/advtest.c
+@TOOLS_TRUE@am_tools_advtest_OBJECTS = tools/advtest.$(OBJEXT)
+tools_advtest_OBJECTS = $(am_tools_advtest_OBJECTS)
+@TOOLS_TRUE@tools_advtest_DEPENDENCIES = lib/libbluetooth-internal.la \
+@TOOLS_TRUE@	src/libshared-mainloop.la
 tools_amptest_SOURCES = tools/amptest.c
 tools_amptest_OBJECTS = tools/amptest.$(OBJEXT)
 @TOOLS_TRUE@tools_amptest_DEPENDENCIES = lib/libbluetooth-internal.la
@@ -1634,8 +1627,7 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(profiles_sap_libsap_a_SOURCES) \
-	$(android_audio_a2dp_default_la_SOURCES) \
+SOURCES = $(android_audio_a2dp_default_la_SOURCES) \
 	$(android_audio_sco_default_la_SOURCES) \
 	$(android_bluetooth_default_la_SOURCES) \
 	$(gdbus_libgdbus_internal_la_SOURCES) \
@@ -1657,8 +1649,8 @@ SOURCES = $(profiles_sap_libsap_a_SOURCES) \
 	$(profiles_cups_bluetooth_SOURCES) \
 	$(profiles_iap_iapd_SOURCES) $(src_bluetoothd_SOURCES) \
 	$(nodist_src_bluetoothd_SOURCES) $(tools_3dsp_SOURCES) \
-	tools/amptest.c tools/avinfo.c tools/avtest.c \
-	$(tools_bccmd_SOURCES) $(tools_bdaddr_SOURCES) \
+	$(tools_advtest_SOURCES) tools/amptest.c tools/avinfo.c \
+	tools/avtest.c $(tools_bccmd_SOURCES) $(tools_bdaddr_SOURCES) \
 	$(tools_bluemoon_SOURCES) $(tools_bluetooth_player_SOURCES) \
 	$(tools_bnep_tester_SOURCES) $(tools_bneptest_SOURCES) \
 	$(tools_btattach_SOURCES) $(tools_btgatt_client_SOURCES) \
@@ -1697,8 +1689,7 @@ SOURCES = $(profiles_sap_libsap_a_SOURCES) \
 	$(unit_test_queue_SOURCES) $(unit_test_ringbuf_SOURCES) \
 	$(unit_test_sdp_SOURCES) $(unit_test_textfile_SOURCES) \
 	$(unit_test_uhid_SOURCES) $(unit_test_uuid_SOURCES)
-DIST_SOURCES = $(am__profiles_sap_libsap_a_SOURCES_DIST) \
-	$(am__android_audio_a2dp_default_la_SOURCES_DIST) \
+DIST_SOURCES = $(am__android_audio_a2dp_default_la_SOURCES_DIST) \
 	$(am__android_audio_sco_default_la_SOURCES_DIST) \
 	$(am__android_bluetooth_default_la_SOURCES_DIST) \
 	$(gdbus_libgdbus_internal_la_SOURCES) \
@@ -1727,8 +1718,9 @@ DIST_SOURCES = $(am__profiles_sap_libsap_a_SOURCES_DIST) \
 	$(am__profiles_cups_bluetooth_SOURCES_DIST) \
 	$(am__profiles_iap_iapd_SOURCES_DIST) \
 	$(am__src_bluetoothd_SOURCES_DIST) \
-	$(am__tools_3dsp_SOURCES_DIST) tools/amptest.c tools/avinfo.c \
-	tools/avtest.c $(am__tools_bccmd_SOURCES_DIST) \
+	$(am__tools_3dsp_SOURCES_DIST) \
+	$(am__tools_advtest_SOURCES_DIST) tools/amptest.c \
+	tools/avinfo.c tools/avtest.c $(am__tools_bccmd_SOURCES_DIST) \
 	$(am__tools_bdaddr_SOURCES_DIST) \
 	$(am__tools_bluemoon_SOURCES_DIST) \
 	$(am__tools_bluetooth_player_SOURCES_DIST) \
@@ -2166,21 +2158,21 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_MAKEFLAGS = --no-print-directory
 lib_LTLIBRARIES = $(am__append_2)
-noinst_LIBRARIES = $(am__append_7)
+noinst_LIBRARIES = 
 noinst_LTLIBRARIES = lib/libbluetooth-internal.la \
 	gdbus/libgdbus-internal.la src/libshared-glib.la \
 	src/libshared-mainloop.la
-dist_man_MANS = $(am__append_31) $(am__append_34) $(am__append_37)
-dist_noinst_MANS = $(am__append_53)
+dist_man_MANS = $(am__append_30) $(am__append_33) $(am__append_36)
+dist_noinst_MANS = $(am__append_52)
 CLEANFILES = $(builtin_files) src/bluetooth.service \
 	obexd/src/builtin.h $(builtin_files) obexd/src/obex.service \
-	$(am__append_49)
+	$(am__append_48)
 EXTRA_DIST = src/bluetooth.service.in src/org.bluez.service \
-	$(am__append_18) src/genbuiltin src/bluetooth.conf \
+	$(am__append_17) src/genbuiltin src/bluetooth.conf \
 	src/main.conf profiles/network/network.conf \
 	profiles/input/input.conf profiles/proximity/proximity.conf \
-	$(am__append_32) $(am__append_35) $(am__append_36) \
-	$(am__append_38) obexd/src/obex.service.in \
+	$(am__append_31) $(am__append_34) $(am__append_35) \
+	$(am__append_37) obexd/src/obex.service.in \
 	obexd/src/org.bluez.obex.service obexd/src/genbuiltin \
 	android/Android.mk android/README \
 	android/compat/readline/history.h \
@@ -2239,7 +2231,7 @@ EXTRA_DIST = src/bluetooth.service.in src/org.bluez.service \
 	doc/pts-opp.txt doc/btsnoop.txt tools/magic.btsnoop \
 	$(manual_pages:.1=.txt)
 include_HEADERS = $(am__append_1)
-AM_CFLAGS = $(WARNING_CFLAGS) $(MISC_CFLAGS) $(am__append_45) \
+AM_CFLAGS = $(WARNING_CFLAGS) $(MISC_CFLAGS) $(am__append_44) \
 	@DBUS_CFLAGS@ @GLIB_CFLAGS@ $(am__empty)
 AM_LDFLAGS = $(MISC_LDFLAGS)
 @DATAFILES_TRUE@dbusdir = @DBUS_CONFDIR@/dbus-1/system.d
@@ -2255,8 +2247,8 @@ AM_LDFLAGS = $(MISC_LDFLAGS)
 plugindir = $(libdir)/bluetooth/plugins
 @MAINTAINER_MODE_FALSE@build_plugindir = $(plugindir)
 @MAINTAINER_MODE_TRUE@build_plugindir = $(abs_top_srcdir)/plugins/.libs
-plugin_LTLIBRARIES = $(am__append_24) $(am__append_25) \
-	$(am__append_47)
+plugin_LTLIBRARIES = $(am__append_23) $(am__append_24) \
+	$(am__append_46)
 lib_sources = lib/bluetooth.c lib/hci.c lib/sdp.c
 lib_headers = lib/bluetooth.h lib/hci.h lib/hci_lib.h \
 		lib/sco.h lib/l2cap.h lib/sdp.h lib/sdp_lib.h \
@@ -2323,18 +2315,17 @@ gobex_sources = gobex/gobex.h gobex/gobex.c \
 			gobex/gobex-apparam.c gobex/gobex-apparam.h
 
 builtin_modules = hostname wiimote autopair policy $(am__append_3) \
-	$(am__append_5) $(am__append_8) $(am__append_10) \
-	$(am__append_12) $(am__append_14) $(am__append_16) \
-	$(am__append_19) gap scanparam deviceinfo $(am__append_21)
+	$(am__append_5) $(am__append_7) $(am__append_9) \
+	$(am__append_11) $(am__append_13) $(am__append_15) \
+	$(am__append_18) gap scanparam deviceinfo $(am__append_20)
 builtin_sources = plugins/hostname.c plugins/wiimote.c \
 	plugins/autopair.c plugins/policy.c $(am__append_4) \
-	$(am__append_6) $(am__append_9) $(am__append_11) \
-	$(am__append_13) $(am__append_15) $(am__append_17) \
-	$(am__append_20) profiles/gap/gas.c profiles/scanparam/scan.c \
-	profiles/deviceinfo/deviceinfo.c $(am__append_22)
+	$(am__append_6) $(am__append_8) $(am__append_10) \
+	$(am__append_12) $(am__append_14) $(am__append_16) \
+	$(am__append_19) profiles/gap/gas.c profiles/scanparam/scan.c \
+	profiles/deviceinfo/deviceinfo.c $(am__append_21)
 builtin_nodist = 
-builtin_ldadd = $(am__append_23)
-@SAP_TRUE@profiles_sap_libsap_a_SOURCES = profiles/sap/sap.h profiles/sap/sap-u8500.c
+builtin_ldadd = $(am__append_22)
 @SIXAXIS_TRUE@plugins_sixaxis_la_SOURCES = plugins/sixaxis.c
 @SIXAXIS_TRUE@plugins_sixaxis_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version \
 @SIXAXIS_TRUE@						-no-undefined @UDEV_LIBS@
@@ -2409,7 +2400,7 @@ test_scripts = test/sap_client.py test/bluezutils.py test/dbusdef.py \
 	test/map-client test/example-advertisement \
 	test/example-gatt-server test/example-gatt-client \
 	test/test-gatt-profile
-unit_tests = $(am__append_48) unit/test-eir unit/test-uuid \
+unit_tests = $(am__append_47) unit/test-eir unit/test-uuid \
 	unit/test-textfile unit/test-crc unit/test-crypto \
 	unit/test-ecc unit/test-ringbuf unit/test-queue unit/test-mgmt \
 	unit/test-uhid unit/test-sdp unit/test-avdtp unit/test-avctp \
@@ -2417,7 +2408,7 @@ unit_tests = $(am__append_48) unit/test-eir unit/test-uuid \
 	unit/test-gobex-header unit/test-gobex-packet unit/test-gobex \
 	unit/test-gobex-transfer unit/test-gobex-apparam unit/test-lib \
 	unit/test-gatt unit/test-hog unit/test-gattrib \
-	$(am__append_50)
+	$(am__append_49)
 @CLIENT_TRUE@client_bluetoothctl_SOURCES = client/main.c \
 @CLIENT_TRUE@					client/display.h client/display.c \
 @CLIENT_TRUE@					client/agent.h client/agent.c \
@@ -2426,8 +2417,8 @@ unit_tests = $(am__append_48) unit/test-eir unit/test-uuid \
 @CLIENT_TRUE@					client/gatt.h client/gatt.c \
 @CLIENT_TRUE@					monitor/uuid.h monitor/uuid.c
 
-@CLIENT_TRUE@client_bluetoothctl_LDADD = gdbus/libgdbus-internal.la @GLIB_LIBS@ @DBUS_LIBS@ \
-@CLIENT_TRUE@				-lreadline
+@CLIENT_TRUE@client_bluetoothctl_LDADD = gdbus/libgdbus-internal.la src/libshared-glib.la \
+@CLIENT_TRUE@				@GLIB_LIBS@ @DBUS_LIBS@ -lreadline
 
 @MONITOR_TRUE@monitor_btmon_SOURCES = monitor/main.c monitor/bt.h \
 @MONITOR_TRUE@				monitor/display.h monitor/display.c \
@@ -2595,6 +2586,8 @@ unit_tests = $(am__append_48) unit/test-eir unit/test-uuid \
 @TOOLS_TRUE@tools_cltest_LDADD = lib/libbluetooth-internal.la src/libshared-mainloop.la
 @TOOLS_TRUE@tools_oobtest_SOURCES = tools/oobtest.c
 @TOOLS_TRUE@tools_oobtest_LDADD = lib/libbluetooth-internal.la src/libshared-mainloop.la
+@TOOLS_TRUE@tools_advtest_SOURCES = tools/advtest.c
+@TOOLS_TRUE@tools_advtest_LDADD = lib/libbluetooth-internal.la src/libshared-mainloop.la
 @TOOLS_TRUE@tools_seq2bseq_SOURCES = tools/seq2bseq.c
 @TOOLS_TRUE@tools_nokfw_SOURCES = tools/nokfw.c
 @TOOLS_TRUE@tools_create_image_SOURCES = tools/create-image.c
@@ -2726,12 +2719,12 @@ unit_tests = $(am__append_48) unit/test-eir unit/test-uuid \
 @SYSTEMD_TRUE@dbussessionbusdir = @DBUS_SESSIONBUSDIR@
 @SYSTEMD_TRUE@dbussessionbus_DATA = obexd/src/org.bluez.obex.service
 obex_plugindir = $(libdir)/obex/plugins
-obexd_builtin_modules = filesystem bluetooth $(am__append_41) opp ftp \
-	$(am__append_43) mas mns
+obexd_builtin_modules = filesystem bluetooth $(am__append_40) opp ftp \
+	$(am__append_42) mas mns
 obexd_builtin_sources = obexd/plugins/filesystem.c \
 	obexd/plugins/filesystem.h obexd/plugins/bluetooth.c \
-	$(am__append_42) obexd/plugins/opp.c obexd/plugins/ftp.c \
-	obexd/plugins/ftp.h $(am__append_44) obexd/plugins/mas.c \
+	$(am__append_41) obexd/plugins/opp.c obexd/plugins/ftp.c \
+	obexd/plugins/ftp.h $(am__append_43) obexd/plugins/mas.c \
 	obexd/src/map_ap.h obexd/plugins/messages.h \
 	obexd/plugins/messages-dummy.c obexd/client/mns.c \
 	obexd/src/map_ap.h obexd/client/map-event.h
@@ -3096,7 +3089,7 @@ unit_test_gattrib_LDADD = lib/libbluetooth-internal.la \
 @MIDI_TRUE@			@GLIB_LIBS@ @ALSA_LIBS@
 
 AM_TESTS_ENVIRONMENT = MALLOC_CHECK_=3 MALLOC_PERTURB_=69 \
-	$(am__append_52)
+	$(am__append_51)
 @VALGRIND_TRUE@LOG_COMPILER = valgrind --error-exitcode=1 --num-callers=30
 @VALGRIND_TRUE@LOG_FLAGS = --trace-children=yes --leak-check=full --show-reachable=no \
 @VALGRIND_TRUE@		--suppressions=$(srcdir)/tools/valgrind.supp --quiet
@@ -3179,19 +3172,6 @@ lib/bluez.pc: $(top_builddir)/config.status $(top_srcdir)/lib/bluez.pc.in
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-profiles/sap/$(am__dirstamp):
-	@$(MKDIR_P) profiles/sap
-	@: > profiles/sap/$(am__dirstamp)
-profiles/sap/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) profiles/sap/$(DEPDIR)
-	@: > profiles/sap/$(DEPDIR)/$(am__dirstamp)
-profiles/sap/sap-u8500.$(OBJEXT): profiles/sap/$(am__dirstamp) \
-	profiles/sap/$(DEPDIR)/$(am__dirstamp)
-
-profiles/sap/libsap.a: $(profiles_sap_libsap_a_OBJECTS) $(profiles_sap_libsap_a_DEPENDENCIES) $(EXTRA_profiles_sap_libsap_a_DEPENDENCIES) profiles/sap/$(am__dirstamp)
-	$(AM_V_at)-rm -f profiles/sap/libsap.a
-	$(AM_V_AR)$(profiles_sap_libsap_a_AR) profiles/sap/libsap.a $(profiles_sap_libsap_a_OBJECTS) $(profiles_sap_libsap_a_LIBADD)
-	$(AM_V_at)$(RANLIB) profiles/sap/libsap.a
 
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -4250,6 +4230,12 @@ plugins/bluetoothd-policy.$(OBJEXT): plugins/$(am__dirstamp) \
 	plugins/$(DEPDIR)/$(am__dirstamp)
 plugins/bluetoothd-neard.$(OBJEXT): plugins/$(am__dirstamp) \
 	plugins/$(DEPDIR)/$(am__dirstamp)
+profiles/sap/$(am__dirstamp):
+	@$(MKDIR_P) profiles/sap
+	@: > profiles/sap/$(am__dirstamp)
+profiles/sap/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) profiles/sap/$(DEPDIR)
+	@: > profiles/sap/$(DEPDIR)/$(am__dirstamp)
 profiles/sap/bluetoothd-main.$(OBJEXT): profiles/sap/$(am__dirstamp) \
 	profiles/sap/$(DEPDIR)/$(am__dirstamp)
 profiles/sap/bluetoothd-manager.$(OBJEXT):  \
@@ -4457,6 +4443,12 @@ tools/3dsp.$(OBJEXT): tools/$(am__dirstamp) \
 tools/3dsp$(EXEEXT): $(tools_3dsp_OBJECTS) $(tools_3dsp_DEPENDENCIES) $(EXTRA_tools_3dsp_DEPENDENCIES) tools/$(am__dirstamp)
 	@rm -f tools/3dsp$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tools_3dsp_OBJECTS) $(tools_3dsp_LDADD) $(LIBS)
+tools/advtest.$(OBJEXT): tools/$(am__dirstamp) \
+	tools/$(DEPDIR)/$(am__dirstamp)
+
+tools/advtest$(EXEEXT): $(tools_advtest_OBJECTS) $(tools_advtest_DEPENDENCIES) $(EXTRA_tools_advtest_DEPENDENCIES) tools/$(am__dirstamp)
+	@rm -f tools/advtest$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tools_advtest_OBJECTS) $(tools_advtest_LDADD) $(LIBS)
 tools/amptest.$(OBJEXT): tools/$(am__dirstamp) \
 	tools/$(DEPDIR)/$(am__dirstamp)
 
@@ -5398,7 +5390,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@profiles/sap/$(DEPDIR)/bluetoothd-manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@profiles/sap/$(DEPDIR)/bluetoothd-sap-dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@profiles/sap/$(DEPDIR)/bluetoothd-server.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@profiles/sap/$(DEPDIR)/sap-u8500.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@profiles/scanparam/$(DEPDIR)/bluetoothd-scan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@profiles/scanparam/$(DEPDIR)/bluetoothd-scpp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@profiles/scanparam/$(DEPDIR)/scpp.Po@am__quote@
@@ -5469,6 +5460,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/uhid.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/3dsp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/advtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/amptest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/avinfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/avtest.Po@am__quote@
