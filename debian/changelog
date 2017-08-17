@@ -1,10 +1,13 @@
-bluez (5.46-0ubuntu2) artful; urgency=medium
+bluez (5.46-0ubuntu1) artful; urgency=medium
 
-  * New upstream release.
-  * Note: 5.46-0ubuntu1 was an experimental PPA, so to avoid conflicts this
-    this is now version 5.46-0ubuntu2
+  [ Konrad Zapałowicz ]
+  * New upstream version (lp: #1706598)
 
- -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 08 Aug 2017 12:28:05 +0800
+  [ Daniel van Vugt ]
+  * debian/control:
+    - update the vcs information
+
+ -- Simon Fels <simon.fels@canonical.com>  Wed, 19 Jul 2017 11:46:21 +0200
 
 bluez (5.45-0ubuntu4) artful; urgency=medium
 
