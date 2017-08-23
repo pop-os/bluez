@@ -1,10 +1,14 @@
 bluez (5.46-0ubuntu2) UNRELEASED; urgency=medium
 
+  [ Konrad Zapałowicz ]
   * debian/patches/0001-device-Fix-crash-when-connecting-ATT-with-BR-EDR-onl.patch
     - fix crash when conecting ATT with BR/EDR only device. cherry-picked
       from upstream.
 
- -- Konrad Zapałowicz <konrad.zapalowicz@canonical.com>  Mon, 21 Aug 2017 15:34:15 +0200
+  [ Daniel van Vugt ]
+  * Delete unused patches.
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Wed, 23 Aug 2017 15:56:24 +0800
 
 bluez (5.46-0ubuntu1) artful; urgency=medium
 
