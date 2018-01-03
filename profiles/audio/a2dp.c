@@ -104,6 +104,7 @@ struct a2dp_setup {
 	gboolean reconfigure;
 	gboolean start;
 	GSList *cb;
+	GIOChannel *io;
 	int ref;
 };
 
@@ -157,6 +158,11 @@ static struct a2dp_setup *setup_new(struct avdtp *session)
 static void setup_free(struct a2dp_setup *s)
 {
 	DBG("%p", s);
+
+	if (s->io) {
+		g_io_channel_shutdown(s->io, TRUE, NULL);
+		g_io_channel_unref(s->io);
+	}
 
 	setups = g_slist_remove(setups, s);
 	if (s->session)
@@ -1393,6 +1399,7 @@ struct avdtp *a2dp_avdtp_get(struct btd_device *device)
 {
 	struct a2dp_server *server;
 	struct a2dp_channel *chan;
+	const struct queue_entry *entry;
 
 	server = find_server(servers, device_get_adapter(device));
 	if (server == NULL)
@@ -1408,6 +1415,20 @@ struct avdtp *a2dp_avdtp_get(struct btd_device *device)
 	if (chan->session)
 		return avdtp_ref(chan->session);
 
+	/* Check if there is any SEP available */
+	for (entry = queue_get_entries(server->seps); entry;
+					entry = entry->next) {
+		struct avdtp_local_sep *sep = entry->data;
+
+		if (avdtp_sep_get_state(sep) == AVDTP_STATE_IDLE)
+			goto found;
+	}
+
+	DBG("Unable to find any available SEP");
+
+	return NULL;
+
+found:
 	chan->session = avdtp_new(NULL, device, server->seps);
 	if (!chan->session) {
 		channel_remove(chan);
@@ -1493,6 +1514,9 @@ static void transport_cb(GIOChannel *io, GError *err, gpointer user_data)
 
 	g_io_channel_set_close_on_unref(io, FALSE);
 
+	g_io_channel_unref(setup->io);
+	setup->io = NULL;
+
 	setup_unref(setup);
 
 	return;
@@ -1537,11 +1561,23 @@ static void confirm_cb(GIOChannel *io, gpointer data)
 		if (!setup || !setup->stream)
 			goto drop;
 
+		if (setup->io) {
+			error("transport channel already exists");
+			goto drop;
+		}
+
 		if (!bt_io_accept(io, transport_cb, setup, NULL, &err)) {
 			error("bt_io_accept: %s", err->message);
 			g_error_free(err);
 			goto drop;
 		}
+
+		/*
+		 * Reference the channel so it can be shutdown properly
+		 * stopping bt_io_accept from calling the callback with invalid
+		 * setup pointer.
+		 */
+		setup->io = g_io_channel_ref(io);
 
 		return;
 	}

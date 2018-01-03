@@ -1,5 +1,5 @@
 AC_PREREQ(2.60)
-AC_INIT(bluez, 5.46)
+AC_INIT(bluez, 5.48)
 
 AM_INIT_AUTOMAKE([foreign subdir-objects color-tests silent-rules
 					tar-pax no-dist-gzip dist-xz])
@@ -212,6 +212,17 @@ AC_ARG_ENABLE(cups, AC_HELP_STRING([--disable-cups],
                 [disable CUPS printer support]), [enable_cups=${enableval}])
 AM_CONDITIONAL(CUPS, test "${enable_cups}" != "no")
 
+AC_ARG_ENABLE(mesh, AC_HELP_STRING([--enable-mesh],
+		[enable Mesh profile support]), [enable_mesh=${enableval}])
+AM_CONDITIONAL(MESH, test "${enable_mesh}" = "yes")
+
+if (test "${enable_mesh}" == "yes"); then
+	PKG_CHECK_MODULES(JSONC, json-c, dummy=yes,
+				AC_MSG_ERROR(json-c is required))
+	AC_SUBST(JSON_CFLAGS)
+	AC_SUBST(JSON_LIBS)
+fi
+
 AC_ARG_ENABLE(midi, AC_HELP_STRING([--enable-midi],
                 [enable MIDI support]), [enable_midi=${enableval}])
 AM_CONDITIONAL(MIDI, test "${enable_midi}" = "yes")
@@ -233,11 +244,22 @@ if (test "${enable_obex}" != "no"); then
 fi
 AM_CONDITIONAL(OBEX, test "${enable_obex}" != "no")
 
+AC_ARG_ENABLE(btpclient, AC_HELP_STRING([--enable-btpclient],
+		[enable BTP client]), [enable_btpclient=${enableval}])
+AM_CONDITIONAL(BTPCLIENT, test "${enable_btpclient}" = "yes")
+
+if (test "${enable_btpclient}" = "yes"); then
+	PKG_CHECK_MODULES(ELL, ell >= 0.2, dummy=yes,
+			  AC_MSG_ERROR(ell library >= 0.2 is required))
+	AC_SUBST(ELL_CFLAGS)
+	AC_SUBST(ELL_LIBS)
+fi
+
 AC_ARG_ENABLE(client, AC_HELP_STRING([--disable-client],
 		[disable command line client]), [enable_client=${enableval}])
 AM_CONDITIONAL(CLIENT, test "${enable_client}" != "no")
 
-if (test "${enable_client}" != "no"); then
+if (test "${enable_client}" != "no" || test "${enable_mesh}" == "yes"); then
         AC_CHECK_HEADERS(readline/readline.h, enable_readline=yes,
                 AC_MSG_ERROR(readline header files are required))
 fi

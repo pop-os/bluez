@@ -80,7 +80,7 @@ include_HEADERS += $(lib_headers)
 lib_LTLIBRARIES += lib/libbluetooth.la
 
 lib_libbluetooth_la_SOURCES = $(lib_headers) $(lib_sources)
-lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 21:15:18
+lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 21:16:18
 lib_libbluetooth_la_DEPENDENCIES = $(local_headers)
 endif
 
@@ -119,7 +119,7 @@ shared_sources = src/shared/io.h src/shared/timeout.h \
 			src/shared/gatt-server.h src/shared/gatt-server.c \
 			src/shared/gatt-db.h src/shared/gatt-db.c \
 			src/shared/gap.h src/shared/gap.c \
-			src/shared/tty.h
+			src/shared/tty.h src/shared/shell.c src/shared/shell.h
 
 src_libshared_glib_la_SOURCES = $(shared_sources) \
 				src/shared/io-glib.c \
@@ -216,7 +216,7 @@ man_MANS = src/bluetoothd.8
 
 EXTRA_DIST += src/genbuiltin src/bluetooth.conf \
 			src/main.conf profiles/network/network.conf \
-			profiles/input/input.conf profiles/proximity/proximity.conf
+			profiles/input/input.conf
 
 test_scripts =
 unit_tests =
@@ -254,10 +254,7 @@ EXTRA_DIST += doc/mgmt-api.txt \
 		doc/health-api.txt doc/sap-api.txt \
 		doc/input-api.txt
 
-EXTRA_DIST += doc/alert-api.txt \
-		doc/proximity-api.txt doc/heartrate-api.txt \
-		doc/thermometer-api.txt doc/cyclingspeed-api.txt \
-		doc/gatt-api.txt doc/advertising-api.txt
+EXTRA_DIST += doc/gatt-api.txt doc/advertising-api.txt
 
 EXTRA_DIST += doc/obex-api.txt doc/obex-agent-api.txt
 
@@ -465,8 +462,13 @@ endif
 EXTRA_DIST += $(manual_pages:.1=.txt)
 
 DISTCHECK_CONFIGURE_FLAGS = --disable-datafiles --enable-library \
-					--enable-manpages --enable-android \
-					--disable-systemd --disable-udev
+						--enable-health \
+						--enable-mesh \
+						--enable-midi \
+						--enable-manpages \
+						--enable-android \
+						--disable-systemd \
+						--disable-udev
 
 DISTCLEANFILES = $(pkgconfig_DATA) $(unit_tests) $(manual_pages)
 
@@ -494,7 +496,7 @@ $(lib_libbluetooth_la_OBJECTS): $(local_headers)
 
 lib/bluetooth/%.h: lib/%.h
 	$(AM_V_at)$(MKDIR_P) lib/bluetooth
-	$(AM_V_GEN)$(LN_S) -f "$(abs_top_builddir)"/$< $@
+	$(AM_V_GEN)$(LN_S) -f $(abspath $<) $@
 
 if COVERAGE
 clean-coverage:

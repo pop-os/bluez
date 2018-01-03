@@ -2,8 +2,7 @@
  *
  *  BlueZ - Bluetooth protocol stack for Linux
  *
- *  Copyright (C) 2011-2014  Intel Corporation
- *  Copyright (C) 2002-2010  Marcel Holtmann <marcel@holtmann.org>
+ *  Copyright (C) 2017  Intel Corporation. All rights reserved.
  *
  *
  *  This library is free software; you can redistribute it and/or
@@ -22,10 +21,13 @@
  *
  */
 
-#include <stdint.h>
+struct prov;
 
-#define MAX_LEN_UUID_STR 37
+typedef void (*provision_done_cb)(void *user_data, int status);
 
-const char *uuid16_to_str(uint16_t uuid);
-const char *uuid32_to_str(uint32_t uuid);
-const char *uuidstr_to_str(const char *uuid);
+bool prov_open(struct mesh_node *node, GDBusProxy *prov_in, uint16_t net_idx,
+		provision_done_cb cb, void *user_data);
+bool prov_data_ready(struct mesh_node *node, uint8_t *buf, uint8_t len);
+bool prov_complete(struct mesh_node *node, uint8_t status);
+bool prov_set_sec_level(uint8_t level);
+uint8_t prov_get_sec_level(void);
