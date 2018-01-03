@@ -1,3 +1,9 @@
+bluez (5.46-0ubuntu4) bionic; urgency=medium
+
+  * No-change rebuild for libical soname change.
+
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 09 Dec 2017 11:51:41 +0000
+
 bluez (5.46-0ubuntu3) artful; urgency=medium
 
   * SECURITY UPDATE: information disclosure in service discovery
