@@ -1,3 +1,13 @@
+bluez (5.46-0ubuntu3) artful; urgency=medium
+
+  * SECURITY UPDATE: information disclosure in service discovery
+    protocol daemon.
+    - debian/patches/CVE-2017-1000250.patch: validate continuation
+      request size before sending response.
+    - CVE-2017-1000250
+
+ -- Steve Beattie <sbeattie@ubuntu.com>  Tue, 12 Sep 2017 00:56:06 -0700
+
 bluez (5.46-0ubuntu2) artful; urgency=medium
 
   [ Konrad Zapałowicz ]
