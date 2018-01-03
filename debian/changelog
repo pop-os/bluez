@@ -1,5 +1,7 @@
 bluez (5.48-0ubuntu1) bionic; urgency=medium
 
+  * Drop upstreamed patch:
+    - 0001-device-Fix-crash-when-connecting-ATT-with-BR-EDR-onl.patch
   * New upstream release 5.48:
     - Fix issue with subscriptions for unpaired devices.
     - Fix issue with handling A2DP and no available SEP.
