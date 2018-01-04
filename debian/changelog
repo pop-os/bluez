@@ -1,4 +1,4 @@
-bluez (5.48-0ubuntu1) bionic; urgency=medium
+bluez (5.48-0ubuntu0~ppa1) bionic; urgency=medium
 
   * Drop upstreamed patch:
     - 0001-device-Fix-crash-when-connecting-ATT-with-BR-EDR-onl.patch
