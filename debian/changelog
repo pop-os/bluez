@@ -1,3 +1,9 @@
+bluez (5.48-0ubuntu2) bionic; urgency=medium
+
+  * debian/control: Don't mention artful in Vcs fields
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Mon, 05 Feb 2018 13:36:28 +0800
+
 bluez (5.48-0ubuntu1) bionic; urgency=medium
 
   * Drop upstreamed patch:
