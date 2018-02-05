@@ -1,4 +1,4 @@
-bluez (5.48-0ubuntu0~ppa1) bionic; urgency=medium
+bluez (5.48-0ubuntu1) bionic; urgency=medium
 
   * Drop upstreamed patch:
     - 0001-device-Fix-crash-when-connecting-ATT-with-BR-EDR-onl.patch
@@ -30,7 +30,7 @@ bluez (5.48-0ubuntu0~ppa1) bionic; urgency=medium
     - Add support for decoding Bluetooth Mesh advertising bearer.
     - Add support for Bluetooth Mesh control application.
 
- -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Wed, 03 Jan 2018 17:56:45 +0800
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Mon, 05 Feb 2018 13:08:06 +0800
 
 bluez (5.46-0ubuntu4) bionic; urgency=medium
 
