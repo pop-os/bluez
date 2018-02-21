@@ -1,3 +1,10 @@
+bluez (5.48-0ubuntu3) bionic; urgency=medium
+
+  * Add fix-lp1750308-upstream-commit-1bf03369.patch to fix command piping
+    regression (mostly affecting python-dbusmock). (LP: #1750308)
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Wed, 21 Feb 2018 15:08:50 +0800
+
 bluez (5.48-0ubuntu2) bionic; urgency=medium
 
   * debian/control: Don't mention artful in Vcs fields
