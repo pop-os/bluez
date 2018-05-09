@@ -377,7 +377,8 @@ static gboolean transfer_size_exists(const GDBusPropertyTable *property,
 	struct obex_transfer *transfer = data;
 	struct obex_session *session = transfer->session;
 
-	return session->size != OBJECT_SIZE_UNKNOWN;
+	return (session->size != OBJECT_SIZE_UNKNOWN &&
+				session->size != OBJECT_SIZE_DELETE);
 }
 
 static gboolean transfer_get_size(const GDBusPropertyTable *property,
@@ -386,7 +387,8 @@ static gboolean transfer_get_size(const GDBusPropertyTable *property,
 	struct obex_transfer *transfer = data;
 	struct obex_session *session = transfer->session;
 
-	if (session->size == OBJECT_SIZE_UNKNOWN)
+	if (session->size == OBJECT_SIZE_UNKNOWN ||
+				session->size == OBJECT_SIZE_DELETE)
 		return FALSE;
 
 	dbus_message_iter_append_basic(iter, DBUS_TYPE_UINT64, &session->size);
@@ -531,12 +533,21 @@ void manager_cleanup(void)
 	dbus_connection_unref(connection);
 }
 
+void manager_emit_transfer_property(struct obex_transfer *transfer,
+								char *name)
+{
+	if (!transfer->path)
+		return;
+
+	g_dbus_emit_property_changed(connection, transfer->path,
+					TRANSFER_INTERFACE, name);
+}
+
 void manager_emit_transfer_started(struct obex_transfer *transfer)
 {
 	transfer->status = TRANSFER_STATUS_ACTIVE;
 
-	g_dbus_emit_property_changed(connection, transfer->path,
-					TRANSFER_INTERFACE, "Status");
+	manager_emit_transfer_property(transfer, "Status");
 }
 
 static void emit_transfer_completed(struct obex_transfer *transfer,
@@ -548,18 +559,7 @@ static void emit_transfer_completed(struct obex_transfer *transfer,
 	transfer->status = success ? TRANSFER_STATUS_COMPLETE :
 						TRANSFER_STATUS_ERROR;
 
-	g_dbus_emit_property_changed(connection, transfer->path,
-					TRANSFER_INTERFACE, "Status");
-}
-
-static void emit_transfer_progress(struct obex_transfer *transfer,
-					uint32_t total, uint32_t transferred)
-{
-	if (transfer->path == NULL)
-		return;
-
-	g_dbus_emit_property_changed(connection, transfer->path,
-					TRANSFER_INTERFACE, "Transferred");
+	manager_emit_transfer_property(transfer, "Status");
 }
 
 static void transfer_free(struct obex_transfer *transfer)
@@ -781,8 +781,7 @@ void manager_unregister_session(struct obex_session *os)
 
 void manager_emit_transfer_progress(struct obex_transfer *transfer)
 {
-	emit_transfer_progress(transfer, transfer->session->size,
-						transfer->session->offset);
+	manager_emit_transfer_property(transfer, "Transferred");
 }
 
 void manager_emit_transfer_completed(struct obex_transfer *transfer)

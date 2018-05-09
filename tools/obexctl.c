@@ -59,13 +59,13 @@
 
 static DBusConnection *dbus_conn;
 static GDBusProxy *default_session;
-static GSList *sessions = NULL;
-static GSList *opps = NULL;
-static GSList *ftps = NULL;
-static GSList *pbaps = NULL;
-static GSList *maps = NULL;
-static GSList *msgs = NULL;
-static GSList *transfers = NULL;
+static GList *sessions = NULL;
+static GList *opps = NULL;
+static GList *ftps = NULL;
+static GList *pbaps = NULL;
+static GList *maps = NULL;
+static GList *msgs = NULL;
+static GList *transfers = NULL;
 static GDBusProxy *client = NULL;
 
 struct transfer_data {
@@ -75,12 +75,35 @@ struct transfer_data {
 
 static void connect_handler(DBusConnection *connection, void *user_data)
 {
+	bt_shell_attach(fileno(stdin));
 	bt_shell_set_prompt(PROMPT_ON);
 }
 
 static void disconnect_handler(DBusConnection *connection, void *user_data)
 {
+	bt_shell_detach();
 	bt_shell_set_prompt(PROMPT_OFF);
+}
+
+static char *generic_generator(const char *text, int state, GList *source)
+{
+	static int index = 0;
+
+	if (!state) {
+		index = 0;
+	}
+
+	return g_dbus_proxy_path_lookup(source, &index, text);
+}
+
+static char *session_generator(const char *text, int state)
+{
+	return generic_generator(text, state, sessions);
+}
+
+static char *transfer_generator(const char *text, int state)
+{
+	return generic_generator(text, state, transfers);
 }
 
 static void connect_reply(DBusMessage *message, void *user_data)
@@ -92,43 +115,12 @@ static void connect_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to connect: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Connection successful\n");
-}
 
-static void append_variant(DBusMessageIter *iter, int type, void *val)
-{
-	DBusMessageIter value;
-	char sig[2] = { type, '\0' };
-
-	dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, sig, &value);
-
-	dbus_message_iter_append_basic(&value, type, val);
-
-	dbus_message_iter_close_container(iter, &value);
-}
-
-static void dict_append_entry(DBusMessageIter *dict, const char *key,
-							int type, void *val)
-{
-	DBusMessageIter entry;
-
-	if (type == DBUS_TYPE_STRING) {
-		const char *str = *((const char **) val);
-		if (str == NULL)
-			return;
-	}
-
-	dbus_message_iter_open_container(dict, DBUS_TYPE_DICT_ENTRY,
-							NULL, &entry);
-
-	dbus_message_iter_append_basic(&entry, DBUS_TYPE_STRING, &key);
-
-	append_variant(&entry, type, val);
-
-	dbus_message_iter_close_container(dict, &entry);
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 struct connect_args {
@@ -162,7 +154,8 @@ static void connect_setup(DBusMessageIter *iter, void *user_data)
 	if (args->target == NULL)
 		goto done;
 
-	dict_append_entry(&dict, "Target", DBUS_TYPE_STRING, &args->target);
+	g_dbus_dict_append_entry(&dict, "Target",
+					DBUS_TYPE_STRING, &args->target);
 
 done:
 	dbus_message_iter_close_container(iter, &dict);
@@ -175,7 +168,7 @@ static void cmd_connect(int argc, char *argv[])
 
 	if (!client) {
 		bt_shell_printf("Client proxy not available\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (argc > 2)
@@ -188,7 +181,7 @@ static void cmd_connect(int argc, char *argv[])
 	if (g_dbus_proxy_method_call(client, "CreateSession", connect_setup,
 			connect_reply, args, connect_args_free) == FALSE) {
 		bt_shell_printf("Failed to connect\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to connect to %s\n", argv[1]);
@@ -203,10 +196,12 @@ static void disconnect_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to disconnect: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Disconnection successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void disconnect_setup(DBusMessageIter *iter, void *user_data)
@@ -219,38 +214,25 @@ static void disconnect_setup(DBusMessageIter *iter, void *user_data)
 	dbus_message_iter_append_basic(iter, DBUS_TYPE_OBJECT_PATH, &path);
 }
 
-static GDBusProxy *find_session(const char *path)
-{
-	GSList *l;
-
-	for (l = sessions; l; l = g_slist_next(l)) {
-		GDBusProxy *proxy = l->data;
-
-		if (strcmp(path, g_dbus_proxy_get_path(proxy)) == 0)
-			return proxy;
-	}
-
-	return NULL;
-}
-
 static void cmd_disconnect(int argc, char *argv[])
 {
 	GDBusProxy *proxy;
 
 	if (argc > 1)
-		proxy = find_session(argv[1]);
+		proxy = g_dbus_proxy_lookup(sessions, NULL, argv[1],
+						OBEX_SESSION_INTERFACE);
 	else
 		proxy = default_session;
 
 	if (proxy == NULL) {
 		bt_shell_printf("Session not available\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (g_dbus_proxy_method_call(client, "RemoveSession", disconnect_setup,
 				disconnect_reply, proxy, NULL) == FALSE) {
 		bt_shell_printf("Failed to disconnect\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to disconnect to %s\n",
@@ -278,19 +260,22 @@ static void print_proxy(GDBusProxy *proxy, const char *title,
 
 	str = proxy_description(proxy, title, description);
 
-	bt_shell_printf("%s%s\n", str, default_session == proxy ? "[default]" : "");
+	bt_shell_printf("%s%s\n", str,
+			default_session == proxy ? "[default]" : "");
 
 	g_free(str);
 }
 
 static void cmd_list(int argc, char *arg[])
 {
-	GSList *l;
+	GList *l;
 
-	for (l = sessions; l; l = g_slist_next(l)) {
+	for (l = sessions; l; l = g_list_next(l)) {
 		GDBusProxy *proxy = l->data;
 		print_proxy(proxy, "Session", NULL);
 	}
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static bool check_default_session(void)
@@ -389,14 +374,15 @@ static void cmd_show(int argc, char *argv[])
 
 	if (argc < 2) {
 		if (check_default_session() == FALSE)
-			return;
+			return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
 		proxy = default_session;
 	} else {
-		proxy = find_session(argv[1]);
+		proxy = g_dbus_proxy_lookup(sessions, NULL, argv[1],
+						OBEX_SESSION_INTERFACE);
 		if (!proxy) {
 			bt_shell_printf("Session %s not available\n", argv[1]);
-			return;
+			return bt_shell_noninteractive_quit(EXIT_FAILURE);
 		}
 	}
 
@@ -404,6 +390,8 @@ static void cmd_show(int argc, char *argv[])
 
 	print_property(proxy, "Destination");
 	print_property(proxy, "Target");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void set_default_session(GDBusProxy *proxy)
@@ -430,46 +418,21 @@ static void cmd_select(int argc, char *argv[])
 {
 	GDBusProxy *proxy;
 
-	proxy = find_session(argv[1]);
+	proxy = g_dbus_proxy_lookup(sessions, NULL, argv[1],
+						OBEX_SESSION_INTERFACE);
 	if (proxy == NULL) {
 		bt_shell_printf("Session %s not available\n", argv[1]);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (default_session == proxy)
-		return;
+		return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 
 	set_default_session(proxy);
 
 	print_proxy(proxy, "Session", NULL);
-}
 
-static GDBusProxy *find_transfer(const char *path)
-{
-	GSList *l;
-
-	for (l = transfers; l; l = g_slist_next(l)) {
-		GDBusProxy *proxy = l->data;
-
-		if (strcmp(path, g_dbus_proxy_get_path(proxy)) == 0)
-			return proxy;
-	}
-
-	return NULL;
-}
-
-static GDBusProxy *find_message(const char *path)
-{
-	GSList *l;
-
-	for (l = msgs; l; l = g_slist_next(l)) {
-		GDBusProxy *proxy = l->data;
-
-		if (strcmp(path, g_dbus_proxy_get_path(proxy)) == 0)
-			return proxy;
-	}
-
-	return NULL;
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void transfer_info(GDBusProxy *proxy, int argc, char *argv[])
@@ -512,19 +475,22 @@ static void cmd_info(int argc, char *argv[])
 {
 	GDBusProxy *proxy;
 
-	proxy = find_transfer(argv[1]);
+	proxy = g_dbus_proxy_lookup(transfers, NULL, argv[1],
+						OBEX_TRANSFER_INTERFACE);
 	if (proxy) {
 		transfer_info(proxy, argc, argv);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 	}
 
-	proxy = find_message(argv[1]);
+	proxy = g_dbus_proxy_lookup(msgs, NULL, argv[1], OBEX_MSG_INTERFACE);
 	if (proxy) {
 		message_info(proxy, argc, argv);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 	}
 
 	bt_shell_printf("Object %s not available\n", argv[1]);
+
+	return bt_shell_noninteractive_quit(EXIT_FAILURE);
 }
 
 static void cancel_reply(DBusMessage *message, void *user_data)
@@ -536,26 +502,29 @@ static void cancel_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to cancel: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Cancel successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void cmd_cancel(int argc, char *argv[])
 {
 	GDBusProxy *proxy;
 
-	proxy = find_transfer(argv[1]);
+	proxy = g_dbus_proxy_lookup(transfers, NULL, argv[1],
+						OBEX_TRANSFER_INTERFACE);
 	if (!proxy) {
 		bt_shell_printf("Transfer %s not available\n", argv[1]);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (g_dbus_proxy_method_call(proxy, "Cancel", NULL, cancel_reply, NULL,
 							NULL) == FALSE) {
 		bt_shell_printf("Failed to cancel transfer\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to cancel transfer %s\n",
@@ -571,26 +540,29 @@ static void suspend_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to suspend: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Suspend successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void cmd_suspend(int argc, char *argv[])
 {
 	GDBusProxy *proxy;
 
-	proxy = find_transfer(argv[1]);
+	proxy = g_dbus_proxy_lookup(transfers, NULL, argv[1],
+						OBEX_TRANSFER_INTERFACE);
 	if (!proxy) {
 		bt_shell_printf("Transfer %s not available\n", argv[1]);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (g_dbus_proxy_method_call(proxy, "Suspend", NULL, suspend_reply,
 						NULL, NULL) == FALSE) {
 		bt_shell_printf("Failed to suspend transfer\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to suspend transfer %s\n",
@@ -606,58 +578,33 @@ static void resume_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to resume: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Resume successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void cmd_resume(int argc, char *argv[])
 {
 	GDBusProxy *proxy;
 
-	proxy = find_transfer(argv[1]);
+	proxy = g_dbus_proxy_lookup(transfers, NULL, argv[1],
+						OBEX_TRANSFER_INTERFACE);
 	if (!proxy) {
 		bt_shell_printf("Transfer %s not available\n", argv[1]);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (g_dbus_proxy_method_call(proxy, "Resume", NULL, resume_reply,
 						NULL, NULL) == FALSE) {
 		bt_shell_printf("Failed to resume transfer\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to resume transfer %s\n",
 						g_dbus_proxy_get_path(proxy));
-}
-
-static GDBusProxy *find_opp(const char *path)
-{
-	GSList *l;
-
-	for (l = opps; l; l = g_slist_next(l)) {
-		GDBusProxy *proxy = l->data;
-
-		if (strcmp(path, g_dbus_proxy_get_path(proxy)) == 0)
-			return proxy;
-	}
-
-	return NULL;
-}
-
-static GDBusProxy *find_map(const char *path)
-{
-	GSList *l;
-
-	for (l = maps; l; l = g_slist_next(l)) {
-		GDBusProxy *proxy = l->data;
-
-		if (strcmp(path, g_dbus_proxy_get_path(proxy)) == 0)
-			return proxy;
-	}
-
-	return NULL;
 }
 
 static void print_dict_iter(DBusMessageIter *iter)
@@ -715,12 +662,14 @@ static void send_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to send/pull: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	print_transfer_iter(&iter);
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void send_setup(DBusMessageIter *iter, void *user_data)
@@ -735,7 +684,7 @@ static void opp_send(GDBusProxy *proxy, int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "SendFile", send_setup, send_reply,
 					g_strdup(argv[1]), g_free) == FALSE) {
 		bt_shell_printf("Failed to send\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to send %s to %s\n", argv[1],
@@ -747,7 +696,7 @@ static void opp_pull(GDBusProxy *proxy, int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "PullBusinessCard", send_setup,
 			send_reply, g_strdup(argv[1]), g_free) == FALSE) {
 		bt_shell_printf("Failed to pull\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to pull %s from %s\n", argv[1],
@@ -764,12 +713,14 @@ static void push_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to PushMessage: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	print_transfer_iter(&iter);
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void push_setup(DBusMessageIter *iter, void *user_data)
@@ -797,7 +748,7 @@ static void map_send(GDBusProxy *proxy, int argc, char *argv[])
 					push_reply, g_strdup(argv[1]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to send\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to send %s to %s\n", argv[1],
@@ -806,40 +757,46 @@ static void map_send(GDBusProxy *proxy, int argc, char *argv[])
 
 static void cmd_send(int argc, char *argv[])
 {
+	const char *path = g_dbus_proxy_get_path(default_session);
 	GDBusProxy *proxy;
 
 	if (!check_default_session())
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
-	proxy = find_opp(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(opps, NULL, path, OBEX_OPP_INTERFACE);
 	if (proxy) {
 		opp_send(proxy, argc, argv);
 		return;
 	}
 
-	proxy = find_map(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(maps, NULL, path, OBEX_MAP_INTERFACE);
 	if (proxy) {
 		map_send(proxy, argc, argv);
 		return;
 	}
 
 	bt_shell_printf("Command not supported\n");
+
+	return bt_shell_noninteractive_quit(EXIT_FAILURE);
 }
 
 static void cmd_pull(int argc, char *argv[])
 {
+	const char *path = g_dbus_proxy_get_path(default_session);
 	GDBusProxy *proxy;
 
 	if (!check_default_session())
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
-	proxy = find_opp(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(opps, NULL, path, OBEX_OPP_INTERFACE);
 	if (proxy) {
 		opp_pull(proxy, argc, argv);
 		return;
 	}
 
 	bt_shell_printf("Command not supported\n");
+
+	return bt_shell_noninteractive_quit(EXIT_FAILURE);
 }
 
 static void change_folder_reply(DBusMessage *message, void *user_data)
@@ -851,10 +808,12 @@ static void change_folder_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to ChangeFolder: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("ChangeFolder successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void change_folder_setup(DBusMessageIter *iter, void *user_data)
@@ -874,12 +833,14 @@ static void select_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to Select: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	bt_shell_printf("Select successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void select_setup(DBusMessageIter *iter, void *user_data)
@@ -900,10 +861,12 @@ static void setfolder_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to SetFolder: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("SetFolder successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void setfolder_setup(DBusMessageIter *iter, void *user_data)
@@ -913,41 +876,13 @@ static void setfolder_setup(DBusMessageIter *iter, void *user_data)
 	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &folder);
 }
 
-static GDBusProxy *find_ftp(const char *path)
-{
-	GSList *l;
-
-	for (l = ftps; l; l = g_slist_next(l)) {
-		GDBusProxy *proxy = l->data;
-
-		if (strcmp(path, g_dbus_proxy_get_path(proxy)) == 0)
-			return proxy;
-	}
-
-	return NULL;
-}
-
-static GDBusProxy *find_pbap(const char *path)
-{
-	GSList *l;
-
-	for (l = pbaps; l; l = g_slist_next(l)) {
-		GDBusProxy *proxy = l->data;
-
-		if (strcmp(path, g_dbus_proxy_get_path(proxy)) == 0)
-			return proxy;
-	}
-
-	return NULL;
-}
-
 static void ftp_cd(GDBusProxy *proxy, int argc, char *argv[])
 {
 	if (g_dbus_proxy_method_call(proxy, "ChangeFolder", change_folder_setup,
 					change_folder_reply, g_strdup(argv[1]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to ChangeFolder\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to ChangeFolder to %s\n", argv[1]);
@@ -959,7 +894,7 @@ static void pbap_cd(GDBusProxy *proxy, int argc, char *argv[])
 					select_reply, g_strdup(argv[1]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to Select\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to Select to %s\n", argv[1]);
@@ -971,7 +906,7 @@ static void map_cd(GDBusProxy *proxy, int argc, char *argv[])
 					setfolder_reply, g_strdup(argv[1]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to SetFolder\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to SetFolder to %s\n", argv[1]);
@@ -979,30 +914,33 @@ static void map_cd(GDBusProxy *proxy, int argc, char *argv[])
 
 static void cmd_cd(int argc, char *argv[])
 {
+	const char *path = g_dbus_proxy_get_path(default_session);
 	GDBusProxy *proxy;
 
 	if (!check_default_session())
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
-	proxy = find_ftp(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(ftps, NULL, path, OBEX_FTP_INTERFACE);
 	if (proxy) {
 		ftp_cd(proxy, argc, argv);
 		return;
 	}
 
-	proxy = find_pbap(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(pbaps, NULL, path, OBEX_PBAP_INTERFACE);
 	if (proxy) {
 		pbap_cd(proxy, argc, argv);
 		return;
 	}
 
-	proxy = find_map(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(maps, NULL, path, OBEX_MAP_INTERFACE);
 	if (proxy) {
 		map_cd(proxy, argc, argv);
 		return;
 	}
 
 	bt_shell_printf("Command not supported\n");
+
+	return bt_shell_noninteractive_quit(EXIT_FAILURE);
 }
 
 static void list_folder_reply(DBusMessage *message, void *user_data)
@@ -1015,13 +953,13 @@ static void list_folder_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to ListFolder: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY)
-		return;
+		return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 
 	dbus_message_iter_recurse(&iter, &array);
 
@@ -1029,6 +967,8 @@ static void list_folder_reply(DBusMessage *message, void *user_data)
 		print_dict_iter(&array);
 		dbus_message_iter_next(&array);
 	}
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void ftp_ls(GDBusProxy *proxy, int argc, char *argv[])
@@ -1037,7 +977,7 @@ static void ftp_ls(GDBusProxy *proxy, int argc, char *argv[])
 						list_folder_reply, NULL,
 						NULL) == FALSE) {
 		bt_shell_printf("Failed to ls\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to ListFolder\n");
@@ -1050,7 +990,7 @@ static void parse_list_reply(DBusMessage *message)
 	dbus_message_iter_init(message, &iter);
 
 	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY)
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
 	dbus_message_iter_recurse(&iter, &array);
 
@@ -1068,6 +1008,8 @@ static void parse_list_reply(DBusMessage *message)
 		print_iter("\t", vcard, &entry);
 		dbus_message_iter_next(&array);
 	}
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void list_reply(DBusMessage *message, void *user_data)
@@ -1079,7 +1021,7 @@ static void list_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to List: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	parse_list_reply(message);
@@ -1108,7 +1050,7 @@ static void search_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to Search: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	parse_list_reply(message);
@@ -1141,7 +1083,7 @@ static void pbap_search(GDBusProxy *proxy, int argc, char *argv[])
 					search_reply, g_strdup(argv[1]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to Search\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to Search\n");
@@ -1157,13 +1099,13 @@ static void list_folders_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to ListFolders: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY)
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
 	dbus_message_iter_recurse(&iter, &array);
 
@@ -1171,6 +1113,8 @@ static void list_folders_reply(DBusMessage *message, void *user_data)
 		print_dict_iter(&array);
 		dbus_message_iter_next(&array);
 	}
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void list_folders_setup(DBusMessageIter *iter, void *user_data)
@@ -1197,13 +1141,13 @@ static void list_messages_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to ListFolders: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY)
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
 	dbus_message_iter_recurse(&iter, &array);
 
@@ -1217,6 +1161,8 @@ static void list_messages_reply(DBusMessage *message, void *user_data)
 		bt_shell_printf("\t%s\n", obj);
 		dbus_message_iter_next(&array);
 	}
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void list_messages_setup(DBusMessageIter *iter, void *user_data)
@@ -1244,7 +1190,7 @@ static void pbap_list(GDBusProxy *proxy, int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "List", list_setup, list_reply,
 						NULL, NULL) == FALSE) {
 		bt_shell_printf("Failed to List\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to List\n");
@@ -1261,7 +1207,7 @@ static void get_size_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to GetSize: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
@@ -1269,6 +1215,8 @@ static void get_size_reply(DBusMessage *message, void *user_data)
 	print_iter("\t", "Size", &iter);
 
 	pbap_list(proxy, 0, NULL);
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void pbap_get_size(GDBusProxy *proxy, int argc, char *argv[])
@@ -1276,7 +1224,7 @@ static void pbap_get_size(GDBusProxy *proxy, int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "GetSize", NULL, get_size_reply,
 						proxy, NULL) == FALSE) {
 		bt_shell_printf("Failed to GetSize\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to GetSize\n");
@@ -1301,7 +1249,7 @@ static void map_ls_messages(GDBusProxy *proxy, int argc, char *argv[])
 					list_messages_reply, g_strdup(argv[1]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to ListMessages\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to ListMessages\n");
@@ -1318,7 +1266,7 @@ static void map_ls(GDBusProxy *proxy, int argc, char *argv[])
 						list_folders_reply, NULL,
 						NULL) == FALSE) {
 		bt_shell_printf("Failed to ListFolders\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to ListFolders\n");
@@ -1326,30 +1274,33 @@ static void map_ls(GDBusProxy *proxy, int argc, char *argv[])
 
 static void cmd_ls(int argc, char *argv[])
 {
+	const char *path = g_dbus_proxy_get_path(default_session);
 	GDBusProxy *proxy;
 
 	if (!check_default_session())
 		return;
 
-	proxy = find_ftp(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(ftps, NULL, path, OBEX_FTP_INTERFACE);
 	if (proxy) {
 		ftp_ls(proxy, argc, argv);
 		return;
 	}
 
-	proxy = find_pbap(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(pbaps, NULL, path, OBEX_PBAP_INTERFACE);
 	if (proxy) {
 		pbap_ls(proxy, argc, argv);
 		return;
 	}
 
-	proxy = find_map(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(maps, NULL, path, OBEX_MAP_INTERFACE);
 	if (proxy) {
 		map_ls(proxy, argc, argv);
 		return;
 	}
 
 	bt_shell_printf("Command not supported\n");
+
+	return bt_shell_noninteractive_quit(EXIT_FAILURE);
 }
 
 struct cp_args {
@@ -1408,10 +1359,12 @@ static void copy_file_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to CopyFile: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("CopyFile successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void ftp_copy(GDBusProxy *proxy, int argc, char *argv[])
@@ -1423,10 +1376,12 @@ static void ftp_copy(GDBusProxy *proxy, int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "CopyFile", cp_setup,
 				copy_file_reply, args, cp_free) == FALSE) {
 		bt_shell_printf("Failed to CopyFile\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to CopyFile\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void get_file_reply(DBusMessage *message, void *user_data)
@@ -1439,12 +1394,14 @@ static void get_file_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to GetFile: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	print_transfer_iter(&iter);
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void get_file_setup(DBusMessageIter *iter, void *user_data)
@@ -1467,7 +1424,7 @@ static void ftp_get(GDBusProxy *proxy, int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "GetFile", get_file_setup,
 				get_file_reply, args, cp_free) == FALSE) {
 		bt_shell_printf("Failed to GetFile\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to GetFile\n");
@@ -1483,12 +1440,14 @@ static void put_file_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to PutFile: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	print_transfer_iter(&iter);
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void ftp_put(GDBusProxy *proxy, int argc, char *argv[])
@@ -1497,7 +1456,7 @@ static void ftp_put(GDBusProxy *proxy, int argc, char *argv[])
 
 	if (rindex(argv[2], ':') != NULL) {
 		bt_shell_printf("Invalid target file argument\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	args = cp_new(argv);
@@ -1505,7 +1464,7 @@ static void ftp_put(GDBusProxy *proxy, int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "PutFile", cp_setup, put_file_reply,
 						args, cp_free) == FALSE) {
 		bt_shell_printf("Failed to PutFile\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to PutFile\n");
@@ -1528,7 +1487,7 @@ static void pull_all_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to PullAll: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 
@@ -1558,7 +1517,7 @@ static void pbap_pull_all(GDBusProxy *proxy, int argc, char *argv[])
 					pull_all_reply, g_strdup(argv[2]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to PullAll\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to PullAll\n");
@@ -1573,7 +1532,7 @@ static void pull_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to Pull: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 
@@ -1607,7 +1566,7 @@ static void pbap_pull(GDBusProxy *proxy, int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "Pull", pull_setup, pull_reply,
 						args, cp_free) == FALSE) {
 		bt_shell_printf("Failed to Pull\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to Pull\n");
@@ -1631,12 +1590,14 @@ static void get_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to Get: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	dbus_message_iter_init(message, &iter);
 
 	print_transfer_iter(&iter);
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void get_setup(DBusMessageIter *iter, void *user_data)
@@ -1652,16 +1613,16 @@ static void map_cp(GDBusProxy *proxy, int argc, char *argv[])
 {
 	GDBusProxy *obj;
 
-	obj = find_message(argv[1]);
+	obj = g_dbus_proxy_lookup(msgs, NULL, argv[1], OBEX_MSG_INTERFACE);
 	if (obj == NULL) {
 		bt_shell_printf("Invalid message argument\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (g_dbus_proxy_method_call(obj, "Get", get_setup, get_reply,
 					g_strdup(argv[2]), g_free) == FALSE) {
 		bt_shell_printf("Failed to Get\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to Get\n");
@@ -1669,31 +1630,33 @@ static void map_cp(GDBusProxy *proxy, int argc, char *argv[])
 
 static void cmd_cp(int argc, char *argv[])
 {
-
+	const char *path = g_dbus_proxy_get_path(default_session);
 	GDBusProxy *proxy;
 
 	if (!check_default_session())
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
-	proxy = find_ftp(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(ftps, NULL, path, OBEX_FTP_INTERFACE);
 	if (proxy) {
 		ftp_cp(proxy, argc, argv);
 		return;
 	}
 
-	proxy = find_pbap(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(pbaps, NULL, path, OBEX_PBAP_INTERFACE);
 	if (proxy) {
 		pbap_cp(proxy, argc, argv);
 		return;
 	}
 
-	proxy = find_map(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(maps, NULL, path, OBEX_MAP_INTERFACE);
 	if (proxy) {
 		map_cp(proxy, argc, argv);
 		return;
 	}
 
 	bt_shell_printf("Command not supported\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void move_file_reply(DBusMessage *message, void *user_data)
@@ -1705,24 +1668,27 @@ static void move_file_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to MoveFile: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("MoveFile successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void cmd_mv(int argc, char *argv[])
 {
+	const char *path = g_dbus_proxy_get_path(default_session);
 	GDBusProxy *proxy;
 	struct cp_args *args;
 
 	if (!check_default_session())
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
-	proxy = find_ftp(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(ftps, NULL, path, OBEX_FTP_INTERFACE);
 	if (proxy == NULL) {
 		bt_shell_printf("Command not supported\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	args = cp_new(argv);
@@ -1730,7 +1696,7 @@ static void cmd_mv(int argc, char *argv[])
 	if (g_dbus_proxy_method_call(proxy, "MoveFile", cp_setup,
 				move_file_reply, args, cp_free) == FALSE) {
 		bt_shell_printf("Failed to MoveFile\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to MoveFile\n");
@@ -1745,10 +1711,12 @@ static void delete_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to Delete: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Delete successful\n");
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void delete_setup(DBusMessageIter *iter, void *user_data)
@@ -1764,7 +1732,7 @@ static void ftp_rm(GDBusProxy *proxy, int argc, char *argv[])
 					delete_reply, g_strdup(argv[1]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to Delete\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to Delete\n");
@@ -1772,10 +1740,13 @@ static void ftp_rm(GDBusProxy *proxy, int argc, char *argv[])
 
 static void set_delete_reply(const DBusError *error, void *user_data)
 {
-	if (dbus_error_is_set(error))
+	if (dbus_error_is_set(error)) {
 		bt_shell_printf("Failed to set Deleted: %s\n", error->name);
-	else
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
+	} else {
 		bt_shell_printf("Set Deleted successful\n");
+		return bt_shell_noninteractive_quit(EXIT_SUCCESS);
+	}
 }
 
 static void map_rm(GDBusProxy *proxy, int argc, char *argv[])
@@ -1783,17 +1754,17 @@ static void map_rm(GDBusProxy *proxy, int argc, char *argv[])
 	GDBusProxy *msg;
 	dbus_bool_t value = TRUE;
 
-	msg = find_message(argv[1]);
+	msg = g_dbus_proxy_lookup(msgs, NULL, argv[1], OBEX_MSG_INTERFACE);
 	if (msg == NULL) {
 		bt_shell_printf("Invalid message argument\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (g_dbus_proxy_set_property_basic(msg, "Deleted", DBUS_TYPE_BOOLEAN,
 						&value, set_delete_reply,
 						NULL, NULL) == FALSE) {
 		bt_shell_printf("Failed to set Deleted\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to set Deleted\n");
@@ -1801,24 +1772,27 @@ static void map_rm(GDBusProxy *proxy, int argc, char *argv[])
 
 static void cmd_rm(int argc, char *argv[])
 {
+	const char *path = g_dbus_proxy_get_path(default_session);
 	GDBusProxy *proxy;
 
 	if (!check_default_session())
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
-	proxy = find_ftp(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(ftps, NULL, path, OBEX_FTP_INTERFACE);
 	if (proxy) {
 		ftp_rm(proxy, argc, argv);
 		return;
 	}
 
-	proxy = find_map(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(maps, NULL, path, OBEX_MAP_INTERFACE);
 	if (proxy) {
 		map_rm(proxy, argc, argv);
 		return;
 	}
 
 	bt_shell_printf("Command not supported\n");
+
+	return bt_shell_noninteractive_quit(EXIT_FAILURE);
 }
 
 static void create_folder_reply(DBusMessage *message, void *user_data)
@@ -1830,7 +1804,7 @@ static void create_folder_reply(DBusMessage *message, void *user_data)
 	if (dbus_set_error_from_message(&error, message) == TRUE) {
 		bt_shell_printf("Failed to CreateFolder: %s\n", error.name);
 		dbus_error_free(&error);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("CreateFolder successful\n");
@@ -1845,22 +1819,23 @@ static void create_folder_setup(DBusMessageIter *iter, void *user_data)
 
 static void cmd_mkdir(int argc, char *argv[])
 {
+	const char *path = g_dbus_proxy_get_path(default_session);
 	GDBusProxy *proxy;
 
 	if (!check_default_session())
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 
-	proxy = find_ftp(g_dbus_proxy_get_path(default_session));
+	proxy = g_dbus_proxy_lookup(ftps, NULL, path, OBEX_FTP_INTERFACE);
 	if (proxy == NULL) {
 		bt_shell_printf("Command not supported\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	if (g_dbus_proxy_method_call(proxy, "CreateFolder", create_folder_setup,
 					create_folder_reply, g_strdup(argv[1]),
 					g_free) == FALSE) {
 		bt_shell_printf("Failed to CreateFolder\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_printf("Attempting to CreateFolder\n");
@@ -1870,14 +1845,21 @@ static const struct bt_shell_menu main_menu = {
 	.name = "main",
 	.entries = {
 	{ "connect",      "<dev> [uuid]", cmd_connect, "Connect session" },
-	{ "disconnect",   "[session]", cmd_disconnect, "Disconnect session" },
+	{ "disconnect",   "[session]", cmd_disconnect, "Disconnect session",
+						session_generator },
 	{ "list",         NULL,       cmd_list, "List available sessions" },
-	{ "show",         "[session]", cmd_show, "Session information" },
-	{ "select",       "<session>", cmd_select, "Select default session" },
-	{ "info",         "<object>", cmd_info, "Object information" },
-	{ "cancel",       "<transfer>", cmd_cancel, "Cancel transfer" },
-	{ "suspend",      "<transfer>", cmd_suspend, "Suspend transfer" },
-	{ "resume",       "<transfer>", cmd_resume, "Resume transfer" },
+	{ "show",         "[session]", cmd_show, "Session information",
+						session_generator },
+	{ "select",       "<session>", cmd_select, "Select default session",
+						session_generator },
+	{ "info",         "<object>", cmd_info, "Object information",
+						transfer_generator },
+	{ "cancel",       "<transfer>", cmd_cancel, "Cancel transfer",
+						transfer_generator },
+	{ "suspend",      "<transfer>", cmd_suspend, "Suspend transfer",
+						transfer_generator },
+	{ "resume",       "<transfer>", cmd_resume, "Resume transfer",
+						transfer_generator },
 	{ "send",         "<file>",   cmd_send, "Send file" },
 	{ "pull",	  "<file>",   cmd_pull,
 					"Pull Vobject & stores in file" },
@@ -1902,7 +1884,7 @@ static void client_added(GDBusProxy *proxy)
 
 static void session_added(GDBusProxy *proxy)
 {
-	sessions = g_slist_append(sessions, proxy);
+	sessions = g_list_append(sessions, proxy);
 
 	if (default_session == NULL)
 		set_default_session(proxy);
@@ -1918,6 +1900,14 @@ static void print_transferred(struct transfer_data *data, const char *str,
 	int seconds, minutes;
 
 	dbus_message_iter_get_basic(iter, &valu64);
+
+	/*
+	 * Use the file size to output the proper size/speed since obexd resets
+	 * the current transferred size to zero on completion of transfer.
+	 */
+	if (valu64 == 0)
+		valu64 = data->size;
+
 	speed = valu64 - data->transferred;
 	data->transferred = valu64;
 
@@ -1940,6 +1930,9 @@ static void transfer_property_changed(GDBusProxy *proxy, const char *name,
 {
 	struct transfer_data *data = user_data;
 	char *str;
+
+	if (iter == NULL)
+		return;
 
 	str = proxy_description(proxy, "Transfer", COLORED_CHG);
 
@@ -1969,7 +1962,7 @@ static void transfer_added(GDBusProxy *proxy)
 	struct transfer_data *data;
 	DBusMessageIter iter;
 
-	transfers = g_slist_append(transfers, proxy);
+	transfers = g_list_append(transfers, proxy);
 
 	print_proxy(proxy, "Transfer", COLORED_NEW);
 
@@ -1987,35 +1980,35 @@ static void transfer_added(GDBusProxy *proxy)
 
 static void opp_added(GDBusProxy *proxy)
 {
-	opps = g_slist_append(opps, proxy);
+	opps = g_list_append(opps, proxy);
 
 	print_proxy(proxy, "ObjectPush", COLORED_NEW);
 }
 
 static void ftp_added(GDBusProxy *proxy)
 {
-	ftps = g_slist_append(ftps, proxy);
+	ftps = g_list_append(ftps, proxy);
 
 	print_proxy(proxy, "FileTransfer", COLORED_NEW);
 }
 
 static void pbap_added(GDBusProxy *proxy)
 {
-	pbaps = g_slist_append(pbaps, proxy);
+	pbaps = g_list_append(pbaps, proxy);
 
 	print_proxy(proxy, "PhonebookAccess", COLORED_NEW);
 }
 
 static void map_added(GDBusProxy *proxy)
 {
-	maps = g_slist_append(maps, proxy);
+	maps = g_list_append(maps, proxy);
 
 	print_proxy(proxy, "MessageAccess", COLORED_NEW);
 }
 
 static void msg_added(GDBusProxy *proxy)
 {
-	msgs = g_slist_append(msgs, proxy);
+	msgs = g_list_append(msgs, proxy);
 
 	print_proxy(proxy, "Message", COLORED_NEW);
 }
@@ -2059,49 +2052,49 @@ static void session_removed(GDBusProxy *proxy)
 	if (default_session == proxy)
 		set_default_session(NULL);
 
-	sessions = g_slist_remove(sessions, proxy);
+	sessions = g_list_remove(sessions, proxy);
 }
 
 static void transfer_removed(GDBusProxy *proxy)
 {
 	print_proxy(proxy, "Transfer", COLORED_DEL);
 
-	transfers = g_slist_remove(transfers, proxy);
+	transfers = g_list_remove(transfers, proxy);
 }
 
 static void opp_removed(GDBusProxy *proxy)
 {
 	print_proxy(proxy, "ObjectPush", COLORED_DEL);
 
-	opps = g_slist_remove(opps, proxy);
+	opps = g_list_remove(opps, proxy);
 }
 
 static void ftp_removed(GDBusProxy *proxy)
 {
 	print_proxy(proxy, "FileTransfer", COLORED_DEL);
 
-	ftps = g_slist_remove(ftps, proxy);
+	ftps = g_list_remove(ftps, proxy);
 }
 
 static void pbap_removed(GDBusProxy *proxy)
 {
 	print_proxy(proxy, "PhonebookAccess", COLORED_DEL);
 
-	pbaps = g_slist_remove(pbaps, proxy);
+	pbaps = g_list_remove(pbaps, proxy);
 }
 
 static void map_removed(GDBusProxy *proxy)
 {
 	print_proxy(proxy, "MessageAccess", COLORED_DEL);
 
-	maps = g_slist_remove(maps, proxy);
+	maps = g_list_remove(maps, proxy);
 }
 
 static void msg_removed(GDBusProxy *proxy)
 {
 	print_proxy(proxy, "Message", COLORED_DEL);
 
-	msgs = g_slist_remove(msgs, proxy);
+	msgs = g_list_remove(msgs, proxy);
 }
 
 static void proxy_removed(GDBusProxy *proxy, void *user_data)
@@ -2156,7 +2149,6 @@ int main(int argc, char *argv[])
 	bt_shell_init(argc, argv, NULL);
 	bt_shell_set_menu(&main_menu);
 	bt_shell_set_prompt(PROMPT_OFF);
-	bt_shell_attach(fileno(stdin));
 
 	dbus_conn = g_dbus_setup_bus(DBUS_BUS_SESSION, NULL, NULL);
 

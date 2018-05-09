@@ -34,6 +34,8 @@ mesh_meshctl_LDADD = gdbus/libgdbus-internal.la src/libshared-glib.la \
 				@GLIB_LIBS@ @DBUS_LIBS@ -ljson-c -lreadline
 endif
 
+EXTRA_DIST += mesh/local_node.json mesh/prov_db.json
+
 if MONITOR
 bin_PROGRAMS += monitor/btmon
 
@@ -185,7 +187,8 @@ noinst_PROGRAMS += tools/bdaddr tools/avinfo tools/avtest \
 			tools/btsnoop tools/btproxy \
 			tools/btiotest tools/bneptest tools/mcaptest \
 			tools/cltest tools/oobtest tools/advtest \
-			tools/seq2bseq tools/nokfw tools/create-image \
+			tools/seq2bseq tools/nokfw tools/rtlfw \
+			tools/create-image \
 			tools/eddystone tools/ibeacon \
 			tools/btgatt-client tools/btgatt-server \
 			tools/test-runner tools/check-selftest \
@@ -248,6 +251,8 @@ tools_advtest_LDADD = lib/libbluetooth-internal.la src/libshared-mainloop.la
 tools_seq2bseq_SOURCES = tools/seq2bseq.c
 
 tools_nokfw_SOURCES = tools/nokfw.c
+
+tools_rtlfw_SOURCES = tools/rtlfw.c
 
 tools_create_image_SOURCES = tools/create-image.c
 
@@ -447,5 +452,5 @@ noinst_PROGRAMS += tools/btpclient
 
 tools_btpclient_SOURCES = tools/btpclient.c src/shared/btp.c src/shared/btp.h
 tools_btpclient_CFLAGS = $(AM_CFLAGS) @ELL_CFLAGS@
-tools_btpclient_LDADD = @ELL_LIBS@
+tools_btpclient_LDADD = @ELL_LIBS@ lib/libbluetooth-internal.la
 endif

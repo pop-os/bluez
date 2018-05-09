@@ -17,8 +17,6 @@
  *
  */
 
-#include "advertising.h"
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
@@ -39,6 +37,7 @@
 #include "src/shared/mgmt.h"
 #include "src/shared/queue.h"
 #include "src/shared/util.h"
+#include "advertising.h"
 
 #define LE_ADVERTISING_MGR_IFACE "org.bluez.LEAdvertisingManager1"
 #define LE_ADVERTISEMENT_IFACE "org.bluez.LEAdvertisement1"
@@ -203,6 +202,9 @@ static bool parse_type(DBusMessageIter *iter, struct btd_adv_client *client)
 {
 	const char *msg_type;
 
+	if (!iter)
+		return true;
+
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_STRING)
 		return false;
 
@@ -225,6 +227,11 @@ static bool parse_service_uuids(DBusMessageIter *iter,
 					struct btd_adv_client *client)
 {
 	DBusMessageIter ariter;
+
+	if (!iter) {
+		bt_ad_clear_service_uuid(client->data);
+		return true;
+	}
 
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_ARRAY)
 		return false;
@@ -262,6 +269,11 @@ static bool parse_solicit_uuids(DBusMessageIter *iter,
 {
 	DBusMessageIter ariter;
 
+	if (!iter) {
+		bt_ad_clear_solicit_uuid(client->data);
+		return true;
+	}
+
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_ARRAY)
 		return false;
 
@@ -297,6 +309,11 @@ static bool parse_manufacturer_data(DBusMessageIter *iter,
 					struct btd_adv_client *client)
 {
 	DBusMessageIter entries;
+
+	if (!iter) {
+		bt_ad_clear_manufacturer_data(client->data);
+		return true;
+	}
 
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_ARRAY)
 		return false;
@@ -352,6 +369,11 @@ static bool parse_service_data(DBusMessageIter *iter,
 					struct btd_adv_client *client)
 {
 	DBusMessageIter entries;
+
+	if (!iter) {
+		bt_ad_clear_service_data(client->data);
+		return true;
+	}
 
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_ARRAY)
 		return false;
@@ -422,10 +444,18 @@ static bool parse_includes(DBusMessageIter *iter,
 {
 	DBusMessageIter entries;
 
+	if (!iter) {
+		client->flags = 0;
+		return true;
+	}
+
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_ARRAY)
 		return false;
 
 	dbus_message_iter_recurse(iter, &entries);
+
+	/* Reset flags before parsing */
+	client->flags = 0;
 
 	while (dbus_message_iter_get_arg_type(&entries) == DBUS_TYPE_STRING) {
 		const char *str;
@@ -456,6 +486,12 @@ static bool parse_local_name(DBusMessageIter *iter,
 {
 	const char *name;
 
+	if (!iter) {
+		free(client->name);
+		client->name = NULL;
+		return true;
+	}
+
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_STRING)
 		return false;
 
@@ -475,6 +511,11 @@ static bool parse_local_name(DBusMessageIter *iter,
 static bool parse_appearance(DBusMessageIter *iter,
 					struct btd_adv_client *client)
 {
+	if (!iter) {
+		client->appearance = 0;
+		return true;
+	}
+
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_UINT16)
 		return false;
 
@@ -491,6 +532,11 @@ static bool parse_appearance(DBusMessageIter *iter,
 static bool parse_duration(DBusMessageIter *iter,
 					struct btd_adv_client *client)
 {
+	if (!iter) {
+		client->duration = 0;
+		return true;
+	}
+
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_UINT16)
 		return false;
 
@@ -516,6 +562,13 @@ static gboolean client_timeout(void *user_data)
 static bool parse_timeout(DBusMessageIter *iter,
 					struct btd_adv_client *client)
 {
+	if (!iter) {
+		client->timeout = 0;
+		g_source_remove(client->to_id);
+		client->to_id = 0;
+		return true;
+	}
+
 	if (dbus_message_iter_get_arg_type(iter) != DBUS_TYPE_UINT16)
 		return false;
 
@@ -622,8 +675,12 @@ static int refresh_adv(struct btd_adv_client *client, mgmt_request_func_t func)
 
 	DBG("Refreshing advertisement: %s", client->path);
 
-	if (client->type == AD_TYPE_PERIPHERAL)
-		flags = MGMT_ADV_FLAG_CONNECTABLE | MGMT_ADV_FLAG_DISCOV;
+	if (client->type == AD_TYPE_PERIPHERAL) {
+		flags = MGMT_ADV_FLAG_CONNECTABLE;
+
+		if (btd_adapter_get_discoverable(client->manager->adapter))
+			flags |= MGMT_ADV_FLAG_DISCOV;
+	}
 
 	flags |= client->flags;
 
@@ -776,6 +833,11 @@ static void client_proxy_added(GDBusProxy *proxy, void *data)
 {
 	struct btd_adv_client *client = data;
 	DBusMessage *reply;
+	const char *interface;
+
+	interface = g_dbus_proxy_get_interface(proxy);
+	if (g_str_equal(interface, LE_ADVERTISEMENT_IFACE) == FALSE)
+		return;
 
 	reply = parse_advertisement(client);
 	if (!reply)
@@ -1032,27 +1094,20 @@ static void read_adv_features_callback(uint8_t status, uint16_t length,
 	if (manager->max_ads == 0)
 		return;
 
-	if (!g_dbus_register_interface(btd_get_dbus_connection(),
-					adapter_get_path(manager->adapter),
-					LE_ADVERTISING_MGR_IFACE, methods,
-					NULL, properties, manager, NULL)) {
-		error("Failed to register " LE_ADVERTISING_MGR_IFACE);
-		return;
-	}
-
 	/* Reset existing instances */
 	if (feat->num_instances)
 		remove_advertising(manager, 0);
 }
 
-static struct btd_adv_manager *manager_create(struct btd_adapter *adapter)
+static struct btd_adv_manager *manager_create(struct btd_adapter *adapter,
+						struct mgmt *mgmt)
 {
 	struct btd_adv_manager *manager;
 
 	manager = new0(struct btd_adv_manager, 1);
 	manager->adapter = adapter;
 
-	manager->mgmt = mgmt_new_default();
+	manager->mgmt = mgmt_ref(mgmt);
 
 	if (!manager->mgmt) {
 		error("Failed to access management interface");
@@ -1061,29 +1116,40 @@ static struct btd_adv_manager *manager_create(struct btd_adapter *adapter)
 	}
 
 	manager->mgmt_index = btd_adapter_get_index(adapter);
+	manager->clients = queue_new();
+	manager->supported_flags = MGMT_ADV_FLAG_LOCAL_NAME;
+
+	if (!g_dbus_register_interface(btd_get_dbus_connection(),
+					adapter_get_path(manager->adapter),
+					LE_ADVERTISING_MGR_IFACE, methods,
+					NULL, properties, manager, NULL)) {
+		error("Failed to register " LE_ADVERTISING_MGR_IFACE);
+		goto fail;
+	}
 
 	if (!mgmt_send(manager->mgmt, MGMT_OP_READ_ADV_FEATURES,
 				manager->mgmt_index, 0, NULL,
 				read_adv_features_callback, manager, NULL)) {
 		error("Failed to read advertising features");
-		manager_destroy(manager);
-		return NULL;
+		goto fail;
 	}
 
-	manager->clients = queue_new();
-	manager->supported_flags = MGMT_ADV_FLAG_LOCAL_NAME;
-
 	return manager;
+
+fail:
+	manager_destroy(manager);
+	return NULL;
 }
 
-struct btd_adv_manager *btd_adv_manager_new(struct btd_adapter *adapter)
+struct btd_adv_manager *btd_adv_manager_new(struct btd_adapter *adapter,
+							struct mgmt *mgmt)
 {
 	struct btd_adv_manager *manager;
 
-	if (!adapter)
+	if (!adapter || !mgmt)
 		return NULL;
 
-	manager = manager_create(adapter);
+	manager = manager_create(adapter, mgmt);
 	if (!manager)
 		return NULL;
 
@@ -1103,4 +1169,10 @@ void btd_adv_manager_destroy(struct btd_adv_manager *manager)
 					LE_ADVERTISING_MGR_IFACE);
 
 	manager_destroy(manager);
+}
+
+void btd_adv_manager_refresh(struct btd_adv_manager *manager)
+{
+	queue_foreach(manager->clients, (queue_foreach_func_t)refresh_adv,
+									NULL);
 }

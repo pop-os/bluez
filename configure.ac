@@ -1,5 +1,5 @@
 AC_PREREQ(2.60)
-AC_INIT(bluez, 5.48)
+AC_INIT(bluez, 5.49)
 
 AM_INIT_AUTOMAKE([foreign subdir-objects color-tests silent-rules
 					tar-pax no-dist-gzip dist-xz])
@@ -249,8 +249,8 @@ AC_ARG_ENABLE(btpclient, AC_HELP_STRING([--enable-btpclient],
 AM_CONDITIONAL(BTPCLIENT, test "${enable_btpclient}" = "yes")
 
 if (test "${enable_btpclient}" = "yes"); then
-	PKG_CHECK_MODULES(ELL, ell >= 0.2, dummy=yes,
-			  AC_MSG_ERROR(ell library >= 0.2 is required))
+	PKG_CHECK_MODULES(ELL, ell >= 0.3, dummy=yes,
+			  AC_MSG_ERROR(ell library >= 0.3 is required))
 	AC_SUBST(ELL_CFLAGS)
 	AC_SUBST(ELL_LIBS)
 fi

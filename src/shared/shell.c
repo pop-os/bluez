@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <signal.h>
 #include <sys/signalfd.h>
@@ -37,8 +38,9 @@
 
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <glib.h>
 
+#include "src/shared/mainloop.h"
+#include "src/shared/timeout.h"
 #include "src/shared/io.h"
 #include "src/shared/util.h"
 #include "src/shared/queue.h"
@@ -54,9 +56,17 @@
 		printf(COLOR_BLUE "%s %-*s " COLOR_OFF "%s\n", \
 			cmd, (int)(CMD_LENGTH - strlen(cmd)), "", desc)
 
-static GMainLoop *main_loop;
+struct bt_shell_env {
+	char *name;
+	void *value;
+};
 
 static struct {
+	bool init;
+	int argc;
+	char **argv;
+	bool mode;
+	int timeout;
 	struct io *input;
 
 	bool saved_prompt;
@@ -66,6 +76,9 @@ static struct {
 	const struct bt_shell_menu *menu;
 	const struct bt_shell_menu *main;
 	struct queue *submenus;
+	const struct bt_shell_menu_entry *exec;
+
+	struct queue *envs;
 } data;
 
 static void shell_print_menu(void);
@@ -73,16 +86,20 @@ static void shell_print_menu(void);
 static void cmd_version(int argc, char *argv[])
 {
 	bt_shell_printf("Version %s\n", VERSION);
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static void cmd_quit(int argc, char *argv[])
 {
-	g_main_loop_quit(main_loop);
+	mainloop_quit();
 }
 
 static void cmd_help(int argc, char *argv[])
 {
 	shell_print_menu();
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static const struct bt_shell_menu *find_menu(const char *name)
@@ -131,18 +148,20 @@ static void cmd_menu(int argc, char *argv[])
 
 	if (argc < 2 || !strlen(argv[1])) {
 		bt_shell_printf("Missing name argument\n");
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	menu = find_menu(argv[1]);
 	if (!menu) {
 		bt_shell_printf("Unable find menu with name: %s\n", argv[1]);
-		return;
+		return bt_shell_noninteractive_quit(EXIT_FAILURE);
 	}
 
 	bt_shell_set_menu(menu);
 
 	shell_print_menu();
+
+	return bt_shell_noninteractive_quit(EXIT_SUCCESS);
 }
 
 static bool cmd_menu_exists(const struct bt_shell_menu *menu)
@@ -191,6 +210,15 @@ static const struct bt_shell_menu_entry default_menu[] = {
 	{ }
 };
 
+static void shell_print_help(void)
+{
+	print_text(COLOR_HIGHLIGHT,
+		"\n"
+		"Use \"help\" for a list of available commands in a menu.\n"
+		"Use \"menu <submenu>\" if you want to enter any submenu.\n"
+		"Use \"back\" if you want to return to menu main.");
+}
+
 static void shell_print_menu(void)
 {
 	const struct bt_shell_menu_entry *entry;
@@ -229,18 +257,18 @@ static int parse_args(char *arg, wordexp_t *w, char *del, int flags)
 {
 	char *str;
 
-	str = g_strdelimit(arg, del, '"');
+	str = strdelimit(arg, del, '"');
 
 	if (wordexp(str, w, flags)) {
-		g_free(str);
+		free(str);
 		return -EINVAL;
 	}
 
 	/* If argument ends with ,,, set we_offs bypass strict checks */
-	if (w->we_wordc && g_str_has_suffix(w->we_wordv[w->we_wordc -1], "..."))
+	if (w->we_wordc && strsuffix(w->we_wordv[w->we_wordc -1], "..."))
 		w->we_offs = 1;
 
-	g_free(str);
+	free(str);
 
 	return 0;
 }
@@ -269,16 +297,30 @@ static int cmd_exec(const struct bt_shell_menu_entry *entry,
 	}
 
 	len = man - entry->arg;
-	man = strndup(entry->arg, len + 1);
+	if (entry->arg[0] == '<')
+		man = strndup(entry->arg, len + 1);
+	else {
+		/* Find where mandatory arguments start */
+		opt = strrchr(entry->arg, '<');
+		/* Skip if mandatory arguments are not in the right format */
+		if (!opt || opt > man) {
+			opt = strdup(entry->arg);
+			goto optional;
+		}
+		man = strndup(opt, man - opt + 1);
+	}
 
 	if (parse_args(man, &w, "<>", flags) < 0) {
 		print_text(COLOR_HIGHLIGHT,
-				"Unable to parse mandatory command arguments");
+			"Unable to parse mandatory command arguments: %s", man );
+		free(man);
 		return -EINVAL;
 	}
 
+	free(man);
+
 	/* Check if there are enough arguments */
-	if ((unsigned) argc - 1 < w.we_wordc && !w.we_offs) {
+	if ((unsigned) argc - 1 < w.we_wordc) {
 		print_text(COLOR_HIGHLIGHT, "Missing %s argument",
 						w.we_wordv[argc - 1]);
 		goto fail;
@@ -290,9 +332,12 @@ static int cmd_exec(const struct bt_shell_menu_entry *entry,
 optional:
 	if (parse_args(opt, &w, "[]", flags) < 0) {
 		print_text(COLOR_HIGHLIGHT,
-				"Unable to parse optional command arguments");
+			"Unable to parse optional command arguments: %s", opt);
+		free(opt);
 		return -EINVAL;
 	}
+
+	free(opt);
 
 	/* Check if there are too many arguments */
 	if ((unsigned) argc - 1 > w.we_wordc && !w.we_offs) {
@@ -301,15 +346,21 @@ optional:
 		goto fail;
 	}
 
+	w.we_offs = 0;
 	wordfree(&w);
 
 exec:
+	data.exec = entry;
+
 	if (entry->func)
 		entry->func(argc, argv);
+
+	data.exec = NULL;
 
 	return 0;
 
 fail:
+	w.we_offs = 0;
 	wordfree(&w);
 	return -EINVAL;
 }
@@ -335,15 +386,56 @@ static int menu_exec(const struct bt_shell_menu_entry *entry,
 	return -ENOENT;
 }
 
-static void shell_exec(int argc, char *argv[])
+static int submenu_exec(int argc, char *argv[])
 {
-	if (!data.menu || !argv[0])
-		return;
+	char *name;
+	int len, tlen;
+	const struct bt_shell_menu *submenu;
 
-	if (menu_exec(default_menu, argc, argv) == -ENOENT) {
-		if (menu_exec(data.menu->entries, argc, argv) == -ENOENT)
-			print_text(COLOR_HIGHLIGHT, "Invalid command");
+	if (data.menu != data.main)
+		return -ENOENT;
+
+	name = strchr(argv[0], '.');
+	if (!name)
+		return -ENOENT;
+
+	tlen = strlen(argv[0]);
+	len = name - argv[0];
+	name[0] = '\0';
+
+	submenu = find_menu(argv[0]);
+	if (!submenu)
+		return -ENOENT;
+
+	/* Replace submenu.command with command */
+	memmove(argv[0], argv[0] + len + 1, tlen - len - 1);
+	memset(argv[0] + tlen - len - 1, 0, len + 1);
+
+	return menu_exec(submenu->entries, argc, argv);
+}
+
+static int shell_exec(int argc, char *argv[])
+{
+	int err;
+
+	if (!data.menu || !argv[0])
+		return -EINVAL;
+
+	err  = menu_exec(default_menu, argc, argv);
+	if (err == -ENOENT) {
+		err  = menu_exec(data.menu->entries, argc, argv);
+		if (err == -ENOENT) {
+			err = submenu_exec(argc, argv);
+			if (err == -ENOENT) {
+				print_text(COLOR_HIGHLIGHT,
+					"Invalid command in menu %s: %s",
+					data.menu->name , argv[0]);
+				shell_print_help();
+			}
+		}
 	}
+
+	return err;
 }
 
 void bt_shell_printf(const char *fmt, ...)
@@ -353,16 +445,24 @@ void bt_shell_printf(const char *fmt, ...)
 	char *saved_line;
 	int saved_point;
 
+	if (!data.input)
+		return;
+
+	if (data.mode) {
+		va_start(args, fmt);
+		vprintf(fmt, args);
+		va_end(args);
+		return;
+	}
+
 	save_input = !RL_ISSTATE(RL_STATE_DONE);
 
 	if (save_input) {
 		saved_point = rl_point;
 		saved_line = rl_copy_text(0, rl_end);
-		if (!data.saved_prompt) {
-			rl_save_prompt();
-			rl_replace_line("", 0);
-			rl_redisplay();
-		}
+		rl_save_prompt();
+		rl_replace_line("", 0);
+		rl_redisplay();
 	}
 
 	va_start(args, fmt);
@@ -370,8 +470,7 @@ void bt_shell_printf(const char *fmt, ...)
 	va_end(args);
 
 	if (save_input) {
-		if (!data.saved_prompt)
-			rl_restore_prompt();
+		rl_restore_prompt();
 		rl_replace_line(saved_line, 0);
 		rl_point = saved_point;
 		rl_forced_update_display();
@@ -379,50 +478,31 @@ void bt_shell_printf(const char *fmt, ...)
 	}
 }
 
+static void print_string(const char *str, void *user_data)
+{
+	bt_shell_printf("%s\n", str);
+}
+
 void bt_shell_hexdump(const unsigned char *buf, size_t len)
 {
-	static const char hexdigits[] = "0123456789abcdef";
-	char str[68];
-	size_t i;
+	util_hexdump(' ', buf, len, print_string, NULL);
+}
 
-	if (!len)
+void bt_shell_usage()
+{
+	if (!data.exec)
 		return;
 
-	str[0] = ' ';
-
-	for (i = 0; i < len; i++) {
-		str[((i % 16) * 3) + 1] = ' ';
-		str[((i % 16) * 3) + 2] = hexdigits[buf[i] >> 4];
-		str[((i % 16) * 3) + 3] = hexdigits[buf[i] & 0xf];
-		str[(i % 16) + 51] = isprint(buf[i]) ? buf[i] : '.';
-
-		if ((i + 1) % 16 == 0) {
-			str[49] = ' ';
-			str[50] = ' ';
-			str[67] = '\0';
-			bt_shell_printf("%s\n", str);
-			str[0] = ' ';
-		}
-	}
-
-	if (i % 16 > 0) {
-		size_t j;
-		for (j = (i % 16); j < 16; j++) {
-			str[(j * 3) + 1] = ' ';
-			str[(j * 3) + 2] = ' ';
-			str[(j * 3) + 3] = ' ';
-			str[j + 51] = ' ';
-		}
-		str[49] = ' ';
-		str[50] = ' ';
-		str[67] = '\0';
-		bt_shell_printf("%s\n", str);
-	}
+	bt_shell_printf("Usage: %s %s\n", data.exec->cmd,
+					data.exec->arg ? data.exec->arg : "");
 }
 
 void bt_shell_prompt_input(const char *label, const char *msg,
 			bt_shell_prompt_input_func func, void *user_data)
 {
+	if (!data.init || data.mode)
+		return;
+
 	/* Normal use should not prompt for user input to the value a second
 	 * time before it releases the prompt, but we take a safe action. */
 	if (data.saved_prompt)
@@ -467,7 +547,7 @@ static void rl_handler(char *input)
 		rl_insert_text("quit");
 		rl_redisplay();
 		rl_crlf();
-		g_main_loop_quit(main_loop);
+		mainloop_quit();
 		return;
 	}
 
@@ -542,8 +622,84 @@ static char *cmd_generator(const char *text, int state)
 	return find_cmd(text, data.menu->entries, &index);
 }
 
+static wordexp_t args;
+
+static char *arg_generator(const char *text, int state)
+{
+	static unsigned int index, len;
+	const char *arg;
+
+	if (!state) {
+		index = 0;
+		len = strlen(text);
+	}
+
+	while (index < args.we_wordc) {
+		arg = args.we_wordv[index];
+		index++;
+
+		if (!strncmp(arg, text, len))
+			return strdup(arg);
+	}
+
+	return NULL;
+}
+
+static char **args_completion(const struct bt_shell_menu_entry *entry, int argc,
+							const char *text)
+{
+	char **matches = NULL;
+	char *str;
+	int index;
+
+	index = text[0] == '\0' ? argc - 1 : argc - 2;
+	if (index < 0)
+		return NULL;
+
+	if (!entry->arg)
+		goto end;
+
+	str = strdup(entry->arg);
+
+	if (parse_args(str, &args, "<>[]", WRDE_NOCMD))
+		goto done;
+
+	/* Check if argument is valid */
+	if ((unsigned) index > args.we_wordc - 1)
+		goto done;
+
+	/* Check if there are multiple values */
+	if (!strrchr(entry->arg, '/'))
+		goto done;
+
+	free(str);
+
+	/* Split values separated by / */
+	str = strdelimit(args.we_wordv[index], "/", ' ');
+
+	args.we_offs = 0;
+	wordfree(&args);
+
+	if (wordexp(str, &args, WRDE_NOCMD))
+		goto done;
+
+	rl_completion_display_matches_hook = NULL;
+	matches = rl_completion_matches(text, arg_generator);
+
+done:
+	free(str);
+end:
+	if (!matches && text[0] == '\0')
+		bt_shell_printf("Usage: %s %s\n", entry->cmd,
+					entry->arg ? entry->arg : "");
+
+	args.we_offs = 0;
+	wordfree(&args);
+	return matches;
+}
+
 static char **menu_completion(const struct bt_shell_menu_entry *entry,
-				const char *text, char *input_cmd)
+				const char *text, int argc, char *input_cmd)
 {
 	char **matches = NULL;
 
@@ -552,9 +708,7 @@ static char **menu_completion(const struct bt_shell_menu_entry *entry,
 			continue;
 
 		if (!entry->gen) {
-			if (text[0] == '\0')
-				bt_shell_printf("Usage: %s %s\n", entry->cmd,
-						entry->arg ? entry->arg : "");
+			matches = args_completion(entry, argc, text);
 			break;
 		}
 
@@ -579,9 +733,11 @@ static char **shell_completion(const char *text, int start, int end)
 		if (wordexp(rl_line_buffer, &w, WRDE_NOCMD))
 			return NULL;
 
-		matches = menu_completion(default_menu, text, w.we_wordv[0]);
+		matches = menu_completion(default_menu, text, w.we_wordc,
+							w.we_wordv[0]);
 		if (!matches)
 			matches = menu_completion(data.menu->entries, text,
+							w.we_wordc,
 							w.we_wordv[0]);
 
 		wordfree(&w);
@@ -598,7 +754,7 @@ static char **shell_completion(const char *text, int start, int end)
 
 static bool io_hup(struct io *io, void *user_data)
 {
-	g_main_loop_quit(main_loop);
+	mainloop_quit();
 
 	return false;
 }
@@ -618,12 +774,12 @@ static bool signal_read(struct io *io, void *user_data)
 
 	switch (si.ssi_signo) {
 	case SIGINT:
-		if (data.input) {
+		if (data.input && !data.mode) {
 			rl_replace_line("", 0);
 			rl_crlf();
 			rl_on_new_line();
 			rl_redisplay();
-			break;
+			return true;
 		}
 
 		/*
@@ -636,9 +792,11 @@ static bool signal_read(struct io *io, void *user_data)
 		/* fall through */
 	case SIGTERM:
 		if (!terminated) {
-			rl_replace_line("", 0);
-			rl_crlf();
-			g_main_loop_quit(main_loop);
+			if (!data.mode) {
+				rl_replace_line("", 0);
+				rl_crlf();
+			}
+			mainloop_quit();
 		}
 
 		terminated = true;
@@ -680,6 +838,9 @@ static struct io *setup_signalfd(void)
 
 static void rl_init(void)
 {
+	if (data.mode)
+		return;
+
 	setlinebuf(stdout);
 	rl_attempted_completion_function = shell_completion;
 
@@ -690,6 +851,7 @@ static void rl_init(void)
 static const struct option main_options[] = {
 	{ "version",	no_argument, 0, 'v' },
 	{ "help",	no_argument, 0, 'h' },
+	{ "timeout",	required_argument, 0, 't' },
 };
 
 static void usage(int argc, char **argv, const struct bt_shell_opt *opt)
@@ -705,13 +867,14 @@ static void usage(int argc, char **argv, const struct bt_shell_opt *opt)
 	for (i = 0; opt && opt->options[i].name; i++)
 		printf("\t--%s \t%s\n", opt->options[i].name, opt->help[i]);
 
-	printf("\t--version \tDisplay version\n"
+	printf("\t--timeout \tTimeout in seconds for non-interactive mode\n"
+		"\t--version \tDisplay version\n"
 		"\t--help \t\tDisplay help\n");
 }
 
 void bt_shell_init(int argc, char **argv, const struct bt_shell_opt *opt)
 {
-	int c, index = 0;
+	int c, index = -1;
 	struct option options[256];
 	char optstr[256];
 	size_t offset;
@@ -723,9 +886,9 @@ void bt_shell_init(int argc, char **argv, const struct bt_shell_opt *opt)
 	if (opt) {
 		memcpy(options + offset, opt->options,
 				sizeof(struct option) * opt->optno);
-		snprintf(optstr, sizeof(optstr), "+hv%s", opt->optstr);
+		snprintf(optstr, sizeof(optstr), "+hvt:%s", opt->optstr);
 	} else
-		snprintf(optstr, sizeof(optstr), "+hv");
+		snprintf(optstr, sizeof(optstr), "+hvt:");
 
 	while ((c = getopt_long(argc, argv, optstr, options, &index)) != -1) {
 		switch (c) {
@@ -737,7 +900,17 @@ void bt_shell_init(int argc, char **argv, const struct bt_shell_opt *opt)
 			usage(argc, argv, opt);
 			exit(EXIT_SUCCESS);
 			return;
+		case 't':
+			data.timeout = atoi(optarg);
+			break;
 		default:
+			if (index < 0) {
+				for (index = 0; options[index].val; index++) {
+					if (c == options[index].val)
+						break;
+				}
+			}
+
 			if (c != opt->options[index - offset].val) {
 				usage(argc, argv, opt);
 				exit(EXIT_SUCCESS);
@@ -748,15 +921,36 @@ void bt_shell_init(int argc, char **argv, const struct bt_shell_opt *opt)
 		}
 	}
 
-	main_loop = g_main_loop_new(NULL, FALSE);
+	data.argc = argc - optind;
+	data.argv = argv + optind;
+	optind = 0;
+	data.mode = (data.argc > 0);
+
+	if (data.mode)
+		bt_shell_set_env("NON_INTERACTIVE", &data.mode);
+
+	mainloop_init();
 
 	rl_init();
+
+	data.init = true;
 }
 
 static void rl_cleanup(void)
 {
+	if (data.mode)
+		return;
+
 	rl_message("");
 	rl_callback_handler_remove();
+}
+
+static void env_destroy(void *data)
+{
+	struct bt_shell_env *env = data;
+
+	free(env->name);
+	free(env);
 }
 
 void bt_shell_run(void)
@@ -765,17 +959,37 @@ void bt_shell_run(void)
 
 	signal = setup_signalfd();
 
-	g_main_loop_run(main_loop);
+	mainloop_run();
 
 	bt_shell_release_prompt("");
 	bt_shell_detach();
 
 	io_destroy(signal);
 
-	g_main_loop_unref(main_loop);
-	main_loop = NULL;
+	if (data.envs) {
+		queue_destroy(data.envs, env_destroy);
+		data.envs = NULL;
+	}
 
 	rl_cleanup();
+
+	data.init = false;
+}
+
+void bt_shell_quit(int status)
+{
+	if (status == EXIT_SUCCESS)
+		mainloop_exit_success();
+	else
+		mainloop_exit_failure();
+}
+
+void bt_shell_noninteractive_quit(int status)
+{
+	if (!data.mode || data.timeout)
+		return;
+
+	bt_shell_quit(status);
 }
 
 bool bt_shell_set_menu(const struct bt_shell_menu *menu)
@@ -806,7 +1020,7 @@ bool bt_shell_add_submenu(const struct bt_shell_menu *menu)
 
 void bt_shell_set_prompt(const char *string)
 {
-	if (!main_loop)
+	if (!data.init || data.mode)
 		return;
 
 	rl_set_prompt(string);
@@ -821,6 +1035,13 @@ static bool input_read(struct io *io, void *user_data)
 	return true;
 }
 
+static bool shell_quit(void *data)
+{
+	mainloop_quit();
+
+	return false;
+}
+
 bool bt_shell_attach(int fd)
 {
 	struct io *io;
@@ -831,10 +1052,23 @@ bool bt_shell_attach(int fd)
 
 	io = io_new(fd);
 
-	io_set_read_handler(io, input_read, NULL, NULL);
+	if (!data.mode)
+		io_set_read_handler(io, input_read, NULL, NULL);
+
 	io_set_disconnect_handler(io, io_hup, NULL, NULL);
 
 	data.input = io;
+
+	if (data.mode) {
+		if (shell_exec(data.argc, data.argv) < 0) {
+			bt_shell_noninteractive_quit(EXIT_FAILURE);
+			return true;
+		}
+
+		if (data.timeout)
+			timeout_add(data.timeout * 1000, shell_quit, NULL,
+								NULL);
+	}
 
 	return true;
 }
@@ -848,4 +1082,47 @@ bool bt_shell_detach(void)
 	data.input = NULL;
 
 	return true;
+}
+
+static bool match_env(const void *data, const void *user_data)
+{
+	const struct bt_shell_env *env = data;
+	const char *name = user_data;
+
+	return !strcmp(env->name, name);
+}
+
+void bt_shell_set_env(const char *name, void *value)
+{
+	struct bt_shell_env *env;
+
+	if (!data.envs) {
+		data.envs = queue_new();
+		goto done;
+	}
+
+	env = queue_remove_if(data.envs, match_env, (void *) name);
+	if (env)
+		env_destroy(env);
+
+done:
+	env = new0(struct bt_shell_env, 1);
+	env->name = strdup(name);
+	env->value = value;
+
+	queue_push_tail(data.envs, env);
+}
+
+void *bt_shell_get_env(const char *name)
+{
+	const struct bt_shell_env *env;
+
+	if (!data.envs)
+		return NULL;
+
+	env = queue_find(data.envs, match_env, name);
+	if (!env)
+		return NULL;
+
+	return env->value;
 }

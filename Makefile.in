@@ -183,7 +183,8 @@ DIST_COMMON = $(srcdir)/Makefile.plugins $(srcdir)/Makefile.tools \
 @TOOLS_TRUE@			tools/btsnoop tools/btproxy \
 @TOOLS_TRUE@			tools/btiotest tools/bneptest tools/mcaptest \
 @TOOLS_TRUE@			tools/cltest tools/oobtest tools/advtest \
-@TOOLS_TRUE@			tools/seq2bseq tools/nokfw tools/create-image \
+@TOOLS_TRUE@			tools/seq2bseq tools/nokfw tools/rtlfw \
+@TOOLS_TRUE@			tools/create-image \
 @TOOLS_TRUE@			tools/eddystone tools/ibeacon \
 @TOOLS_TRUE@			tools/btgatt-client tools/btgatt-server \
 @TOOLS_TRUE@			tools/test-runner tools/check-selftest \
@@ -424,7 +425,8 @@ am__objects_4 = src/shared/queue.lo src/shared/util.lo \
 	src/shared/gatt-client.lo src/shared/gatt-server.lo \
 	src/shared/gatt-db.lo src/shared/gap.lo src/shared/shell.lo
 am_src_libshared_glib_la_OBJECTS = $(am__objects_4) \
-	src/shared/io-glib.lo src/shared/timeout-glib.lo
+	src/shared/io-glib.lo src/shared/timeout-glib.lo \
+	src/shared/mainloop-glib.lo
 src_libshared_glib_la_OBJECTS = $(am_src_libshared_glib_la_OBJECTS)
 src_libshared_mainloop_la_LIBADD =
 am_src_libshared_mainloop_la_OBJECTS = $(am__objects_4) \
@@ -468,7 +470,8 @@ src_libshared_mainloop_la_OBJECTS =  \
 @TOOLS_TRUE@	tools/bneptest$(EXEEXT) tools/mcaptest$(EXEEXT) \
 @TOOLS_TRUE@	tools/cltest$(EXEEXT) tools/oobtest$(EXEEXT) \
 @TOOLS_TRUE@	tools/advtest$(EXEEXT) tools/seq2bseq$(EXEEXT) \
-@TOOLS_TRUE@	tools/nokfw$(EXEEXT) tools/create-image$(EXEEXT) \
+@TOOLS_TRUE@	tools/nokfw$(EXEEXT) tools/rtlfw$(EXEEXT) \
+@TOOLS_TRUE@	tools/create-image$(EXEEXT) \
 @TOOLS_TRUE@	tools/eddystone$(EXEEXT) tools/ibeacon$(EXEEXT) \
 @TOOLS_TRUE@	tools/btgatt-client$(EXEEXT) \
 @TOOLS_TRUE@	tools/btgatt-server$(EXEEXT) \
@@ -839,8 +842,7 @@ am__obexd_src_obexd_SOURCES_DIST = btio/btio.h btio/btio.c \
 	obexd/client/opp.c obexd/client/map.h obexd/client/map.c \
 	obexd/client/map-event.c obexd/client/transfer.h \
 	obexd/client/transfer.c obexd/client/transport.h \
-	obexd/client/transport.c obexd/client/dbus.h \
-	obexd/client/dbus.c obexd/client/driver.h \
+	obexd/client/transport.c obexd/client/driver.h \
 	obexd/client/driver.c
 am__objects_5 = btio/obexd-btio.$(OBJEXT)
 am__objects_6 = gobex/obexd-gobex.$(OBJEXT) \
@@ -882,7 +884,6 @@ am_obexd_src_obexd_OBJECTS = $(am__objects_5) $(am__objects_6) \
 	obexd/client/obexd-map-event.$(OBJEXT) \
 	obexd/client/obexd-transfer.$(OBJEXT) \
 	obexd/client/obexd-transport.$(OBJEXT) \
-	obexd/client/obexd-dbus.$(OBJEXT) \
 	obexd/client/obexd-driver.$(OBJEXT)
 am__objects_10 = $(am__objects_1)
 nodist_obexd_src_obexd_OBJECTS = $(am__objects_10)
@@ -1194,7 +1195,8 @@ am__tools_btpclient_SOURCES_DIST = tools/btpclient.c src/shared/btp.c \
 @BTPCLIENT_TRUE@	tools/tools_btpclient-btpclient.$(OBJEXT) \
 @BTPCLIENT_TRUE@	src/shared/tools_btpclient-btp.$(OBJEXT)
 tools_btpclient_OBJECTS = $(am_tools_btpclient_OBJECTS)
-tools_btpclient_DEPENDENCIES =
+@BTPCLIENT_TRUE@tools_btpclient_DEPENDENCIES =  \
+@BTPCLIENT_TRUE@	lib/libbluetooth-internal.la
 tools_btpclient_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(tools_btpclient_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
@@ -1454,6 +1456,10 @@ tools_rfcomm_tester_OBJECTS = $(am_tools_rfcomm_tester_OBJECTS)
 @TESTING_TRUE@tools_rfcomm_tester_DEPENDENCIES =  \
 @TESTING_TRUE@	lib/libbluetooth-internal.la \
 @TESTING_TRUE@	src/libshared-glib.la
+am__tools_rtlfw_SOURCES_DIST = tools/rtlfw.c
+@TOOLS_TRUE@am_tools_rtlfw_OBJECTS = tools/rtlfw.$(OBJEXT)
+tools_rtlfw_OBJECTS = $(am_tools_rtlfw_OBJECTS)
+tools_rtlfw_LDADD = $(LDADD)
 am__tools_sco_tester_SOURCES_DIST = tools/sco-tester.c monitor/bt.h \
 	emulator/hciemu.h emulator/hciemu.c emulator/btdev.h \
 	emulator/btdev.c emulator/bthost.h emulator/bthost.c \
@@ -1710,16 +1716,17 @@ SOURCES = $(android_audio_a2dp_default_la_SOURCES) \
 	$(tools_obex_client_tool_SOURCES) \
 	$(tools_obex_server_tool_SOURCES) $(tools_obexctl_SOURCES) \
 	$(tools_oobtest_SOURCES) tools/rctest.c tools/rfcomm.c \
-	$(tools_rfcomm_tester_SOURCES) $(tools_sco_tester_SOURCES) \
-	tools/scotest.c $(tools_sdptool_SOURCES) \
-	$(tools_seq2bseq_SOURCES) $(tools_smp_tester_SOURCES) \
-	tools/test-runner.c $(tools_userchan_tester_SOURCES) \
-	$(unit_test_avctp_SOURCES) $(unit_test_avdtp_SOURCES) \
-	$(unit_test_avrcp_SOURCES) $(unit_test_crc_SOURCES) \
-	$(unit_test_crypto_SOURCES) $(unit_test_ecc_SOURCES) \
-	$(unit_test_eir_SOURCES) $(unit_test_gatt_SOURCES) \
-	$(unit_test_gattrib_SOURCES) $(unit_test_gdbus_client_SOURCES) \
-	$(unit_test_gobex_SOURCES) $(unit_test_gobex_apparam_SOURCES) \
+	$(tools_rfcomm_tester_SOURCES) $(tools_rtlfw_SOURCES) \
+	$(tools_sco_tester_SOURCES) tools/scotest.c \
+	$(tools_sdptool_SOURCES) $(tools_seq2bseq_SOURCES) \
+	$(tools_smp_tester_SOURCES) tools/test-runner.c \
+	$(tools_userchan_tester_SOURCES) $(unit_test_avctp_SOURCES) \
+	$(unit_test_avdtp_SOURCES) $(unit_test_avrcp_SOURCES) \
+	$(unit_test_crc_SOURCES) $(unit_test_crypto_SOURCES) \
+	$(unit_test_ecc_SOURCES) $(unit_test_eir_SOURCES) \
+	$(unit_test_gatt_SOURCES) $(unit_test_gattrib_SOURCES) \
+	$(unit_test_gdbus_client_SOURCES) $(unit_test_gobex_SOURCES) \
+	$(unit_test_gobex_apparam_SOURCES) \
 	$(unit_test_gobex_header_SOURCES) \
 	$(unit_test_gobex_packet_SOURCES) \
 	$(unit_test_gobex_transfer_SOURCES) $(unit_test_hfp_SOURCES) \
@@ -1798,6 +1805,7 @@ DIST_SOURCES = $(am__android_audio_a2dp_default_la_SOURCES_DIST) \
 	$(am__tools_obexctl_SOURCES_DIST) \
 	$(am__tools_oobtest_SOURCES_DIST) tools/rctest.c \
 	tools/rfcomm.c $(am__tools_rfcomm_tester_SOURCES_DIST) \
+	$(am__tools_rtlfw_SOURCES_DIST) \
 	$(am__tools_sco_tester_SOURCES_DIST) tools/scotest.c \
 	$(am__tools_sdptool_SOURCES_DIST) \
 	$(am__tools_seq2bseq_SOURCES_DIST) \
@@ -2218,7 +2226,8 @@ CLEANFILES = $(builtin_files) src/bluetooth.service \
 EXTRA_DIST = src/bluetooth.service.in src/org.bluez.service \
 	$(am__append_17) src/genbuiltin src/bluetooth.conf \
 	src/main.conf profiles/network/network.conf \
-	profiles/input/input.conf $(am__append_32) $(am__append_35) \
+	profiles/input/input.conf mesh/local_node.json \
+	mesh/prov_db.json $(am__append_32) $(am__append_35) \
 	$(am__append_36) $(am__append_38) obexd/src/obex.service.in \
 	obexd/src/org.bluez.obex.service obexd/src/genbuiltin \
 	android/Android.mk android/README \
@@ -2339,7 +2348,8 @@ shared_sources = src/shared/io.h src/shared/timeout.h \
 
 src_libshared_glib_la_SOURCES = $(shared_sources) \
 				src/shared/io-glib.c \
-				src/shared/timeout-glib.c
+				src/shared/timeout-glib.c \
+				src/shared/mainloop-glib.c
 
 src_libshared_mainloop_la_SOURCES = $(shared_sources) \
 				src/shared/io-mainloop.c \
@@ -2654,6 +2664,7 @@ unit_tests = $(am__append_49) unit/test-eir unit/test-uuid \
 @TOOLS_TRUE@tools_advtest_LDADD = lib/libbluetooth-internal.la src/libshared-mainloop.la
 @TOOLS_TRUE@tools_seq2bseq_SOURCES = tools/seq2bseq.c
 @TOOLS_TRUE@tools_nokfw_SOURCES = tools/nokfw.c
+@TOOLS_TRUE@tools_rtlfw_SOURCES = tools/rtlfw.c
 @TOOLS_TRUE@tools_create_image_SOURCES = tools/create-image.c
 @TOOLS_TRUE@tools_eddystone_SOURCES = tools/eddystone.c monitor/bt.h
 @TOOLS_TRUE@tools_eddystone_LDADD = src/libshared-mainloop.la
@@ -2777,7 +2788,7 @@ unit_tests = $(am__append_49) unit/test-eir unit/test-uuid \
 
 @BTPCLIENT_TRUE@tools_btpclient_SOURCES = tools/btpclient.c src/shared/btp.c src/shared/btp.h
 @BTPCLIENT_TRUE@tools_btpclient_CFLAGS = $(AM_CFLAGS) @ELL_CFLAGS@
-@BTPCLIENT_TRUE@tools_btpclient_LDADD = @ELL_LIBS@
+@BTPCLIENT_TRUE@tools_btpclient_LDADD = @ELL_LIBS@ lib/libbluetooth-internal.la
 @SYSTEMD_TRUE@systemduserunitdir = @SYSTEMD_USERUNITDIR@
 @SYSTEMD_TRUE@systemduserunit_DATA = obexd/src/obex.service
 @SYSTEMD_TRUE@dbussessionbusdir = @DBUS_SESSIONBUSDIR@
@@ -2815,7 +2826,6 @@ obexd_src_obexd_SOURCES = $(btio_sources) $(gobex_sources) \
 			obexd/client/map-event.h obexd/client/map-event.c \
 			obexd/client/transfer.h obexd/client/transfer.c \
 			obexd/client/transport.h obexd/client/transport.c \
-			obexd/client/dbus.h obexd/client/dbus.c \
 			obexd/client/driver.h obexd/client/driver.c \
 			obexd/src/map_ap.h
 
@@ -3482,6 +3492,8 @@ src/shared/shell.lo: src/shared/$(am__dirstamp) \
 src/shared/io-glib.lo: src/shared/$(am__dirstamp) \
 	src/shared/$(DEPDIR)/$(am__dirstamp)
 src/shared/timeout-glib.lo: src/shared/$(am__dirstamp) \
+	src/shared/$(DEPDIR)/$(am__dirstamp)
+src/shared/mainloop-glib.lo: src/shared/$(am__dirstamp) \
 	src/shared/$(DEPDIR)/$(am__dirstamp)
 src/$(am__dirstamp):
 	@$(MKDIR_P) src
@@ -4263,8 +4275,6 @@ obexd/client/obexd-transfer.$(OBJEXT): obexd/client/$(am__dirstamp) \
 	obexd/client/$(DEPDIR)/$(am__dirstamp)
 obexd/client/obexd-transport.$(OBJEXT): obexd/client/$(am__dirstamp) \
 	obexd/client/$(DEPDIR)/$(am__dirstamp)
-obexd/client/obexd-dbus.$(OBJEXT): obexd/client/$(am__dirstamp) \
-	obexd/client/$(DEPDIR)/$(am__dirstamp)
 obexd/client/obexd-driver.$(OBJEXT): obexd/client/$(am__dirstamp) \
 	obexd/client/$(DEPDIR)/$(am__dirstamp)
 
@@ -4960,6 +4970,12 @@ tools/rfcomm-tester.$(OBJEXT): tools/$(am__dirstamp) \
 tools/rfcomm-tester$(EXEEXT): $(tools_rfcomm_tester_OBJECTS) $(tools_rfcomm_tester_DEPENDENCIES) $(EXTRA_tools_rfcomm_tester_DEPENDENCIES) tools/$(am__dirstamp)
 	@rm -f tools/rfcomm-tester$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tools_rfcomm_tester_OBJECTS) $(tools_rfcomm_tester_LDADD) $(LIBS)
+tools/rtlfw.$(OBJEXT): tools/$(am__dirstamp) \
+	tools/$(DEPDIR)/$(am__dirstamp)
+
+tools/rtlfw$(EXEEXT): $(tools_rtlfw_OBJECTS) $(tools_rtlfw_DEPENDENCIES) $(EXTRA_tools_rtlfw_DEPENDENCIES) tools/$(am__dirstamp)
+	@rm -f tools/rtlfw$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tools_rtlfw_OBJECTS) $(tools_rtlfw_LDADD) $(LIBS)
 tools/sco-tester.$(OBJEXT): tools/$(am__dirstamp) \
 	tools/$(DEPDIR)/$(am__dirstamp)
 
@@ -5430,7 +5446,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/sdp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/vendor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@obexd/client/$(DEPDIR)/obexd-bluetooth.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@obexd/client/$(DEPDIR)/obexd-dbus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@obexd/client/$(DEPDIR)/obexd-driver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@obexd/client/$(DEPDIR)/obexd-ftp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@obexd/client/$(DEPDIR)/obexd-manager.Po@am__quote@
@@ -5582,6 +5597,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/hfp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/io-glib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/io-mainloop.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/mainloop-glib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/mainloop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/mgmt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/shared/$(DEPDIR)/pcap.Plo@am__quote@
@@ -5659,6 +5675,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/rctest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/rfcomm-tester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/rfcomm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/rtlfw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/sco-tester.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/scotest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/sdptool.Po@am__quote@
@@ -7129,20 +7146,6 @@ obexd/client/obexd-transport.obj: obexd/client/transport.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='obexd/client/transport.c' object='obexd/client/obexd-transport.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(obexd_src_obexd_CPPFLAGS) $(CPPFLAGS) $(obexd_src_obexd_CFLAGS) $(CFLAGS) -c -o obexd/client/obexd-transport.obj `if test -f 'obexd/client/transport.c'; then $(CYGPATH_W) 'obexd/client/transport.c'; else $(CYGPATH_W) '$(srcdir)/obexd/client/transport.c'; fi`
-
-obexd/client/obexd-dbus.o: obexd/client/dbus.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(obexd_src_obexd_CPPFLAGS) $(CPPFLAGS) $(obexd_src_obexd_CFLAGS) $(CFLAGS) -MT obexd/client/obexd-dbus.o -MD -MP -MF obexd/client/$(DEPDIR)/obexd-dbus.Tpo -c -o obexd/client/obexd-dbus.o `test -f 'obexd/client/dbus.c' || echo '$(srcdir)/'`obexd/client/dbus.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) obexd/client/$(DEPDIR)/obexd-dbus.Tpo obexd/client/$(DEPDIR)/obexd-dbus.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='obexd/client/dbus.c' object='obexd/client/obexd-dbus.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(obexd_src_obexd_CPPFLAGS) $(CPPFLAGS) $(obexd_src_obexd_CFLAGS) $(CFLAGS) -c -o obexd/client/obexd-dbus.o `test -f 'obexd/client/dbus.c' || echo '$(srcdir)/'`obexd/client/dbus.c
-
-obexd/client/obexd-dbus.obj: obexd/client/dbus.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(obexd_src_obexd_CPPFLAGS) $(CPPFLAGS) $(obexd_src_obexd_CFLAGS) $(CFLAGS) -MT obexd/client/obexd-dbus.obj -MD -MP -MF obexd/client/$(DEPDIR)/obexd-dbus.Tpo -c -o obexd/client/obexd-dbus.obj `if test -f 'obexd/client/dbus.c'; then $(CYGPATH_W) 'obexd/client/dbus.c'; else $(CYGPATH_W) '$(srcdir)/obexd/client/dbus.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) obexd/client/$(DEPDIR)/obexd-dbus.Tpo obexd/client/$(DEPDIR)/obexd-dbus.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='obexd/client/dbus.c' object='obexd/client/obexd-dbus.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(obexd_src_obexd_CPPFLAGS) $(CPPFLAGS) $(obexd_src_obexd_CFLAGS) $(CFLAGS) -c -o obexd/client/obexd-dbus.obj `if test -f 'obexd/client/dbus.c'; then $(CYGPATH_W) 'obexd/client/dbus.c'; else $(CYGPATH_W) '$(srcdir)/obexd/client/dbus.c'; fi`
 
 obexd/client/obexd-driver.o: obexd/client/driver.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(obexd_src_obexd_CPPFLAGS) $(CPPFLAGS) $(obexd_src_obexd_CFLAGS) $(CFLAGS) -MT obexd/client/obexd-driver.o -MD -MP -MF obexd/client/$(DEPDIR)/obexd-driver.Tpo -c -o obexd/client/obexd-driver.o `test -f 'obexd/client/driver.c' || echo '$(srcdir)/'`obexd/client/driver.c

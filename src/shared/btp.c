@@ -28,6 +28,7 @@
 
 #include <ell/ell.h>
 
+#include "lib/bluetooth.h"
 #include "src/shared/btp.h"
 
 #define BTP_MTU 512
@@ -293,10 +294,13 @@ bool btp_send(struct btp *btp, uint8_t service, uint8_t opcode, uint8_t index,
 	struct pending_message *msg;
 	size_t len;
 
+	if (!btp)
+		return false;
+
 	len = sizeof(*hdr) + length;
 	hdr = l_malloc(len);
 	if (!hdr)
-		return NULL;
+		return false;
 
 	hdr->service = service;
 	hdr->opcode = opcode;
