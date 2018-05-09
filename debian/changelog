@@ -1,6 +1,20 @@
 bluez (5.49-0ubuntu1ppa1) cosmic; urgency=medium
 
-  * New upstream release 5.49
+  * New upstream release 5.49:
+    - Fix issue with configuring discoverable advertising flag.
+    - Fix issue with bearer selection and single mode controllers.
+    - Fix issue with Connect and ConnectProfile returning in progress.
+    - Fix issue with missing Paired property change when not bonded.
+    - Fix issue with storage for controllers without public address.
+    - Fix issue with handling AVCTP disconnecting the channel queue.
+    - Fix issue with not clearing connectable setting on power off.
+    - Fix issue with creating multiple mgmt socket instances.
+    - Fix issue with GATT server and BR/EDR only devices.
+    - Fix issue with InterfaceAdded event ordering. (LP: #1759628)
+    - Add support for generic ConnectDevice method call.
+    - Add support for Mesh heartbeat client functionality.
+  * Drop upstreamed patch:
+    - fix-lp1750308-upstream-commit-1bf03369.patch
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>>  Wed, 09 May 2018 16:27:33 +0800
 
