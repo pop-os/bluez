@@ -1,3 +1,9 @@
+bluez (5.49-0ubuntu1ppa1) cosmic; urgency=medium
+
+  * New upstream release 5.49
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>>  Wed, 09 May 2018 16:27:33 +0800
+
 bluez (5.48-0ubuntu3) bionic; urgency=medium
 
   * Add fix-lp1750308-upstream-commit-1bf03369.patch to fix command piping
