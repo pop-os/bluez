@@ -1,4 +1,4 @@
-bluez (5.49-0ubuntu1ppa1) cosmic; urgency=medium
+bluez (5.49-0ubuntu0ppa1) cosmic; urgency=medium
 
   * New upstream release 5.49:
     - Fix issue with configuring discoverable advertising flag.
