@@ -1,6 +1,14 @@
+bluez (5.49-0ubuntu0ppa2) cosmic; urgency=medium
+
+  * TODO: More work required
+    - Fix lintian
+    - Maybe fully merge Debian
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Sun, 27 May 2018 16:27:09 +0800
+
 bluez (5.49-0ubuntu0ppa1) cosmic; urgency=medium
 
-  * New upstream release 5.49:
+  * New upstream release 5.49 (LP: #1759961):
     - Fix issue with configuring discoverable advertising flag.
     - Fix issue with bearer selection and single mode controllers.
     - Fix issue with Connect and ConnectProfile returning in progress.
