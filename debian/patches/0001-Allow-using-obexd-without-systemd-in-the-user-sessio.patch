@@ -20,7 +20,7 @@ Index: bluez/Makefile.obexd
 ===================================================================
 --- bluez.orig/Makefile.obexd
 +++ bluez/Makefile.obexd
-@@ -2,12 +2,12 @@
+@@ -1,12 +1,12 @@
  if SYSTEMD
  systemduserunitdir = @SYSTEMD_USERUNITDIR@
  systemduserunit_DATA = obexd/src/obex.service
@@ -33,7 +33,7 @@ Index: bluez/Makefile.obexd
 -EXTRA_DIST += obexd/src/obex.service.in obexd/src/org.bluez.obex.service
 +EXTRA_DIST += obexd/src/obex.service.in obexd/src/org.bluez.obex.service.in
  
- obex_plugindir = $(libdir)/obex/plugins
+ if OBEX
  
 Index: bluez/obexd/src/org.bluez.obex.service
 ===================================================================
