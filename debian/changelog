@@ -17,6 +17,7 @@ bluez (5.50-0ubuntu0ppa1) cosmic; urgency=medium
     - Add support for handling separate discoverable state.
     - Add support for enabling HFP version 1.7 features.
     - Add support for dedicated Bluetooth logging daemon.
+  * Refreshed debian/patches to work with 5.50 and apply cleanly.
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 05 Jun 2018 15:14:09 +0800
 
