@@ -2,6 +2,7 @@ bluez (5.49-0ubuntu0ppa2) cosmic; urgency=medium
 
   * Fixed lintian errors:
     - dpkg-maintscript-helper missing in postinst and postrm.
+    - Synchronized (some) man pages from Debian.
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Sun, 27 May 2018 16:27:09 +0800
 
