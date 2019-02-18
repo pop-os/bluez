@@ -1,3 +1,9 @@
+bluez (5.50-0ubuntu2) disco; urgency=medium
+
+  * No-change rebuild for readline soname change.
+
+ -- Matthias Klose <doko@ubuntu.com>  Mon, 14 Jan 2019 19:58:14 +0000
+
 bluez (5.50-0ubuntu1) cosmic; urgency=medium
 
   * New upstream release 5.50:
