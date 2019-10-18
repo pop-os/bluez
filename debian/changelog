@@ -1,3 +1,10 @@
+bluez (5.50-0ubuntu3) eoan; urgency=medium
+
+  * d/p/tools-Fix-build-after-y2038-changes-in-glibc.patch: fix build
+    failure due to linux header changes for y2038 bug.
+
+ -- Dan Streetman <ddstreet@canonical.com>  Wed, 28 Aug 2019 02:43:38 -0400
+
 bluez (5.50-0ubuntu2) disco; urgency=medium
 
   * No-change rebuild for readline soname change.
