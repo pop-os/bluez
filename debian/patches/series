@@ -5,8 +5,10 @@ bluetooth.conf.patch
 change_path_of_hogsuspend.patch
 migrate_scripts_python3.patch
 tools-Fix-build-after-y2038-changes-in-glibc.patch
+lp1759836.patch
 
 # This currently stays specific for Ubuntu
 0001-obexd-plugins-import-PBAP-ebook-support-from-upstrea.patch
 0001-obexd-plugins-port-ebook-support-to-the-latest-EDS.patch
 0002-hostname-handle-chassis-type-handset.patch
+

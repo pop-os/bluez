@@ -1,3 +1,10 @@
+bluez (5.50-0ubuntu4) eoan; urgency=medium
+
+  * d/p/lp1759836.patch: avoid endless udev events from new bind uevents
+    (LP: #1759836)
+
+ -- Dan Streetman <ddstreet@canonical.com>  Tue, 10 Sep 2019 17:22:37 -0400
+
 bluez (5.50-0ubuntu3) eoan; urgency=medium
 
   * d/p/tools-Fix-build-after-y2038-changes-in-glibc.patch: fix build
