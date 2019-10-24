@@ -1,3 +1,12 @@
+bluez (5.51-0ubuntu1) UNRELEASED; urgency=medium
+
+  * New upstream release 5.51:
+    - Many fixes
+    - Improved Bluetooth Mesh support
+    - Support for the GATT Database Hash feature
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 24 Oct 2019 17:15:15 +0800
+
 bluez (5.50-0ubuntu4) eoan; urgency=medium
 
   * d/p/lp1759836.patch: avoid endless udev events from new bind uevents
