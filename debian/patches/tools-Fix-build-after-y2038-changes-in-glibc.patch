@@ -10,11 +10,28 @@ to fix the build.
  tools/rctest.c | 6 +++++-
  2 files changed, 10 insertions(+), 2 deletions(-)
 
---- a/tools/l2test.c
-+++ b/tools/l2test.c
+Index: bluez/tools/l2test.c
+===================================================================
+--- bluez.orig/tools/l2test.c
++++ bluez/tools/l2test.c
+@@ -59,6 +59,10 @@
+ #define SIOCGSTAMP_OLD SIOCGSTAMP
+ #endif
+ 
++#ifndef SIOCGSTAMP_OLD
++#define SIOCGSTAMP_OLD SIOCGSTAMP
++#endif
++
+ /* Test modes */
+ enum {
+ 	SEND,
+Index: bluez/tools/rctest.c
+===================================================================
+--- bluez.orig/tools/rctest.c
++++ bluez/tools/rctest.c
 @@ -54,6 +54,10 @@
- #define BREDR_DEFAULT_PSM	0x1011
- #define LE_DEFAULT_PSM		0x0080
+ #define SIOCGSTAMP_OLD SIOCGSTAMP
+ #endif
  
 +#ifndef SIOCGSTAMP_OLD
 +#define SIOCGSTAMP_OLD SIOCGSTAMP
@@ -23,34 +40,3 @@ to fix the build.
  /* Test modes */
  enum {
  	SEND,
-@@ -906,7 +910,7 @@
- 			if (timestamp) {
- 				struct timeval tv;
- 
--				if (ioctl(sk, SIOCGSTAMP, &tv) < 0) {
-+				if (ioctl(sk, SIOCGSTAMP_OLD, &tv) < 0) {
- 					timestamp = 0;
- 					memset(ts, 0, sizeof(ts));
- 				} else {
---- a/tools/rctest.c
-+++ b/tools/rctest.c
-@@ -49,6 +49,10 @@
- 
- #include "src/shared/util.h"
- 
-+#ifndef SIOCGSTAMP_OLD
-+#define SIOCGSTAMP_OLD SIOCGSTAMP
-+#endif
-+
- /* Test modes */
- enum {
- 	SEND,
-@@ -504,7 +508,7 @@
- 			if (timestamp) {
- 				struct timeval tv;
- 
--				if (ioctl(sk, SIOCGSTAMP, &tv) < 0) {
-+				if (ioctl(sk, SIOCGSTAMP_OLD, &tv) < 0) {
- 					timestamp = 0;
- 					memset(ts, 0, sizeof(ts));
- 				} else {
