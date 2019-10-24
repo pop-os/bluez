@@ -7,6 +7,7 @@ bluez (5.51-0ubuntu1) UNRELEASED; urgency=medium
   * Refreshed patches and fixed conflicts:
     - bluetooth.conf.patch
     - 0001-Allow-using-obexd-without-systemd-in-the-user-sessio.patch
+  * Drop upstreamed patches:
     - tools-Fix-build-after-y2038-changes-in-glibc.patch
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 24 Oct 2019 17:15:15 +0800
