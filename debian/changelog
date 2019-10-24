@@ -1,6 +1,6 @@
-bluez (5.51-0ubuntu1) UNRELEASED; urgency=medium
+bluez (5.51-0ubuntu1) focal; urgency=medium
 
-  * New upstream release 5.51:
+  * New upstream release 5.51 (LP: #1849641):
     - Many fixes
     - Improved Bluetooth Mesh support
     - Support for the GATT Database Hash feature
