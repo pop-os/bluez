@@ -4,7 +4,7 @@ bluez (5.52-0ubuntu1) focal; urgency=medium
     - Fix issue with AVDTP session disconnect timeout handling.
     - Mark media endpoint APIs as stable interfaces.
 
- -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 05 Dec 2019 14:12:30 +0800
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Mon, 09 Dec 2019 17:54:32 +0800
 
 bluez (5.51-0ubuntu2) focal; urgency=medium
 
