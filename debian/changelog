@@ -6,6 +6,12 @@ bluez (5.52-0ubuntu1) focal; urgency=medium
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 05 Dec 2019 14:12:30 +0800
 
+bluez (5.51-0ubuntu2) focal; urgency=medium
+
+  * Make autopkgtests cross-test-friendly.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Sat, 07 Dec 2019 13:49:35 -0800
+
 bluez (5.51-0ubuntu1) focal; urgency=medium
 
   * New upstream release 5.51 (LP: #1849641):
