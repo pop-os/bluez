@@ -1,3 +1,9 @@
+bluez (5.52-0ubuntu2) focal; urgency=medium
+
+  * Don't build bluez-cups on i386.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Fri, 20 Dec 2019 00:01:27 -0600
+
 bluez (5.52-0ubuntu1) focal; urgency=medium
 
   * New upstream release 5.52 (LP: #1854689):

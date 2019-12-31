@@ -26,6 +26,10 @@ CONFIGURE_FLAGS := \
 	--enable-testing \
 	--enable-phonebook-ebook
 
+ifeq ($(shell dpkg-vendor --is Ubuntu && echo yes) $(DEB_HOST_ARCH), yes i386)
+   skip_packages = -Nbluez-cups
+endif
+
 %:
 	dh $@ --with systemd,autoreconf
 
@@ -49,3 +53,9 @@ override_dh_systemd_start:
 
 override_dh_auto_test:
 	# disable
+
+override_dh_builddeb:
+	dh_builddeb ${skip_packages}
+
+override_dh_gencontrol:
+	dh_gencontrol ${skip_packages}
