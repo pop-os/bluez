@@ -52,7 +52,8 @@ static bool match_by_type(const void *a, const void *b)
 	return io->type == type;
 }
 
-struct mesh_io *mesh_io_new(enum mesh_io_type type, void *opts)
+struct mesh_io *mesh_io_new(enum mesh_io_type type, void *opts,
+				mesh_io_ready_func_t cb, void *user_data)
 {
 	const struct mesh_io_api *api = NULL;
 	struct mesh_io *io;
@@ -78,7 +79,7 @@ struct mesh_io *mesh_io_new(enum mesh_io_type type, void *opts)
 	io->type = type;
 
 	io->api = api;
-	if (!api->init(io, opts))
+	if (!api->init(io, opts, cb, user_data))
 		goto fail;
 
 	if (!io_list)
@@ -169,6 +170,9 @@ bool mesh_io_send(struct mesh_io *io, struct mesh_io_send_info *info,
 					const uint8_t *data, uint16_t len)
 {
 	io = l_queue_find(io_list, match_by_io, io);
+
+	if (!io)
+		io = l_queue_peek_head(io_list);
 
 	if (io && io->api && io->api->send)
 		return io->api->send(io, info, data, len);

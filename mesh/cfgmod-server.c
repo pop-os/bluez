@@ -211,8 +211,8 @@ static bool config_pub_set(struct mesh_node *node, uint16_t net_idx,
 			.ttl = ttl,
 			.credential = cred_flag,
 			.period = period,
-			.count = retransmit >> 5,
-			.interval = ((0x1f & retransmit) + 1) * 50
+			.count = retransmit & 0x7,
+			.interval = ((retransmit >> 3) + 1) * 50
 		};
 
 		if (b_virt)
@@ -740,9 +740,11 @@ static int hb_subscription_set(struct mesh_net *net, uint16_t src,
 
 static void node_reset(struct l_timeout *timeout, void *user_data)
 {
+	struct mesh_node *node = user_data;
+
 	l_debug("Node Reset");
 	l_timeout_remove(timeout);
-	l_main_quit();
+	node_remove(node);
 }
 
 static bool cfg_srv_pkt(uint16_t src, uint32_t dst, uint16_t unicast,
@@ -870,8 +872,8 @@ static bool cfg_srv_pkt(uint16_t src, uint32_t dst, uint16_t unicast,
 		if (size != 2 || pkt[0] > 0x01)
 			return true;
 
-		count = (pkt[1] >> 5) + 1;
-		interval = ((pkt[1] & 0x1f) + 1) * 10;
+		count = (pkt[1] & 0x7) + 1;
+		interval = ((pkt[1] >> 3) + 1) * 10;
 		node_relay_mode_set(node, !!pkt[0], count, interval);
 		/* Fall Through */
 
@@ -879,7 +881,7 @@ static bool cfg_srv_pkt(uint16_t src, uint32_t dst, uint16_t unicast,
 		n = mesh_model_opcode_set(OP_CONFIG_RELAY_STATUS, msg);
 
 		msg[n++] = node_relay_mode_get(node, &count, &interval);
-		msg[n++] = ((count - 1) << 5) + ((interval/10 - 1) & 0x1f);
+		msg[n++] = (count - 1) + ((interval/10 - 1) << 3);
 
 		l_debug("Get/Set Relay Config (%d)", msg[n-1]);
 		break;
@@ -888,8 +890,8 @@ static bool cfg_srv_pkt(uint16_t src, uint32_t dst, uint16_t unicast,
 		if (size != 1)
 			return true;
 
-		count = (pkt[0] >> 5) + 1;
-		interval = ((pkt[0] & 0x1f) + 1) * 10;
+		count = (pkt[0] & 0x7) + 1;
+		interval = ((pkt[0] >> 3) + 1) * 10;
 
 		if (mesh_config_write_net_transmit(node_config_get(node), count,
 								interval))
@@ -900,7 +902,7 @@ static bool cfg_srv_pkt(uint16_t src, uint32_t dst, uint16_t unicast,
 		n = mesh_model_opcode_set(OP_CONFIG_NETWORK_TRANSMIT_STATUS,
 									msg);
 		mesh_net_transmit_params_get(net, &count, &interval);
-		msg[n++] = ((count - 1) << 5) + ((interval/10 - 1) & 0x1f);
+		msg[n++] = (count - 1) + ((interval/10 - 1) << 3);
 
 		l_debug("Get/Set Network Transmit Config");
 		break;
@@ -1265,7 +1267,11 @@ static bool cfg_srv_pkt(uint16_t src, uint32_t dst, uint16_t unicast,
 
 	case OP_NODE_RESET:
 		n = mesh_model_opcode_set(OP_NODE_RESET_STATUS, msg);
-		l_timeout_create(1, node_reset, net, NULL);
+		/*
+		 * delay node removal to give it a chance to send back the
+		 * status
+		 */
+		l_timeout_create(1, node_reset, node, NULL);
 		break;
 	}
 

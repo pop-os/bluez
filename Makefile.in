@@ -196,9 +196,11 @@ pkglibexec_PROGRAMS = src/bluetoothd$(EXEEXT) $(am__EXEEXT_17) \
 @TOOLS_TRUE@			tools/gatt-service profiles/iap/iapd
 
 @TOOLS_TRUE@am__append_36 = tools/rctest.1 tools/l2ping.1 tools/bccmd.1 tools/btattach.1
-@TOOLS_TRUE@am__append_37 = tools/bdaddr.1 tools/mesh/local_node.json \
-@TOOLS_TRUE@	tools/mesh/prov_db.json
-@MESH_TRUE@@TOOLS_TRUE@am__append_38 = tools/meshctl
+@TOOLS_TRUE@am__append_37 = tools/bdaddr.1 \
+@TOOLS_TRUE@	tools/mesh-gatt/local_node.json \
+@TOOLS_TRUE@	tools/mesh-gatt/prov_db.json
+@MESH_TRUE@@TOOLS_TRUE@am__append_38 = tools/meshctl \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-cfgclient
 @DEPRECATED_TRUE@@TOOLS_TRUE@am__append_39 = tools/hciattach tools/hciconfig tools/hcitool tools/hcidump \
 @DEPRECATED_TRUE@@TOOLS_TRUE@			tools/rfcomm tools/sdptool tools/ciptool
 
@@ -265,7 +267,8 @@ CONFIG_CLEAN_VPATH_FILES =
 @TOOLS_TRUE@	tools/l2ping$(EXEEXT) tools/bccmd$(EXEEXT) \
 @TOOLS_TRUE@	tools/bluemoon$(EXEEXT) tools/hex2hcd$(EXEEXT) \
 @TOOLS_TRUE@	tools/mpris-proxy$(EXEEXT) tools/btattach$(EXEEXT)
-@MESH_TRUE@@TOOLS_TRUE@am__EXEEXT_4 = tools/meshctl$(EXEEXT)
+@MESH_TRUE@@TOOLS_TRUE@am__EXEEXT_4 = tools/meshctl$(EXEEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-cfgclient$(EXEEXT)
 @DEPRECATED_TRUE@@TOOLS_TRUE@am__EXEEXT_5 = tools/hciattach$(EXEEXT) \
 @DEPRECATED_TRUE@@TOOLS_TRUE@	tools/hciconfig$(EXEEXT) \
 @DEPRECATED_TRUE@@TOOLS_TRUE@	tools/hcitool$(EXEEXT) \
@@ -474,12 +477,16 @@ ell_libell_internal_la_LIBADD =
 am__ell_libell_internal_la_SOURCES_DIST = ell/util.h ell/log.h \
 	ell/queue.h ell/hashmap.h ell/random.h ell/signal.h \
 	ell/timeout.h ell/cipher.h ell/checksum.h ell/io.h ell/idle.h \
-	ell/main.h ell/strv.h ell/string.h ell/utf8.h ell/dbus.h \
-	ell/dbus-service.h ell/dbus-client.h ell/private.h \
-	ell/missing.h ell/util.c ell/log.c ell/queue.c ell/hashmap.c \
-	ell/random.c ell/signal.c ell/timeout.c ell/io.c ell/idle.c \
-	ell/main.c ell/strv.c ell/string.c ell/cipher.c ell/checksum.c \
-	ell/utf8.c ell/dbus-private.h ell/dbus.c ell/dbus-message.c \
+	ell/main.h ell/settings.h ell/strv.h ell/string.h ell/utf8.h \
+	ell/dbus.h ell/dbus-service.h ell/dbus-client.h ell/key.h \
+	ell/cert.h ell/pem.h ell/base64.h ell/pkcs5.h \
+	ell/asn1-private.h ell/pkcs5-private.h ell/cert-private.h \
+	ell/pem-private.h ell/private.h ell/missing.h ell/util.c \
+	ell/log.c ell/queue.c ell/hashmap.c ell/random.c ell/signal.c \
+	ell/timeout.c ell/io.c ell/idle.c ell/main.c ell/settings.c \
+	ell/strv.c ell/string.c ell/cipher.c ell/checksum.c ell/pem.c \
+	ell/cert.c ell/key.c ell/pkcs5.c ell/base64.c ell/utf8.c \
+	ell/dbus-private.h ell/dbus.c ell/dbus-message.c \
 	ell/dbus-util.c ell/dbus-service.c ell/dbus-client.c \
 	ell/dbus-name-cache.c ell/dbus-filter.c ell/gvariant-private.h \
 	ell/gvariant-util.c ell/siphash-private.h ell/siphash.c
@@ -487,9 +494,11 @@ am__objects_1 =
 @EXTERNAL_ELL_FALSE@am__objects_2 = ell/util.lo ell/log.lo \
 @EXTERNAL_ELL_FALSE@	ell/queue.lo ell/hashmap.lo ell/random.lo \
 @EXTERNAL_ELL_FALSE@	ell/signal.lo ell/timeout.lo ell/io.lo \
-@EXTERNAL_ELL_FALSE@	ell/idle.lo ell/main.lo ell/strv.lo \
-@EXTERNAL_ELL_FALSE@	ell/string.lo ell/cipher.lo \
-@EXTERNAL_ELL_FALSE@	ell/checksum.lo ell/utf8.lo ell/dbus.lo \
+@EXTERNAL_ELL_FALSE@	ell/idle.lo ell/main.lo ell/settings.lo \
+@EXTERNAL_ELL_FALSE@	ell/strv.lo ell/string.lo ell/cipher.lo \
+@EXTERNAL_ELL_FALSE@	ell/checksum.lo ell/pem.lo ell/cert.lo \
+@EXTERNAL_ELL_FALSE@	ell/key.lo ell/pkcs5.lo ell/base64.lo \
+@EXTERNAL_ELL_FALSE@	ell/utf8.lo ell/dbus.lo \
 @EXTERNAL_ELL_FALSE@	ell/dbus-message.lo ell/dbus-util.lo \
 @EXTERNAL_ELL_FALSE@	ell/dbus-service.lo ell/dbus-client.lo \
 @EXTERNAL_ELL_FALSE@	ell/dbus-name-cache.lo ell/dbus-filter.lo \
@@ -896,7 +905,7 @@ am__mesh_bluetooth_meshd_SOURCES_DIST = mesh/mesh.h mesh/mesh.c \
 	mesh/dbus.c mesh/agent.h mesh/agent.c mesh/prov-acceptor.c \
 	mesh/prov-initiator.c mesh/manager.h mesh/manager.c \
 	mesh/pb-adv.h mesh/pb-adv.c mesh/keyring.h mesh/keyring.c \
-	mesh/mesh-defs.h mesh/main.c
+	mesh/rpl.h mesh/rpl.c mesh/mesh-defs.h mesh/main.c
 @MESH_TRUE@am__objects_7 = mesh/mesh.$(OBJEXT) mesh/net-keys.$(OBJEXT) \
 @MESH_TRUE@	mesh/mesh-io.$(OBJEXT) mesh/mesh-mgmt.$(OBJEXT) \
 @MESH_TRUE@	mesh/mesh-io-generic.$(OBJEXT) mesh/net.$(OBJEXT) \
@@ -908,7 +917,7 @@ am__mesh_bluetooth_meshd_SOURCES_DIST = mesh/mesh.h mesh/mesh.c \
 @MESH_TRUE@	mesh/prov-acceptor.$(OBJEXT) \
 @MESH_TRUE@	mesh/prov-initiator.$(OBJEXT) \
 @MESH_TRUE@	mesh/manager.$(OBJEXT) mesh/pb-adv.$(OBJEXT) \
-@MESH_TRUE@	mesh/keyring.$(OBJEXT)
+@MESH_TRUE@	mesh/keyring.$(OBJEXT) mesh/rpl.$(OBJEXT)
 @MESH_TRUE@am_mesh_bluetooth_meshd_OBJECTS = $(am__objects_7) \
 @MESH_TRUE@	mesh/main.$(OBJEXT)
 mesh_bluetooth_meshd_OBJECTS = $(am_mesh_bluetooth_meshd_OBJECTS)
@@ -1521,29 +1530,55 @@ tools_mcaptest_OBJECTS = $(am_tools_mcaptest_OBJECTS)
 @TOOLS_TRUE@tools_mcaptest_DEPENDENCIES =  \
 @TOOLS_TRUE@	lib/libbluetooth-internal.la $(am__DEPENDENCIES_1) \
 @TOOLS_TRUE@	src/libshared-mainloop.la
-am__tools_meshctl_SOURCES_DIST = tools/meshctl.c tools/mesh/mesh-net.h \
-	tools/mesh/node.h tools/mesh/node.c tools/mesh/gatt.h \
-	tools/mesh/gatt.c tools/mesh/crypto.h tools/mesh/crypto.c \
-	tools/mesh/keys.h tools/mesh/net.h tools/mesh/net.c \
-	tools/mesh/prov.h tools/mesh/prov.c tools/mesh/util.h \
-	tools/mesh/util.c tools/mesh/agent.h tools/mesh/agent.c \
-	tools/mesh/prov-db.h tools/mesh/prov-db.c \
-	tools/mesh/config-model.h tools/mesh/config-client.c \
-	tools/mesh/config-server.c tools/mesh/onoff-model.h \
-	tools/mesh/onoff-model.c
+am__tools_mesh_cfgclient_SOURCES_DIST = tools/mesh-cfgclient.c \
+	tools/mesh/model.h tools/mesh/config-model.h \
+	tools/mesh/cfgcli.h tools/mesh/cfgcli.c tools/mesh/keys.h \
+	tools/mesh/keys.c tools/mesh/util.h tools/mesh/util.c \
+	tools/mesh/remote.h tools/mesh/remote.c tools/mesh/agent.h \
+	tools/mesh/agent.c tools/mesh/mesh-db.h tools/mesh/mesh-db.c \
+	mesh/util.h mesh/util.c mesh/mesh-config.h \
+	mesh/mesh-config-json.c
+@MESH_TRUE@@TOOLS_TRUE@am_tools_mesh_cfgclient_OBJECTS =  \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-cfgclient.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/cfgcli.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/keys.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/util.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/remote.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/agent.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/mesh-db.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	mesh/util.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	mesh/mesh-config-json.$(OBJEXT)
+tools_mesh_cfgclient_OBJECTS = $(am_tools_mesh_cfgclient_OBJECTS)
+@MESH_TRUE@@TOOLS_TRUE@tools_mesh_cfgclient_DEPENDENCIES =  \
+@MESH_TRUE@@TOOLS_TRUE@	lib/libbluetooth-internal.la \
+@MESH_TRUE@@TOOLS_TRUE@	src/libshared-ell.la \
+@MESH_TRUE@@TOOLS_TRUE@	$(am__DEPENDENCIES_2)
+am__tools_meshctl_SOURCES_DIST = tools/meshctl.c tools/mesh/agent.h \
+	tools/mesh/agent.c tools/mesh/config-model.h \
+	tools/mesh-gatt/mesh-net.h tools/mesh-gatt/node.h \
+	tools/mesh-gatt/node.c tools/mesh-gatt/gatt.h \
+	tools/mesh-gatt/gatt.c tools/mesh-gatt/crypto.h \
+	tools/mesh-gatt/crypto.c tools/mesh-gatt/keys.h \
+	tools/mesh-gatt/net.h tools/mesh-gatt/net.c \
+	tools/mesh-gatt/prov.h tools/mesh-gatt/prov.c \
+	tools/mesh-gatt/util.h tools/mesh-gatt/util.c \
+	tools/mesh-gatt/prov-db.h tools/mesh-gatt/prov-db.c \
+	tools/mesh-gatt/config-client.c \
+	tools/mesh-gatt/config-server.c tools/mesh-gatt/onoff-model.h \
+	tools/mesh-gatt/onoff-model.c
 @MESH_TRUE@@TOOLS_TRUE@am_tools_meshctl_OBJECTS =  \
 @MESH_TRUE@@TOOLS_TRUE@	tools/meshctl.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/node.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/gatt.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/crypto.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/net.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/prov.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/util.$(OBJEXT) \
 @MESH_TRUE@@TOOLS_TRUE@	tools/mesh/agent.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/prov-db.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/config-client.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/config-server.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	tools/mesh/onoff-model.$(OBJEXT)
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/node.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/gatt.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/crypto.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/net.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/prov.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/util.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/prov-db.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/config-client.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/config-server.$(OBJEXT) \
+@MESH_TRUE@@TOOLS_TRUE@	tools/mesh-gatt/onoff-model.$(OBJEXT)
 tools_meshctl_OBJECTS = $(am_tools_meshctl_OBJECTS)
 @MESH_TRUE@@TOOLS_TRUE@tools_meshctl_DEPENDENCIES =  \
 @MESH_TRUE@@TOOLS_TRUE@	gdbus/libgdbus-internal.la \
@@ -1789,45 +1824,11 @@ unit_test_lib_OBJECTS = $(am_unit_test_lib_OBJECTS)
 unit_test_lib_DEPENDENCIES = src/libshared-glib.la \
 	lib/libbluetooth-internal.la $(am__DEPENDENCIES_1)
 am__unit_test_mesh_crypto_SOURCES_DIST = unit/test-mesh-crypto.c \
-	mesh/crypto.h ell/internal ell/ell.h ell/private.h \
-	ell/missing.h ell/util.c ell/log.c ell/queue.c ell/hashmap.c \
-	ell/random.c ell/signal.c ell/timeout.c ell/io.c ell/idle.c \
-	ell/main.c ell/strv.c ell/string.c ell/cipher.c ell/checksum.c \
-	ell/utf8.c ell/dbus-private.h ell/dbus.c ell/dbus-message.c \
-	ell/dbus-util.c ell/dbus-service.c ell/dbus-client.c \
-	ell/dbus-name-cache.c ell/dbus-filter.c ell/gvariant-private.h \
-	ell/gvariant-util.c ell/siphash-private.h ell/siphash.c
-@EXTERNAL_ELL_FALSE@am__objects_27 =  \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-util.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-log.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-queue.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-hashmap.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-random.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-signal.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-timeout.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-io.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-idle.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-main.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-strv.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-string.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-cipher.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-checksum.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-utf8.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-dbus.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-dbus-message.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-dbus-util.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-dbus-service.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-dbus-client.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-dbus-name-cache.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-dbus-filter.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-gvariant-util.$(OBJEXT) \
-@EXTERNAL_ELL_FALSE@	ell/unit_test_mesh_crypto-siphash.$(OBJEXT)
+	mesh/crypto.h ell/internal ell/ell.h
 @MESH_TRUE@am_unit_test_mesh_crypto_OBJECTS =  \
-@MESH_TRUE@	unit/test_mesh_crypto-test-mesh-crypto.$(OBJEXT) \
-@MESH_TRUE@	$(am__objects_27)
+@MESH_TRUE@	unit/test_mesh_crypto-test-mesh-crypto.$(OBJEXT)
 unit_test_mesh_crypto_OBJECTS = $(am_unit_test_mesh_crypto_OBJECTS)
-@MESH_TRUE@unit_test_mesh_crypto_DEPENDENCIES = src/libshared-ell.la \
-@MESH_TRUE@	$(am__DEPENDENCIES_2)
+@MESH_TRUE@unit_test_mesh_crypto_DEPENDENCIES = $(am__DEPENDENCIES_2)
 am_unit_test_mgmt_OBJECTS = unit/test-mgmt.$(OBJEXT)
 unit_test_mgmt_OBJECTS = $(am_unit_test_mgmt_OBJECTS)
 unit_test_mgmt_DEPENDENCIES = src/libshared-glib.la \
@@ -1967,6 +1968,7 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	btio/$(DEPDIR)/obexd-btio.Po client/$(DEPDIR)/advertising.Po \
 	client/$(DEPDIR)/agent.Po client/$(DEPDIR)/display.Po \
 	client/$(DEPDIR)/gatt.Po client/$(DEPDIR)/main.Po \
+	ell/$(DEPDIR)/base64.Plo ell/$(DEPDIR)/cert.Plo \
 	ell/$(DEPDIR)/checksum.Plo ell/$(DEPDIR)/cipher.Plo \
 	ell/$(DEPDIR)/dbus-client.Plo ell/$(DEPDIR)/dbus-filter.Plo \
 	ell/$(DEPDIR)/dbus-message.Plo \
@@ -1974,35 +1976,13 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	ell/$(DEPDIR)/dbus-service.Plo ell/$(DEPDIR)/dbus-util.Plo \
 	ell/$(DEPDIR)/dbus.Plo ell/$(DEPDIR)/gvariant-util.Plo \
 	ell/$(DEPDIR)/hashmap.Plo ell/$(DEPDIR)/idle.Plo \
-	ell/$(DEPDIR)/io.Plo ell/$(DEPDIR)/log.Plo \
-	ell/$(DEPDIR)/main.Plo ell/$(DEPDIR)/queue.Plo \
-	ell/$(DEPDIR)/random.Plo ell/$(DEPDIR)/signal.Plo \
+	ell/$(DEPDIR)/io.Plo ell/$(DEPDIR)/key.Plo \
+	ell/$(DEPDIR)/log.Plo ell/$(DEPDIR)/main.Plo \
+	ell/$(DEPDIR)/pem.Plo ell/$(DEPDIR)/pkcs5.Plo \
+	ell/$(DEPDIR)/queue.Plo ell/$(DEPDIR)/random.Plo \
+	ell/$(DEPDIR)/settings.Plo ell/$(DEPDIR)/signal.Plo \
 	ell/$(DEPDIR)/siphash.Plo ell/$(DEPDIR)/string.Plo \
 	ell/$(DEPDIR)/strv.Plo ell/$(DEPDIR)/timeout.Plo \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-io.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-log.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-main.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-random.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-string.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Po \
-	ell/$(DEPDIR)/unit_test_mesh_crypto-util.Po \
 	ell/$(DEPDIR)/utf8.Plo ell/$(DEPDIR)/util.Plo \
 	emulator/$(DEPDIR)/amp.Po \
 	emulator/$(DEPDIR)/android_android_tester-btdev.Po \
@@ -2043,19 +2023,19 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	mesh/$(DEPDIR)/model.Po mesh/$(DEPDIR)/net-keys.Po \
 	mesh/$(DEPDIR)/net.Po mesh/$(DEPDIR)/node.Po \
 	mesh/$(DEPDIR)/pb-adv.Po mesh/$(DEPDIR)/prov-acceptor.Po \
-	mesh/$(DEPDIR)/prov-initiator.Po mesh/$(DEPDIR)/util.Po \
-	monitor/$(DEPDIR)/a2dp.Po monitor/$(DEPDIR)/analyze.Po \
-	monitor/$(DEPDIR)/avctp.Po monitor/$(DEPDIR)/avdtp.Po \
-	monitor/$(DEPDIR)/bnep.Po monitor/$(DEPDIR)/broadcom.Po \
-	monitor/$(DEPDIR)/control.Po monitor/$(DEPDIR)/crc.Po \
-	monitor/$(DEPDIR)/display.Po monitor/$(DEPDIR)/ellisys.Po \
-	monitor/$(DEPDIR)/hcidump.Po monitor/$(DEPDIR)/hwdb.Po \
-	monitor/$(DEPDIR)/intel.Po monitor/$(DEPDIR)/jlink.Po \
-	monitor/$(DEPDIR)/keys.Po monitor/$(DEPDIR)/l2cap.Po \
-	monitor/$(DEPDIR)/ll.Po monitor/$(DEPDIR)/lmp.Po \
-	monitor/$(DEPDIR)/main.Po monitor/$(DEPDIR)/packet.Po \
-	monitor/$(DEPDIR)/rfcomm.Po monitor/$(DEPDIR)/sdp.Po \
-	monitor/$(DEPDIR)/vendor.Po \
+	mesh/$(DEPDIR)/prov-initiator.Po mesh/$(DEPDIR)/rpl.Po \
+	mesh/$(DEPDIR)/util.Po monitor/$(DEPDIR)/a2dp.Po \
+	monitor/$(DEPDIR)/analyze.Po monitor/$(DEPDIR)/avctp.Po \
+	monitor/$(DEPDIR)/avdtp.Po monitor/$(DEPDIR)/bnep.Po \
+	monitor/$(DEPDIR)/broadcom.Po monitor/$(DEPDIR)/control.Po \
+	monitor/$(DEPDIR)/crc.Po monitor/$(DEPDIR)/display.Po \
+	monitor/$(DEPDIR)/ellisys.Po monitor/$(DEPDIR)/hcidump.Po \
+	monitor/$(DEPDIR)/hwdb.Po monitor/$(DEPDIR)/intel.Po \
+	monitor/$(DEPDIR)/jlink.Po monitor/$(DEPDIR)/keys.Po \
+	monitor/$(DEPDIR)/l2cap.Po monitor/$(DEPDIR)/ll.Po \
+	monitor/$(DEPDIR)/lmp.Po monitor/$(DEPDIR)/main.Po \
+	monitor/$(DEPDIR)/packet.Po monitor/$(DEPDIR)/rfcomm.Po \
+	monitor/$(DEPDIR)/sdp.Po monitor/$(DEPDIR)/vendor.Po \
 	obexd/client/$(DEPDIR)/obexd-bluetooth.Po \
 	obexd/client/$(DEPDIR)/obexd-driver.Po \
 	obexd/client/$(DEPDIR)/obexd-ftp.Po \
@@ -2245,9 +2225,9 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	tools/$(DEPDIR)/hwdb.Po tools/$(DEPDIR)/ibeacon.Po \
 	tools/$(DEPDIR)/l2cap-tester.Po tools/$(DEPDIR)/l2ping.Po \
 	tools/$(DEPDIR)/l2test.Po tools/$(DEPDIR)/mcaptest.Po \
-	tools/$(DEPDIR)/meshctl.Po tools/$(DEPDIR)/mgmt-tester.Po \
-	tools/$(DEPDIR)/mpris-proxy.Po tools/$(DEPDIR)/nokfw.Po \
-	tools/$(DEPDIR)/obex-client-tool.Po \
+	tools/$(DEPDIR)/mesh-cfgclient.Po tools/$(DEPDIR)/meshctl.Po \
+	tools/$(DEPDIR)/mgmt-tester.Po tools/$(DEPDIR)/mpris-proxy.Po \
+	tools/$(DEPDIR)/nokfw.Po tools/$(DEPDIR)/obex-client-tool.Po \
 	tools/$(DEPDIR)/obex-server-tool.Po tools/$(DEPDIR)/obexctl.Po \
 	tools/$(DEPDIR)/oobtest.Po tools/$(DEPDIR)/rctest.Po \
 	tools/$(DEPDIR)/rfcomm-tester.Po tools/$(DEPDIR)/rfcomm.Po \
@@ -2256,15 +2236,21 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	tools/$(DEPDIR)/seq2bseq.Po tools/$(DEPDIR)/smp-tester.Po \
 	tools/$(DEPDIR)/test-runner.Po tools/$(DEPDIR)/ubcsp.Po \
 	tools/$(DEPDIR)/userchan-tester.Po \
-	tools/mesh/$(DEPDIR)/agent.Po \
-	tools/mesh/$(DEPDIR)/config-client.Po \
-	tools/mesh/$(DEPDIR)/config-server.Po \
-	tools/mesh/$(DEPDIR)/crypto.Po tools/mesh/$(DEPDIR)/gatt.Po \
-	tools/mesh/$(DEPDIR)/net.Po tools/mesh/$(DEPDIR)/node.Po \
-	tools/mesh/$(DEPDIR)/onoff-model.Po \
-	tools/mesh/$(DEPDIR)/prov-db.Po tools/mesh/$(DEPDIR)/prov.Po \
-	tools/mesh/$(DEPDIR)/util.Po tools/parser/$(DEPDIR)/amp.Po \
-	tools/parser/$(DEPDIR)/att.Po tools/parser/$(DEPDIR)/avctp.Po \
+	tools/mesh-gatt/$(DEPDIR)/config-client.Po \
+	tools/mesh-gatt/$(DEPDIR)/config-server.Po \
+	tools/mesh-gatt/$(DEPDIR)/crypto.Po \
+	tools/mesh-gatt/$(DEPDIR)/gatt.Po \
+	tools/mesh-gatt/$(DEPDIR)/net.Po \
+	tools/mesh-gatt/$(DEPDIR)/node.Po \
+	tools/mesh-gatt/$(DEPDIR)/onoff-model.Po \
+	tools/mesh-gatt/$(DEPDIR)/prov-db.Po \
+	tools/mesh-gatt/$(DEPDIR)/prov.Po \
+	tools/mesh-gatt/$(DEPDIR)/util.Po \
+	tools/mesh/$(DEPDIR)/agent.Po tools/mesh/$(DEPDIR)/cfgcli.Po \
+	tools/mesh/$(DEPDIR)/keys.Po tools/mesh/$(DEPDIR)/mesh-db.Po \
+	tools/mesh/$(DEPDIR)/remote.Po tools/mesh/$(DEPDIR)/util.Po \
+	tools/parser/$(DEPDIR)/amp.Po tools/parser/$(DEPDIR)/att.Po \
+	tools/parser/$(DEPDIR)/avctp.Po \
 	tools/parser/$(DEPDIR)/avdtp.Po \
 	tools/parser/$(DEPDIR)/avrcp.Po tools/parser/$(DEPDIR)/bnep.Po \
 	tools/parser/$(DEPDIR)/bpa.Po tools/parser/$(DEPDIR)/capi.Po \
@@ -2357,9 +2343,10 @@ SOURCES = $(android_audio_a2dp_default_la_SOURCES) \
 	$(tools_hcitool_SOURCES) $(tools_hex2hcd_SOURCES) \
 	tools/hid2hci.c tools/hwdb.c $(tools_ibeacon_SOURCES) \
 	$(tools_l2cap_tester_SOURCES) tools/l2ping.c tools/l2test.c \
-	$(tools_mcaptest_SOURCES) $(tools_meshctl_SOURCES) \
-	$(tools_mgmt_tester_SOURCES) $(tools_mpris_proxy_SOURCES) \
-	$(tools_nokfw_SOURCES) $(tools_obex_client_tool_SOURCES) \
+	$(tools_mcaptest_SOURCES) $(tools_mesh_cfgclient_SOURCES) \
+	$(tools_meshctl_SOURCES) $(tools_mgmt_tester_SOURCES) \
+	$(tools_mpris_proxy_SOURCES) $(tools_nokfw_SOURCES) \
+	$(tools_obex_client_tool_SOURCES) \
 	$(tools_obex_server_tool_SOURCES) $(tools_obexctl_SOURCES) \
 	$(tools_oobtest_SOURCES) tools/rctest.c tools/rfcomm.c \
 	$(tools_rfcomm_tester_SOURCES) $(tools_rtlfw_SOURCES) \
@@ -2447,6 +2434,7 @@ DIST_SOURCES = $(am__android_audio_a2dp_default_la_SOURCES_DIST) \
 	$(am__tools_ibeacon_SOURCES_DIST) \
 	$(am__tools_l2cap_tester_SOURCES_DIST) tools/l2ping.c \
 	tools/l2test.c $(am__tools_mcaptest_SOURCES_DIST) \
+	$(am__tools_mesh_cfgclient_SOURCES_DIST) \
 	$(am__tools_meshctl_SOURCES_DIST) \
 	$(am__tools_mgmt_tester_SOURCES_DIST) \
 	$(am__tools_mpris_proxy_SOURCES_DIST) \
@@ -2945,8 +2933,8 @@ EXTRA_DIST = src/bluetooth.service.in src/org.bluez.service \
 	android/pts-avdtp.txt android/pts-gavdp.txt \
 	android/pts-sdp.txt android/pts-bnep.txt \
 	mesh/bluetooth-mesh.conf mesh/bluetooth-mesh.service.in \
-	mesh/org.bluez.mesh.service tools/hid2hci.rules \
-	$(test_scripts) doc/assigned-numbers.txt \
+	mesh/org.bluez.mesh.service mesh/mesh-main.conf \
+	tools/hid2hci.rules $(test_scripts) doc/assigned-numbers.txt \
 	doc/supported-features.txt doc/test-coverage.txt \
 	doc/test-runner.txt doc/settings-storage.txt doc/mgmt-api.txt \
 	doc/adapter-api.txt doc/device-api.txt doc/agent-api.txt \
@@ -2987,7 +2975,7 @@ local_headers = $(foreach file,$(lib_headers), lib/bluetooth/$(notdir $(file)))
 BUILT_SOURCES = $(local_headers) $(ell_built_sources) src/builtin.h \
 	obexd/src/builtin.h
 @LIBRARY_TRUE@lib_libbluetooth_la_SOURCES = $(lib_headers) $(lib_sources)
-@LIBRARY_TRUE@lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:0:19
+@LIBRARY_TRUE@lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:1:19
 @LIBRARY_TRUE@lib_libbluetooth_la_DEPENDENCIES = $(local_headers)
 lib_libbluetooth_internal_la_SOURCES = $(lib_headers) $(lib_sources) \
 					$(extra_headers) $(extra_sources)
@@ -3016,12 +3004,22 @@ gdbus_libgdbus_internal_la_SOURCES = gdbus/gdbus.h \
 @EXTERNAL_ELL_FALSE@			ell/io.h \
 @EXTERNAL_ELL_FALSE@			ell/idle.h \
 @EXTERNAL_ELL_FALSE@			ell/main.h \
+@EXTERNAL_ELL_FALSE@			ell/settings.h \
 @EXTERNAL_ELL_FALSE@			ell/strv.h \
 @EXTERNAL_ELL_FALSE@			ell/string.h \
 @EXTERNAL_ELL_FALSE@			ell/utf8.h \
 @EXTERNAL_ELL_FALSE@			ell/dbus.h \
 @EXTERNAL_ELL_FALSE@			ell/dbus-service.h \
-@EXTERNAL_ELL_FALSE@			ell/dbus-client.h
+@EXTERNAL_ELL_FALSE@			ell/dbus-client.h \
+@EXTERNAL_ELL_FALSE@			ell/key.h \
+@EXTERNAL_ELL_FALSE@			ell/cert.h \
+@EXTERNAL_ELL_FALSE@			ell/pem.h \
+@EXTERNAL_ELL_FALSE@			ell/base64.h \
+@EXTERNAL_ELL_FALSE@			ell/pkcs5.h \
+@EXTERNAL_ELL_FALSE@			ell/asn1-private.h \
+@EXTERNAL_ELL_FALSE@			ell/pkcs5-private.h \
+@EXTERNAL_ELL_FALSE@			ell/cert-private.h \
+@EXTERNAL_ELL_FALSE@			ell/pem-private.h
 
 @EXTERNAL_ELL_FALSE@ell_sources = ell/private.h ell/missing.h \
 @EXTERNAL_ELL_FALSE@			ell/util.c \
@@ -3034,10 +3032,16 @@ gdbus_libgdbus_internal_la_SOURCES = gdbus/gdbus.h \
 @EXTERNAL_ELL_FALSE@			ell/io.c \
 @EXTERNAL_ELL_FALSE@			ell/idle.c \
 @EXTERNAL_ELL_FALSE@			ell/main.c \
+@EXTERNAL_ELL_FALSE@			ell/settings.c \
 @EXTERNAL_ELL_FALSE@			ell/strv.c \
 @EXTERNAL_ELL_FALSE@			ell/string.c \
 @EXTERNAL_ELL_FALSE@			ell/cipher.c \
 @EXTERNAL_ELL_FALSE@			ell/checksum.c \
+@EXTERNAL_ELL_FALSE@			ell/pem.c \
+@EXTERNAL_ELL_FALSE@			ell/cert.c \
+@EXTERNAL_ELL_FALSE@			ell/key.c \
+@EXTERNAL_ELL_FALSE@			ell/pkcs5.c \
+@EXTERNAL_ELL_FALSE@			ell/base64.c \
 @EXTERNAL_ELL_FALSE@			ell/utf8.c \
 @EXTERNAL_ELL_FALSE@			ell/dbus-private.h \
 @EXTERNAL_ELL_FALSE@			ell/dbus.c \
@@ -3427,23 +3431,41 @@ unit_tests = $(am__append_54) unit/test-eir unit/test-uuid \
 @TOOLS_TRUE@profiles_iap_iapd_SOURCES = profiles/iap/main.c
 @TOOLS_TRUE@profiles_iap_iapd_LDADD = gdbus/libgdbus-internal.la $(GLIB_LIBS) $(DBUS_LIBS)
 @MESH_TRUE@@TOOLS_TRUE@tools_meshctl_SOURCES = tools/meshctl.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/mesh-net.h \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/node.h tools/mesh/node.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/gatt.h tools/mesh/gatt.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/crypto.h tools/mesh/crypto.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/keys.h \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/net.h tools/mesh/net.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/prov.h tools/mesh/prov.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/util.h tools/mesh/util.c \
 @MESH_TRUE@@TOOLS_TRUE@				tools/mesh/agent.h tools/mesh/agent.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/prov-db.h tools/mesh/prov-db.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/config-model.h tools/mesh/config-client.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/config-server.c \
-@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/onoff-model.h tools/mesh/onoff-model.c
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/config-model.h\
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/mesh-net.h \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/node.h tools/mesh-gatt/node.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/gatt.h tools/mesh-gatt/gatt.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/crypto.h\
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/crypto.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/keys.h \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/net.h tools/mesh-gatt/net.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/prov.h tools/mesh-gatt/prov.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/util.h tools/mesh-gatt/util.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/prov-db.h \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/prov-db.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/config-client.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/config-server.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/onoff-model.h \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh-gatt/onoff-model.c
 
 @MESH_TRUE@@TOOLS_TRUE@tools_meshctl_LDADD = gdbus/libgdbus-internal.la src/libshared-glib.la \
 @MESH_TRUE@@TOOLS_TRUE@				lib/libbluetooth-internal.la \
 @MESH_TRUE@@TOOLS_TRUE@				$(GLIB_LIBS) $(DBUS_LIBS) -ljson-c -lreadline
+
+@MESH_TRUE@@TOOLS_TRUE@tools_mesh_cfgclient_SOURCES = tools/mesh-cfgclient.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/model.h tools/mesh/config-model.h \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/cfgcli.h tools/mesh/cfgcli.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/keys.h tools/mesh/keys.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/util.h tools/mesh/util.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/remote.h tools/mesh/remote.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/agent.h tools/mesh/agent.c \
+@MESH_TRUE@@TOOLS_TRUE@				tools/mesh/mesh-db.h tools/mesh/mesh-db.c \
+@MESH_TRUE@@TOOLS_TRUE@				mesh/util.h mesh/util.c \
+@MESH_TRUE@@TOOLS_TRUE@				mesh/mesh-config.h mesh/mesh-config-json.c
+
+@MESH_TRUE@@TOOLS_TRUE@tools_mesh_cfgclient_LDADD = lib/libbluetooth-internal.la src/libshared-ell.la \
+@MESH_TRUE@@TOOLS_TRUE@						$(ell_ldadd) -ljson-c -lreadline
 
 @DEPRECATED_TRUE@@TOOLS_TRUE@tools_hciattach_SOURCES = tools/hciattach.c tools/hciattach.h \
 @DEPRECATED_TRUE@@TOOLS_TRUE@						tools/hciattach_st.c \
@@ -3827,6 +3849,7 @@ nodist_obexd_src_obexd_SOURCES = $(obexd_builtin_files)
 @MESH_TRUE@				mesh/manager.h mesh/manager.c \
 @MESH_TRUE@				mesh/pb-adv.h mesh/pb-adv.c \
 @MESH_TRUE@				mesh/keyring.h mesh/keyring.c \
+@MESH_TRUE@				mesh/rpl.h mesh/rpl.c \
 @MESH_TRUE@				mesh/mesh-defs.h
 
 @MESH_TRUE@mesh_bluetooth_meshd_SOURCES = $(mesh_sources) mesh/main.c
@@ -3953,12 +3976,9 @@ unit_test_gattrib_LDADD = lib/libbluetooth-internal.la \
 
 @MESH_TRUE@unit_test_mesh_crypto_CPPFLAGS = $(ell_cflags)
 @MESH_TRUE@unit_test_mesh_crypto_SOURCES = unit/test-mesh-crypto.c \
-@MESH_TRUE@				mesh/crypto.h ell/internal ell/ell.h \
-@MESH_TRUE@				$(ell_sources)
+@MESH_TRUE@				mesh/crypto.h ell/internal ell/ell.h
 
-@MESH_TRUE@unit_test_mesh_crypto_LDADD = src/libshared-ell.la \
-@MESH_TRUE@			$(ell_ldadd)
-
+@MESH_TRUE@unit_test_mesh_crypto_LDADD = $(ell_ldadd)
 AM_TESTS_ENVIRONMENT = MALLOC_CHECK_=3 MALLOC_PERTURB_=69 \
 	$(am__append_64)
 @VALGRIND_TRUE@LOG_COMPILER = valgrind --error-exitcode=1 --num-callers=30
@@ -4412,10 +4432,16 @@ ell/timeout.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/io.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/idle.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/main.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
+ell/settings.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/strv.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/string.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/cipher.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/checksum.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
+ell/pem.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
+ell/cert.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
+ell/key.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
+ell/pkcs5.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
+ell/base64.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/utf8.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/dbus.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/dbus-message.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
@@ -4976,6 +5002,8 @@ mesh/manager.$(OBJEXT): mesh/$(am__dirstamp) \
 mesh/pb-adv.$(OBJEXT): mesh/$(am__dirstamp) \
 	mesh/$(DEPDIR)/$(am__dirstamp)
 mesh/keyring.$(OBJEXT): mesh/$(am__dirstamp) \
+	mesh/$(DEPDIR)/$(am__dirstamp)
+mesh/rpl.$(OBJEXT): mesh/$(am__dirstamp) \
 	mesh/$(DEPDIR)/$(am__dirstamp)
 mesh/main.$(OBJEXT): mesh/$(am__dirstamp) \
 	mesh/$(DEPDIR)/$(am__dirstamp)
@@ -5778,7 +5806,7 @@ tools/mcaptest.$(OBJEXT): tools/$(am__dirstamp) \
 tools/mcaptest$(EXEEXT): $(tools_mcaptest_OBJECTS) $(tools_mcaptest_DEPENDENCIES) $(EXTRA_tools_mcaptest_DEPENDENCIES) tools/$(am__dirstamp)
 	@rm -f tools/mcaptest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tools_mcaptest_OBJECTS) $(tools_mcaptest_LDADD) $(LIBS)
-tools/meshctl.$(OBJEXT): tools/$(am__dirstamp) \
+tools/mesh-cfgclient.$(OBJEXT): tools/$(am__dirstamp) \
 	tools/$(DEPDIR)/$(am__dirstamp)
 tools/mesh/$(am__dirstamp):
 	@$(MKDIR_P) tools/mesh
@@ -5786,28 +5814,53 @@ tools/mesh/$(am__dirstamp):
 tools/mesh/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) tools/mesh/$(DEPDIR)
 	@: > tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/node.$(OBJEXT): tools/mesh/$(am__dirstamp) \
+tools/mesh/cfgcli.$(OBJEXT): tools/mesh/$(am__dirstamp) \
 	tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/gatt.$(OBJEXT): tools/mesh/$(am__dirstamp) \
-	tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/crypto.$(OBJEXT): tools/mesh/$(am__dirstamp) \
-	tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/net.$(OBJEXT): tools/mesh/$(am__dirstamp) \
-	tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/prov.$(OBJEXT): tools/mesh/$(am__dirstamp) \
+tools/mesh/keys.$(OBJEXT): tools/mesh/$(am__dirstamp) \
 	tools/mesh/$(DEPDIR)/$(am__dirstamp)
 tools/mesh/util.$(OBJEXT): tools/mesh/$(am__dirstamp) \
 	tools/mesh/$(DEPDIR)/$(am__dirstamp)
+tools/mesh/remote.$(OBJEXT): tools/mesh/$(am__dirstamp) \
+	tools/mesh/$(DEPDIR)/$(am__dirstamp)
 tools/mesh/agent.$(OBJEXT): tools/mesh/$(am__dirstamp) \
 	tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/prov-db.$(OBJEXT): tools/mesh/$(am__dirstamp) \
+tools/mesh/mesh-db.$(OBJEXT): tools/mesh/$(am__dirstamp) \
 	tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/config-client.$(OBJEXT): tools/mesh/$(am__dirstamp) \
-	tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/config-server.$(OBJEXT): tools/mesh/$(am__dirstamp) \
-	tools/mesh/$(DEPDIR)/$(am__dirstamp)
-tools/mesh/onoff-model.$(OBJEXT): tools/mesh/$(am__dirstamp) \
-	tools/mesh/$(DEPDIR)/$(am__dirstamp)
+
+tools/mesh-cfgclient$(EXEEXT): $(tools_mesh_cfgclient_OBJECTS) $(tools_mesh_cfgclient_DEPENDENCIES) $(EXTRA_tools_mesh_cfgclient_DEPENDENCIES) tools/$(am__dirstamp)
+	@rm -f tools/mesh-cfgclient$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tools_mesh_cfgclient_OBJECTS) $(tools_mesh_cfgclient_LDADD) $(LIBS)
+tools/meshctl.$(OBJEXT): tools/$(am__dirstamp) \
+	tools/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/$(am__dirstamp):
+	@$(MKDIR_P) tools/mesh-gatt
+	@: > tools/mesh-gatt/$(am__dirstamp)
+tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) tools/mesh-gatt/$(DEPDIR)
+	@: > tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/node.$(OBJEXT): tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/gatt.$(OBJEXT): tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/crypto.$(OBJEXT): tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/net.$(OBJEXT): tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/prov.$(OBJEXT): tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/util.$(OBJEXT): tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/prov-db.$(OBJEXT): tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/config-client.$(OBJEXT):  \
+	tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/config-server.$(OBJEXT):  \
+	tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+tools/mesh-gatt/onoff-model.$(OBJEXT):  \
+	tools/mesh-gatt/$(am__dirstamp) \
+	tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
 
 tools/meshctl$(EXEEXT): $(tools_meshctl_OBJECTS) $(tools_meshctl_DEPENDENCIES) $(EXTRA_tools_meshctl_DEPENDENCIES) tools/$(am__dirstamp)
 	@rm -f tools/meshctl$(EXEEXT)
@@ -6052,54 +6105,6 @@ unit/test-lib$(EXEEXT): $(unit_test_lib_OBJECTS) $(unit_test_lib_DEPENDENCIES) $
 	$(AM_V_CCLD)$(LINK) $(unit_test_lib_OBJECTS) $(unit_test_lib_LDADD) $(LIBS)
 unit/test_mesh_crypto-test-mesh-crypto.$(OBJEXT):  \
 	unit/$(am__dirstamp) unit/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-util.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-log.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-queue.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-hashmap.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-random.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-signal.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-timeout.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-io.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-idle.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-main.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-strv.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-string.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-cipher.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-checksum.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-utf8.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-dbus.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-dbus-message.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-dbus-util.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-dbus-service.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-dbus-client.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-dbus-name-cache.$(OBJEXT):  \
-	ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-dbus-filter.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-gvariant-util.$(OBJEXT):  \
-	ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
-ell/unit_test_mesh_crypto-siphash.$(OBJEXT): ell/$(am__dirstamp) \
-	ell/$(DEPDIR)/$(am__dirstamp)
 
 unit/test-mesh-crypto$(EXEEXT): $(unit_test_mesh_crypto_OBJECTS) $(unit_test_mesh_crypto_DEPENDENCIES) $(EXTRA_unit_test_mesh_crypto_DEPENDENCIES) unit/$(am__dirstamp)
 	@rm -f unit/test-mesh-crypto$(EXEEXT)
@@ -6236,6 +6241,7 @@ mostlyclean-compile:
 	-rm -f src/shared/*.$(OBJEXT)
 	-rm -f src/shared/*.lo
 	-rm -f tools/*.$(OBJEXT)
+	-rm -f tools/mesh-gatt/*.$(OBJEXT)
 	-rm -f tools/mesh/*.$(OBJEXT)
 	-rm -f tools/parser/*.$(OBJEXT)
 	-rm -f unit/*.$(OBJEXT)
@@ -6340,6 +6346,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/display.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/gatt.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/base64.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/cert.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/checksum.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/cipher.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/dbus-client.Plo@am__quote@ # am--include-marker
@@ -6353,39 +6361,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/hashmap.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/idle.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/io.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/key.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/log.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/main.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/pem.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/pkcs5.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/queue.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/random.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/settings.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/signal.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/siphash.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/string.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/strv.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/timeout.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-io.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-log.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-main.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-random.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-string.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/unit_test_mesh_crypto-util.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/utf8.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/amp.Po@am__quote@ # am--include-marker
@@ -6451,6 +6439,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@mesh/$(DEPDIR)/pb-adv.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@mesh/$(DEPDIR)/prov-acceptor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@mesh/$(DEPDIR)/prov-initiator.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@mesh/$(DEPDIR)/rpl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@mesh/$(DEPDIR)/util.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/a2dp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/analyze.Po@am__quote@ # am--include-marker
@@ -6703,6 +6692,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/l2ping.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/l2test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/mcaptest.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/mesh-cfgclient.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/meshctl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/mgmt-tester.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/mpris-proxy.Po@am__quote@ # am--include-marker
@@ -6723,16 +6713,21 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/test-runner.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/ubcsp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/userchan-tester.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/config-client.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/config-server.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/crypto.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/gatt.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/net.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/node.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/onoff-model.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/prov-db.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/prov.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/util.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/agent.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/config-client.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/config-server.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/crypto.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/gatt.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/net.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/node.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/onoff-model.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/prov-db.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/prov.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/cfgcli.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/keys.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/mesh-db.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/remote.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/mesh/$(DEPDIR)/util.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/parser/$(DEPDIR)/amp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/parser/$(DEPDIR)/att.Po@am__quote@ # am--include-marker
@@ -9281,342 +9276,6 @@ unit/test_mesh_crypto-test-mesh-crypto.obj: unit/test-mesh-crypto.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o unit/test_mesh_crypto-test-mesh-crypto.obj `if test -f 'unit/test-mesh-crypto.c'; then $(CYGPATH_W) 'unit/test-mesh-crypto.c'; else $(CYGPATH_W) '$(srcdir)/unit/test-mesh-crypto.c'; fi`
 
-ell/unit_test_mesh_crypto-util.o: ell/util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-util.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-util.Tpo -c -o ell/unit_test_mesh_crypto-util.o `test -f 'ell/util.c' || echo '$(srcdir)/'`ell/util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-util.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/util.c' object='ell/unit_test_mesh_crypto-util.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-util.o `test -f 'ell/util.c' || echo '$(srcdir)/'`ell/util.c
-
-ell/unit_test_mesh_crypto-util.obj: ell/util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-util.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-util.Tpo -c -o ell/unit_test_mesh_crypto-util.obj `if test -f 'ell/util.c'; then $(CYGPATH_W) 'ell/util.c'; else $(CYGPATH_W) '$(srcdir)/ell/util.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-util.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/util.c' object='ell/unit_test_mesh_crypto-util.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-util.obj `if test -f 'ell/util.c'; then $(CYGPATH_W) 'ell/util.c'; else $(CYGPATH_W) '$(srcdir)/ell/util.c'; fi`
-
-ell/unit_test_mesh_crypto-log.o: ell/log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-log.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-log.Tpo -c -o ell/unit_test_mesh_crypto-log.o `test -f 'ell/log.c' || echo '$(srcdir)/'`ell/log.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-log.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-log.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/log.c' object='ell/unit_test_mesh_crypto-log.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-log.o `test -f 'ell/log.c' || echo '$(srcdir)/'`ell/log.c
-
-ell/unit_test_mesh_crypto-log.obj: ell/log.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-log.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-log.Tpo -c -o ell/unit_test_mesh_crypto-log.obj `if test -f 'ell/log.c'; then $(CYGPATH_W) 'ell/log.c'; else $(CYGPATH_W) '$(srcdir)/ell/log.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-log.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-log.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/log.c' object='ell/unit_test_mesh_crypto-log.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-log.obj `if test -f 'ell/log.c'; then $(CYGPATH_W) 'ell/log.c'; else $(CYGPATH_W) '$(srcdir)/ell/log.c'; fi`
-
-ell/unit_test_mesh_crypto-queue.o: ell/queue.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-queue.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Tpo -c -o ell/unit_test_mesh_crypto-queue.o `test -f 'ell/queue.c' || echo '$(srcdir)/'`ell/queue.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/queue.c' object='ell/unit_test_mesh_crypto-queue.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-queue.o `test -f 'ell/queue.c' || echo '$(srcdir)/'`ell/queue.c
-
-ell/unit_test_mesh_crypto-queue.obj: ell/queue.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-queue.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Tpo -c -o ell/unit_test_mesh_crypto-queue.obj `if test -f 'ell/queue.c'; then $(CYGPATH_W) 'ell/queue.c'; else $(CYGPATH_W) '$(srcdir)/ell/queue.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/queue.c' object='ell/unit_test_mesh_crypto-queue.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-queue.obj `if test -f 'ell/queue.c'; then $(CYGPATH_W) 'ell/queue.c'; else $(CYGPATH_W) '$(srcdir)/ell/queue.c'; fi`
-
-ell/unit_test_mesh_crypto-hashmap.o: ell/hashmap.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-hashmap.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Tpo -c -o ell/unit_test_mesh_crypto-hashmap.o `test -f 'ell/hashmap.c' || echo '$(srcdir)/'`ell/hashmap.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/hashmap.c' object='ell/unit_test_mesh_crypto-hashmap.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-hashmap.o `test -f 'ell/hashmap.c' || echo '$(srcdir)/'`ell/hashmap.c
-
-ell/unit_test_mesh_crypto-hashmap.obj: ell/hashmap.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-hashmap.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Tpo -c -o ell/unit_test_mesh_crypto-hashmap.obj `if test -f 'ell/hashmap.c'; then $(CYGPATH_W) 'ell/hashmap.c'; else $(CYGPATH_W) '$(srcdir)/ell/hashmap.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/hashmap.c' object='ell/unit_test_mesh_crypto-hashmap.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-hashmap.obj `if test -f 'ell/hashmap.c'; then $(CYGPATH_W) 'ell/hashmap.c'; else $(CYGPATH_W) '$(srcdir)/ell/hashmap.c'; fi`
-
-ell/unit_test_mesh_crypto-random.o: ell/random.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-random.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-random.Tpo -c -o ell/unit_test_mesh_crypto-random.o `test -f 'ell/random.c' || echo '$(srcdir)/'`ell/random.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-random.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-random.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/random.c' object='ell/unit_test_mesh_crypto-random.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-random.o `test -f 'ell/random.c' || echo '$(srcdir)/'`ell/random.c
-
-ell/unit_test_mesh_crypto-random.obj: ell/random.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-random.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-random.Tpo -c -o ell/unit_test_mesh_crypto-random.obj `if test -f 'ell/random.c'; then $(CYGPATH_W) 'ell/random.c'; else $(CYGPATH_W) '$(srcdir)/ell/random.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-random.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-random.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/random.c' object='ell/unit_test_mesh_crypto-random.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-random.obj `if test -f 'ell/random.c'; then $(CYGPATH_W) 'ell/random.c'; else $(CYGPATH_W) '$(srcdir)/ell/random.c'; fi`
-
-ell/unit_test_mesh_crypto-signal.o: ell/signal.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-signal.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Tpo -c -o ell/unit_test_mesh_crypto-signal.o `test -f 'ell/signal.c' || echo '$(srcdir)/'`ell/signal.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/signal.c' object='ell/unit_test_mesh_crypto-signal.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-signal.o `test -f 'ell/signal.c' || echo '$(srcdir)/'`ell/signal.c
-
-ell/unit_test_mesh_crypto-signal.obj: ell/signal.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-signal.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Tpo -c -o ell/unit_test_mesh_crypto-signal.obj `if test -f 'ell/signal.c'; then $(CYGPATH_W) 'ell/signal.c'; else $(CYGPATH_W) '$(srcdir)/ell/signal.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/signal.c' object='ell/unit_test_mesh_crypto-signal.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-signal.obj `if test -f 'ell/signal.c'; then $(CYGPATH_W) 'ell/signal.c'; else $(CYGPATH_W) '$(srcdir)/ell/signal.c'; fi`
-
-ell/unit_test_mesh_crypto-timeout.o: ell/timeout.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-timeout.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Tpo -c -o ell/unit_test_mesh_crypto-timeout.o `test -f 'ell/timeout.c' || echo '$(srcdir)/'`ell/timeout.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/timeout.c' object='ell/unit_test_mesh_crypto-timeout.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-timeout.o `test -f 'ell/timeout.c' || echo '$(srcdir)/'`ell/timeout.c
-
-ell/unit_test_mesh_crypto-timeout.obj: ell/timeout.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-timeout.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Tpo -c -o ell/unit_test_mesh_crypto-timeout.obj `if test -f 'ell/timeout.c'; then $(CYGPATH_W) 'ell/timeout.c'; else $(CYGPATH_W) '$(srcdir)/ell/timeout.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/timeout.c' object='ell/unit_test_mesh_crypto-timeout.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-timeout.obj `if test -f 'ell/timeout.c'; then $(CYGPATH_W) 'ell/timeout.c'; else $(CYGPATH_W) '$(srcdir)/ell/timeout.c'; fi`
-
-ell/unit_test_mesh_crypto-io.o: ell/io.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-io.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-io.Tpo -c -o ell/unit_test_mesh_crypto-io.o `test -f 'ell/io.c' || echo '$(srcdir)/'`ell/io.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-io.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-io.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/io.c' object='ell/unit_test_mesh_crypto-io.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-io.o `test -f 'ell/io.c' || echo '$(srcdir)/'`ell/io.c
-
-ell/unit_test_mesh_crypto-io.obj: ell/io.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-io.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-io.Tpo -c -o ell/unit_test_mesh_crypto-io.obj `if test -f 'ell/io.c'; then $(CYGPATH_W) 'ell/io.c'; else $(CYGPATH_W) '$(srcdir)/ell/io.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-io.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-io.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/io.c' object='ell/unit_test_mesh_crypto-io.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-io.obj `if test -f 'ell/io.c'; then $(CYGPATH_W) 'ell/io.c'; else $(CYGPATH_W) '$(srcdir)/ell/io.c'; fi`
-
-ell/unit_test_mesh_crypto-idle.o: ell/idle.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-idle.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Tpo -c -o ell/unit_test_mesh_crypto-idle.o `test -f 'ell/idle.c' || echo '$(srcdir)/'`ell/idle.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/idle.c' object='ell/unit_test_mesh_crypto-idle.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-idle.o `test -f 'ell/idle.c' || echo '$(srcdir)/'`ell/idle.c
-
-ell/unit_test_mesh_crypto-idle.obj: ell/idle.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-idle.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Tpo -c -o ell/unit_test_mesh_crypto-idle.obj `if test -f 'ell/idle.c'; then $(CYGPATH_W) 'ell/idle.c'; else $(CYGPATH_W) '$(srcdir)/ell/idle.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/idle.c' object='ell/unit_test_mesh_crypto-idle.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-idle.obj `if test -f 'ell/idle.c'; then $(CYGPATH_W) 'ell/idle.c'; else $(CYGPATH_W) '$(srcdir)/ell/idle.c'; fi`
-
-ell/unit_test_mesh_crypto-main.o: ell/main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-main.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-main.Tpo -c -o ell/unit_test_mesh_crypto-main.o `test -f 'ell/main.c' || echo '$(srcdir)/'`ell/main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-main.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/main.c' object='ell/unit_test_mesh_crypto-main.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-main.o `test -f 'ell/main.c' || echo '$(srcdir)/'`ell/main.c
-
-ell/unit_test_mesh_crypto-main.obj: ell/main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-main.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-main.Tpo -c -o ell/unit_test_mesh_crypto-main.obj `if test -f 'ell/main.c'; then $(CYGPATH_W) 'ell/main.c'; else $(CYGPATH_W) '$(srcdir)/ell/main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-main.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/main.c' object='ell/unit_test_mesh_crypto-main.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-main.obj `if test -f 'ell/main.c'; then $(CYGPATH_W) 'ell/main.c'; else $(CYGPATH_W) '$(srcdir)/ell/main.c'; fi`
-
-ell/unit_test_mesh_crypto-strv.o: ell/strv.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-strv.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Tpo -c -o ell/unit_test_mesh_crypto-strv.o `test -f 'ell/strv.c' || echo '$(srcdir)/'`ell/strv.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/strv.c' object='ell/unit_test_mesh_crypto-strv.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-strv.o `test -f 'ell/strv.c' || echo '$(srcdir)/'`ell/strv.c
-
-ell/unit_test_mesh_crypto-strv.obj: ell/strv.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-strv.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Tpo -c -o ell/unit_test_mesh_crypto-strv.obj `if test -f 'ell/strv.c'; then $(CYGPATH_W) 'ell/strv.c'; else $(CYGPATH_W) '$(srcdir)/ell/strv.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/strv.c' object='ell/unit_test_mesh_crypto-strv.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-strv.obj `if test -f 'ell/strv.c'; then $(CYGPATH_W) 'ell/strv.c'; else $(CYGPATH_W) '$(srcdir)/ell/strv.c'; fi`
-
-ell/unit_test_mesh_crypto-string.o: ell/string.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-string.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-string.Tpo -c -o ell/unit_test_mesh_crypto-string.o `test -f 'ell/string.c' || echo '$(srcdir)/'`ell/string.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-string.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-string.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/string.c' object='ell/unit_test_mesh_crypto-string.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-string.o `test -f 'ell/string.c' || echo '$(srcdir)/'`ell/string.c
-
-ell/unit_test_mesh_crypto-string.obj: ell/string.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-string.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-string.Tpo -c -o ell/unit_test_mesh_crypto-string.obj `if test -f 'ell/string.c'; then $(CYGPATH_W) 'ell/string.c'; else $(CYGPATH_W) '$(srcdir)/ell/string.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-string.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-string.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/string.c' object='ell/unit_test_mesh_crypto-string.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-string.obj `if test -f 'ell/string.c'; then $(CYGPATH_W) 'ell/string.c'; else $(CYGPATH_W) '$(srcdir)/ell/string.c'; fi`
-
-ell/unit_test_mesh_crypto-cipher.o: ell/cipher.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-cipher.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Tpo -c -o ell/unit_test_mesh_crypto-cipher.o `test -f 'ell/cipher.c' || echo '$(srcdir)/'`ell/cipher.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/cipher.c' object='ell/unit_test_mesh_crypto-cipher.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-cipher.o `test -f 'ell/cipher.c' || echo '$(srcdir)/'`ell/cipher.c
-
-ell/unit_test_mesh_crypto-cipher.obj: ell/cipher.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-cipher.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Tpo -c -o ell/unit_test_mesh_crypto-cipher.obj `if test -f 'ell/cipher.c'; then $(CYGPATH_W) 'ell/cipher.c'; else $(CYGPATH_W) '$(srcdir)/ell/cipher.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/cipher.c' object='ell/unit_test_mesh_crypto-cipher.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-cipher.obj `if test -f 'ell/cipher.c'; then $(CYGPATH_W) 'ell/cipher.c'; else $(CYGPATH_W) '$(srcdir)/ell/cipher.c'; fi`
-
-ell/unit_test_mesh_crypto-checksum.o: ell/checksum.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-checksum.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Tpo -c -o ell/unit_test_mesh_crypto-checksum.o `test -f 'ell/checksum.c' || echo '$(srcdir)/'`ell/checksum.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/checksum.c' object='ell/unit_test_mesh_crypto-checksum.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-checksum.o `test -f 'ell/checksum.c' || echo '$(srcdir)/'`ell/checksum.c
-
-ell/unit_test_mesh_crypto-checksum.obj: ell/checksum.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-checksum.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Tpo -c -o ell/unit_test_mesh_crypto-checksum.obj `if test -f 'ell/checksum.c'; then $(CYGPATH_W) 'ell/checksum.c'; else $(CYGPATH_W) '$(srcdir)/ell/checksum.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/checksum.c' object='ell/unit_test_mesh_crypto-checksum.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-checksum.obj `if test -f 'ell/checksum.c'; then $(CYGPATH_W) 'ell/checksum.c'; else $(CYGPATH_W) '$(srcdir)/ell/checksum.c'; fi`
-
-ell/unit_test_mesh_crypto-utf8.o: ell/utf8.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-utf8.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Tpo -c -o ell/unit_test_mesh_crypto-utf8.o `test -f 'ell/utf8.c' || echo '$(srcdir)/'`ell/utf8.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/utf8.c' object='ell/unit_test_mesh_crypto-utf8.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-utf8.o `test -f 'ell/utf8.c' || echo '$(srcdir)/'`ell/utf8.c
-
-ell/unit_test_mesh_crypto-utf8.obj: ell/utf8.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-utf8.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Tpo -c -o ell/unit_test_mesh_crypto-utf8.obj `if test -f 'ell/utf8.c'; then $(CYGPATH_W) 'ell/utf8.c'; else $(CYGPATH_W) '$(srcdir)/ell/utf8.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/utf8.c' object='ell/unit_test_mesh_crypto-utf8.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-utf8.obj `if test -f 'ell/utf8.c'; then $(CYGPATH_W) 'ell/utf8.c'; else $(CYGPATH_W) '$(srcdir)/ell/utf8.c'; fi`
-
-ell/unit_test_mesh_crypto-dbus.o: ell/dbus.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Tpo -c -o ell/unit_test_mesh_crypto-dbus.o `test -f 'ell/dbus.c' || echo '$(srcdir)/'`ell/dbus.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus.c' object='ell/unit_test_mesh_crypto-dbus.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus.o `test -f 'ell/dbus.c' || echo '$(srcdir)/'`ell/dbus.c
-
-ell/unit_test_mesh_crypto-dbus.obj: ell/dbus.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Tpo -c -o ell/unit_test_mesh_crypto-dbus.obj `if test -f 'ell/dbus.c'; then $(CYGPATH_W) 'ell/dbus.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus.c' object='ell/unit_test_mesh_crypto-dbus.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus.obj `if test -f 'ell/dbus.c'; then $(CYGPATH_W) 'ell/dbus.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus.c'; fi`
-
-ell/unit_test_mesh_crypto-dbus-message.o: ell/dbus-message.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-message.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Tpo -c -o ell/unit_test_mesh_crypto-dbus-message.o `test -f 'ell/dbus-message.c' || echo '$(srcdir)/'`ell/dbus-message.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-message.c' object='ell/unit_test_mesh_crypto-dbus-message.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-message.o `test -f 'ell/dbus-message.c' || echo '$(srcdir)/'`ell/dbus-message.c
-
-ell/unit_test_mesh_crypto-dbus-message.obj: ell/dbus-message.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-message.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Tpo -c -o ell/unit_test_mesh_crypto-dbus-message.obj `if test -f 'ell/dbus-message.c'; then $(CYGPATH_W) 'ell/dbus-message.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-message.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-message.c' object='ell/unit_test_mesh_crypto-dbus-message.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-message.obj `if test -f 'ell/dbus-message.c'; then $(CYGPATH_W) 'ell/dbus-message.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-message.c'; fi`
-
-ell/unit_test_mesh_crypto-dbus-util.o: ell/dbus-util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-util.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Tpo -c -o ell/unit_test_mesh_crypto-dbus-util.o `test -f 'ell/dbus-util.c' || echo '$(srcdir)/'`ell/dbus-util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-util.c' object='ell/unit_test_mesh_crypto-dbus-util.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-util.o `test -f 'ell/dbus-util.c' || echo '$(srcdir)/'`ell/dbus-util.c
-
-ell/unit_test_mesh_crypto-dbus-util.obj: ell/dbus-util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-util.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Tpo -c -o ell/unit_test_mesh_crypto-dbus-util.obj `if test -f 'ell/dbus-util.c'; then $(CYGPATH_W) 'ell/dbus-util.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-util.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-util.c' object='ell/unit_test_mesh_crypto-dbus-util.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-util.obj `if test -f 'ell/dbus-util.c'; then $(CYGPATH_W) 'ell/dbus-util.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-util.c'; fi`
-
-ell/unit_test_mesh_crypto-dbus-service.o: ell/dbus-service.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-service.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Tpo -c -o ell/unit_test_mesh_crypto-dbus-service.o `test -f 'ell/dbus-service.c' || echo '$(srcdir)/'`ell/dbus-service.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-service.c' object='ell/unit_test_mesh_crypto-dbus-service.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-service.o `test -f 'ell/dbus-service.c' || echo '$(srcdir)/'`ell/dbus-service.c
-
-ell/unit_test_mesh_crypto-dbus-service.obj: ell/dbus-service.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-service.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Tpo -c -o ell/unit_test_mesh_crypto-dbus-service.obj `if test -f 'ell/dbus-service.c'; then $(CYGPATH_W) 'ell/dbus-service.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-service.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-service.c' object='ell/unit_test_mesh_crypto-dbus-service.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-service.obj `if test -f 'ell/dbus-service.c'; then $(CYGPATH_W) 'ell/dbus-service.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-service.c'; fi`
-
-ell/unit_test_mesh_crypto-dbus-client.o: ell/dbus-client.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-client.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Tpo -c -o ell/unit_test_mesh_crypto-dbus-client.o `test -f 'ell/dbus-client.c' || echo '$(srcdir)/'`ell/dbus-client.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-client.c' object='ell/unit_test_mesh_crypto-dbus-client.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-client.o `test -f 'ell/dbus-client.c' || echo '$(srcdir)/'`ell/dbus-client.c
-
-ell/unit_test_mesh_crypto-dbus-client.obj: ell/dbus-client.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-client.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Tpo -c -o ell/unit_test_mesh_crypto-dbus-client.obj `if test -f 'ell/dbus-client.c'; then $(CYGPATH_W) 'ell/dbus-client.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-client.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-client.c' object='ell/unit_test_mesh_crypto-dbus-client.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-client.obj `if test -f 'ell/dbus-client.c'; then $(CYGPATH_W) 'ell/dbus-client.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-client.c'; fi`
-
-ell/unit_test_mesh_crypto-dbus-name-cache.o: ell/dbus-name-cache.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-name-cache.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Tpo -c -o ell/unit_test_mesh_crypto-dbus-name-cache.o `test -f 'ell/dbus-name-cache.c' || echo '$(srcdir)/'`ell/dbus-name-cache.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-name-cache.c' object='ell/unit_test_mesh_crypto-dbus-name-cache.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-name-cache.o `test -f 'ell/dbus-name-cache.c' || echo '$(srcdir)/'`ell/dbus-name-cache.c
-
-ell/unit_test_mesh_crypto-dbus-name-cache.obj: ell/dbus-name-cache.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-name-cache.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Tpo -c -o ell/unit_test_mesh_crypto-dbus-name-cache.obj `if test -f 'ell/dbus-name-cache.c'; then $(CYGPATH_W) 'ell/dbus-name-cache.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-name-cache.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-name-cache.c' object='ell/unit_test_mesh_crypto-dbus-name-cache.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-name-cache.obj `if test -f 'ell/dbus-name-cache.c'; then $(CYGPATH_W) 'ell/dbus-name-cache.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-name-cache.c'; fi`
-
-ell/unit_test_mesh_crypto-dbus-filter.o: ell/dbus-filter.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-filter.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Tpo -c -o ell/unit_test_mesh_crypto-dbus-filter.o `test -f 'ell/dbus-filter.c' || echo '$(srcdir)/'`ell/dbus-filter.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-filter.c' object='ell/unit_test_mesh_crypto-dbus-filter.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-filter.o `test -f 'ell/dbus-filter.c' || echo '$(srcdir)/'`ell/dbus-filter.c
-
-ell/unit_test_mesh_crypto-dbus-filter.obj: ell/dbus-filter.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-dbus-filter.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Tpo -c -o ell/unit_test_mesh_crypto-dbus-filter.obj `if test -f 'ell/dbus-filter.c'; then $(CYGPATH_W) 'ell/dbus-filter.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-filter.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/dbus-filter.c' object='ell/unit_test_mesh_crypto-dbus-filter.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-dbus-filter.obj `if test -f 'ell/dbus-filter.c'; then $(CYGPATH_W) 'ell/dbus-filter.c'; else $(CYGPATH_W) '$(srcdir)/ell/dbus-filter.c'; fi`
-
-ell/unit_test_mesh_crypto-gvariant-util.o: ell/gvariant-util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-gvariant-util.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Tpo -c -o ell/unit_test_mesh_crypto-gvariant-util.o `test -f 'ell/gvariant-util.c' || echo '$(srcdir)/'`ell/gvariant-util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/gvariant-util.c' object='ell/unit_test_mesh_crypto-gvariant-util.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-gvariant-util.o `test -f 'ell/gvariant-util.c' || echo '$(srcdir)/'`ell/gvariant-util.c
-
-ell/unit_test_mesh_crypto-gvariant-util.obj: ell/gvariant-util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-gvariant-util.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Tpo -c -o ell/unit_test_mesh_crypto-gvariant-util.obj `if test -f 'ell/gvariant-util.c'; then $(CYGPATH_W) 'ell/gvariant-util.c'; else $(CYGPATH_W) '$(srcdir)/ell/gvariant-util.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/gvariant-util.c' object='ell/unit_test_mesh_crypto-gvariant-util.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-gvariant-util.obj `if test -f 'ell/gvariant-util.c'; then $(CYGPATH_W) 'ell/gvariant-util.c'; else $(CYGPATH_W) '$(srcdir)/ell/gvariant-util.c'; fi`
-
-ell/unit_test_mesh_crypto-siphash.o: ell/siphash.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-siphash.o -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Tpo -c -o ell/unit_test_mesh_crypto-siphash.o `test -f 'ell/siphash.c' || echo '$(srcdir)/'`ell/siphash.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/siphash.c' object='ell/unit_test_mesh_crypto-siphash.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-siphash.o `test -f 'ell/siphash.c' || echo '$(srcdir)/'`ell/siphash.c
-
-ell/unit_test_mesh_crypto-siphash.obj: ell/siphash.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ell/unit_test_mesh_crypto-siphash.obj -MD -MP -MF ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Tpo -c -o ell/unit_test_mesh_crypto-siphash.obj `if test -f 'ell/siphash.c'; then $(CYGPATH_W) 'ell/siphash.c'; else $(CYGPATH_W) '$(srcdir)/ell/siphash.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Tpo ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ell/siphash.c' object='ell/unit_test_mesh_crypto-siphash.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ell/unit_test_mesh_crypto-siphash.obj `if test -f 'ell/siphash.c'; then $(CYGPATH_W) 'ell/siphash.c'; else $(CYGPATH_W) '$(srcdir)/ell/siphash.c'; fi`
-
 unit/test_midi-test-midi.o: unit/test-midi.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_midi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT unit/test_midi-test-midi.o -MD -MP -MF unit/$(DEPDIR)/test_midi-test-midi.Tpo -c -o unit/test_midi-test-midi.o `test -f 'unit/test-midi.c' || echo '$(srcdir)/'`unit/test-midi.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) unit/$(DEPDIR)/test_midi-test-midi.Tpo unit/$(DEPDIR)/test_midi-test-midi.Po
@@ -10677,6 +10336,8 @@ distclean-generic:
 	-rm -f src/shared/$(am__dirstamp)
 	-rm -f tools/$(DEPDIR)/$(am__dirstamp)
 	-rm -f tools/$(am__dirstamp)
+	-rm -f tools/mesh-gatt/$(DEPDIR)/$(am__dirstamp)
+	-rm -f tools/mesh-gatt/$(am__dirstamp)
 	-rm -f tools/mesh/$(DEPDIR)/$(am__dirstamp)
 	-rm -f tools/mesh/$(am__dirstamp)
 	-rm -f tools/parser/$(DEPDIR)/$(am__dirstamp)
@@ -10797,6 +10458,8 @@ distclean: distclean-am
 	-rm -f client/$(DEPDIR)/display.Po
 	-rm -f client/$(DEPDIR)/gatt.Po
 	-rm -f client/$(DEPDIR)/main.Po
+	-rm -f ell/$(DEPDIR)/base64.Plo
+	-rm -f ell/$(DEPDIR)/cert.Plo
 	-rm -f ell/$(DEPDIR)/checksum.Plo
 	-rm -f ell/$(DEPDIR)/cipher.Plo
 	-rm -f ell/$(DEPDIR)/dbus-client.Plo
@@ -10810,39 +10473,19 @@ distclean: distclean-am
 	-rm -f ell/$(DEPDIR)/hashmap.Plo
 	-rm -f ell/$(DEPDIR)/idle.Plo
 	-rm -f ell/$(DEPDIR)/io.Plo
+	-rm -f ell/$(DEPDIR)/key.Plo
 	-rm -f ell/$(DEPDIR)/log.Plo
 	-rm -f ell/$(DEPDIR)/main.Plo
+	-rm -f ell/$(DEPDIR)/pem.Plo
+	-rm -f ell/$(DEPDIR)/pkcs5.Plo
 	-rm -f ell/$(DEPDIR)/queue.Plo
 	-rm -f ell/$(DEPDIR)/random.Plo
+	-rm -f ell/$(DEPDIR)/settings.Plo
 	-rm -f ell/$(DEPDIR)/signal.Plo
 	-rm -f ell/$(DEPDIR)/siphash.Plo
 	-rm -f ell/$(DEPDIR)/string.Plo
 	-rm -f ell/$(DEPDIR)/strv.Plo
 	-rm -f ell/$(DEPDIR)/timeout.Plo
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-io.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-log.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-main.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-random.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-string.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-util.Po
 	-rm -f ell/$(DEPDIR)/utf8.Plo
 	-rm -f ell/$(DEPDIR)/util.Plo
 	-rm -f emulator/$(DEPDIR)/amp.Po
@@ -10908,6 +10551,7 @@ distclean: distclean-am
 	-rm -f mesh/$(DEPDIR)/pb-adv.Po
 	-rm -f mesh/$(DEPDIR)/prov-acceptor.Po
 	-rm -f mesh/$(DEPDIR)/prov-initiator.Po
+	-rm -f mesh/$(DEPDIR)/rpl.Po
 	-rm -f mesh/$(DEPDIR)/util.Po
 	-rm -f monitor/$(DEPDIR)/a2dp.Po
 	-rm -f monitor/$(DEPDIR)/analyze.Po
@@ -11160,6 +10804,7 @@ distclean: distclean-am
 	-rm -f tools/$(DEPDIR)/l2ping.Po
 	-rm -f tools/$(DEPDIR)/l2test.Po
 	-rm -f tools/$(DEPDIR)/mcaptest.Po
+	-rm -f tools/$(DEPDIR)/mesh-cfgclient.Po
 	-rm -f tools/$(DEPDIR)/meshctl.Po
 	-rm -f tools/$(DEPDIR)/mgmt-tester.Po
 	-rm -f tools/$(DEPDIR)/mpris-proxy.Po
@@ -11180,16 +10825,21 @@ distclean: distclean-am
 	-rm -f tools/$(DEPDIR)/test-runner.Po
 	-rm -f tools/$(DEPDIR)/ubcsp.Po
 	-rm -f tools/$(DEPDIR)/userchan-tester.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/config-client.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/config-server.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/crypto.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/gatt.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/net.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/node.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/onoff-model.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/prov-db.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/prov.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/util.Po
 	-rm -f tools/mesh/$(DEPDIR)/agent.Po
-	-rm -f tools/mesh/$(DEPDIR)/config-client.Po
-	-rm -f tools/mesh/$(DEPDIR)/config-server.Po
-	-rm -f tools/mesh/$(DEPDIR)/crypto.Po
-	-rm -f tools/mesh/$(DEPDIR)/gatt.Po
-	-rm -f tools/mesh/$(DEPDIR)/net.Po
-	-rm -f tools/mesh/$(DEPDIR)/node.Po
-	-rm -f tools/mesh/$(DEPDIR)/onoff-model.Po
-	-rm -f tools/mesh/$(DEPDIR)/prov-db.Po
-	-rm -f tools/mesh/$(DEPDIR)/prov.Po
+	-rm -f tools/mesh/$(DEPDIR)/cfgcli.Po
+	-rm -f tools/mesh/$(DEPDIR)/keys.Po
+	-rm -f tools/mesh/$(DEPDIR)/mesh-db.Po
+	-rm -f tools/mesh/$(DEPDIR)/remote.Po
 	-rm -f tools/mesh/$(DEPDIR)/util.Po
 	-rm -f tools/parser/$(DEPDIR)/amp.Po
 	-rm -f tools/parser/$(DEPDIR)/att.Po
@@ -11394,6 +11044,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f client/$(DEPDIR)/display.Po
 	-rm -f client/$(DEPDIR)/gatt.Po
 	-rm -f client/$(DEPDIR)/main.Po
+	-rm -f ell/$(DEPDIR)/base64.Plo
+	-rm -f ell/$(DEPDIR)/cert.Plo
 	-rm -f ell/$(DEPDIR)/checksum.Plo
 	-rm -f ell/$(DEPDIR)/cipher.Plo
 	-rm -f ell/$(DEPDIR)/dbus-client.Plo
@@ -11407,39 +11059,19 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ell/$(DEPDIR)/hashmap.Plo
 	-rm -f ell/$(DEPDIR)/idle.Plo
 	-rm -f ell/$(DEPDIR)/io.Plo
+	-rm -f ell/$(DEPDIR)/key.Plo
 	-rm -f ell/$(DEPDIR)/log.Plo
 	-rm -f ell/$(DEPDIR)/main.Plo
+	-rm -f ell/$(DEPDIR)/pem.Plo
+	-rm -f ell/$(DEPDIR)/pkcs5.Plo
 	-rm -f ell/$(DEPDIR)/queue.Plo
 	-rm -f ell/$(DEPDIR)/random.Plo
+	-rm -f ell/$(DEPDIR)/settings.Plo
 	-rm -f ell/$(DEPDIR)/signal.Plo
 	-rm -f ell/$(DEPDIR)/siphash.Plo
 	-rm -f ell/$(DEPDIR)/string.Plo
 	-rm -f ell/$(DEPDIR)/strv.Plo
 	-rm -f ell/$(DEPDIR)/timeout.Plo
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-checksum.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-cipher.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-client.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-filter.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-message.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-name-cache.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-service.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus-util.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-dbus.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-gvariant-util.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-hashmap.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-idle.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-io.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-log.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-main.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-queue.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-random.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-signal.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-siphash.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-string.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-strv.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-timeout.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-utf8.Po
-	-rm -f ell/$(DEPDIR)/unit_test_mesh_crypto-util.Po
 	-rm -f ell/$(DEPDIR)/utf8.Plo
 	-rm -f ell/$(DEPDIR)/util.Plo
 	-rm -f emulator/$(DEPDIR)/amp.Po
@@ -11505,6 +11137,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f mesh/$(DEPDIR)/pb-adv.Po
 	-rm -f mesh/$(DEPDIR)/prov-acceptor.Po
 	-rm -f mesh/$(DEPDIR)/prov-initiator.Po
+	-rm -f mesh/$(DEPDIR)/rpl.Po
 	-rm -f mesh/$(DEPDIR)/util.Po
 	-rm -f monitor/$(DEPDIR)/a2dp.Po
 	-rm -f monitor/$(DEPDIR)/analyze.Po
@@ -11757,6 +11390,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tools/$(DEPDIR)/l2ping.Po
 	-rm -f tools/$(DEPDIR)/l2test.Po
 	-rm -f tools/$(DEPDIR)/mcaptest.Po
+	-rm -f tools/$(DEPDIR)/mesh-cfgclient.Po
 	-rm -f tools/$(DEPDIR)/meshctl.Po
 	-rm -f tools/$(DEPDIR)/mgmt-tester.Po
 	-rm -f tools/$(DEPDIR)/mpris-proxy.Po
@@ -11777,16 +11411,21 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tools/$(DEPDIR)/test-runner.Po
 	-rm -f tools/$(DEPDIR)/ubcsp.Po
 	-rm -f tools/$(DEPDIR)/userchan-tester.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/config-client.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/config-server.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/crypto.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/gatt.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/net.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/node.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/onoff-model.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/prov-db.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/prov.Po
+	-rm -f tools/mesh-gatt/$(DEPDIR)/util.Po
 	-rm -f tools/mesh/$(DEPDIR)/agent.Po
-	-rm -f tools/mesh/$(DEPDIR)/config-client.Po
-	-rm -f tools/mesh/$(DEPDIR)/config-server.Po
-	-rm -f tools/mesh/$(DEPDIR)/crypto.Po
-	-rm -f tools/mesh/$(DEPDIR)/gatt.Po
-	-rm -f tools/mesh/$(DEPDIR)/net.Po
-	-rm -f tools/mesh/$(DEPDIR)/node.Po
-	-rm -f tools/mesh/$(DEPDIR)/onoff-model.Po
-	-rm -f tools/mesh/$(DEPDIR)/prov-db.Po
-	-rm -f tools/mesh/$(DEPDIR)/prov.Po
+	-rm -f tools/mesh/$(DEPDIR)/cfgcli.Po
+	-rm -f tools/mesh/$(DEPDIR)/keys.Po
+	-rm -f tools/mesh/$(DEPDIR)/mesh-db.Po
+	-rm -f tools/mesh/$(DEPDIR)/remote.Po
 	-rm -f tools/mesh/$(DEPDIR)/util.Po
 	-rm -f tools/parser/$(DEPDIR)/amp.Po
 	-rm -f tools/parser/$(DEPDIR)/att.Po

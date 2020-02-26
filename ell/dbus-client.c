@@ -301,6 +301,9 @@ LIB_EXPORT uint32_t l_dbus_proxy_method_call(struct l_dbus_proxy *proxy,
 {
 	struct method_call_request *req;
 
+	if (unlikely(!proxy))
+		return 0;
+
 	req = l_new(struct method_call_request, 1);
 	req->proxy = proxy;
 	req->setup = setup;
@@ -648,8 +651,8 @@ LIB_EXPORT void l_dbus_client_destroy(struct l_dbus_client *client)
 		client->proxy_cb_data_destroy(client->proxy_cb_data);
 
 	if (client->objects_call)
-		l_dbus_cancel(client->dbus, client->objects_call)
-;
+		l_dbus_cancel(client->dbus, client->objects_call);
+
 	l_queue_destroy(client->proxies,
 				(l_queue_destroy_func_t)dbus_proxy_destroy);
 
