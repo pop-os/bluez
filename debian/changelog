@@ -1,3 +1,13 @@
+bluez (5.53-0ubuntu1) focal; urgency=medium
+
+  * New upstream release 5.53 (LP: #1864824)
+    - Fix issue with handling unregistration for advertisment.
+    - Fix issue with A2DP and handling recovering process.
+    - Fix issue with udpating input device information.
+    - Add support for loading blocked keys.
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Wed, 26 Feb 2020 17:57:54 +0800
+
 bluez (5.52-0ubuntu2) focal; urgency=medium
 
   * Don't build bluez-cups on i386.
