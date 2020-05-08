@@ -15,3 +15,4 @@ CVE-2020-0556-1.patch
 CVE-2020-0556-2.patch
 CVE-2020-0556-3.patch
 CVE-2020-0556-4.patch
+ubuntu_error_restart.patch

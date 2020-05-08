@@ -1,3 +1,10 @@
+bluez (5.53-0ubuntu3) focal; urgency=medium
+
+  * debian/patches/ubuntu_error_restart.patch:
+    - restart the service on errors
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Fri, 03 Apr 2020 08:47:01 +0200
+
 bluez (5.53-0ubuntu2) focal; urgency=medium
 
   * SECURITY UPDATE: privilege escalation via improper access control
