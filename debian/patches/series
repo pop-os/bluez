@@ -11,3 +11,7 @@ lp1759836.patch
 0001-obexd-plugins-port-ebook-support-to-the-latest-EDS.patch
 0002-hostname-handle-chassis-type-handset.patch
 
+CVE-2020-0556-1.patch
+CVE-2020-0556-2.patch
+CVE-2020-0556-3.patch
+CVE-2020-0556-4.patch
