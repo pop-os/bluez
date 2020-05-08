@@ -24,8 +24,6 @@ struct mesh_model;
 #define MAX_BINDINGS	10
 #define MAX_GRP_PER_MOD	10
 
-#define VIRTUAL_BASE			0x10000
-
 #define OP_MODEL_TEST			0x8000fffe
 #define OP_MODEL_INVALID		0x8000ffff
 
@@ -35,8 +33,11 @@ struct mesh_model;
 #define ACTION_UPDATE		2
 #define ACTION_DELETE		3
 
+struct mesh_virtual;
+
 struct mesh_model_pub {
-	uint32_t addr;
+	struct mesh_virtual *virt;
+	uint16_t addr;
 	uint16_t idx;
 	uint8_t ttl;
 	uint8_t credential;
@@ -45,10 +46,9 @@ struct mesh_model_pub {
 };
 
 typedef void (*mesh_model_unregister)(void *user_data);
-typedef bool (*mesh_model_recv_cb)(uint16_t src, uint32_t dst, uint16_t unicast,
+typedef bool (*mesh_model_recv_cb)(uint16_t src, uint16_t unicast,
 					uint16_t app_idx, uint16_t net_idx,
-					const uint8_t *data,
-					uint16_t len, uint8_t ttl,
+					const uint8_t *data, uint16_t len,
 					const void *user_data);
 typedef int (*mesh_model_bind_cb)(uint16_t app_idx, int action);
 typedef int (*mesh_model_pub_cb)(struct mesh_model_pub *pub);
@@ -75,7 +75,7 @@ struct mesh_model_pub *mesh_model_pub_get(struct mesh_node *node,
 int mesh_model_pub_set(struct mesh_node *node, uint16_t addr, uint32_t id,
 			const uint8_t *pub_addr, uint16_t idx, bool cred_flag,
 			uint8_t ttl, uint8_t period, uint8_t retransmit,
-			bool b_virt, uint16_t *dst);
+			bool is_virt, uint16_t *dst);
 
 int mesh_model_binding_add(struct mesh_node *node, uint16_t addr, uint32_t id,
 								uint16_t idx);
@@ -100,9 +100,9 @@ bool mesh_model_send(struct mesh_node *node, uint16_t src, uint16_t dst,
 int mesh_model_publish(struct mesh_node *node, uint32_t mod_id, uint16_t src,
 				uint8_t ttl, const void *msg, uint16_t msg_len);
 bool mesh_model_rx(struct mesh_node *node, bool szmict, uint32_t seq0,
-			uint32_t seq, uint32_t iv_index, uint8_t ttl,
-			uint16_t net_idx, uint16_t src, uint16_t dst,
-			uint8_t key_aid, const uint8_t *data, uint16_t size);
+			uint32_t seq, uint32_t iv_index, uint16_t net_idx,
+			uint16_t src, uint16_t dst, uint8_t key_aid,
+			const uint8_t *data, uint16_t size);
 void mesh_model_app_key_generate_new(struct mesh_node *node, uint16_t net_idx);
 void mesh_model_app_key_delete(struct mesh_node *node, struct l_queue *models,
 								uint16_t idx);

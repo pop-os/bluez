@@ -1408,7 +1408,7 @@ static void sig_ecred_conn_rsp(const struct l2cap_frame *frame)
 	const struct bt_l2cap_pdu_ecred_conn_rsp *pdu = frame->data;
 	uint16_t dcid;
 
-	l2cap_frame_pull((void *)frame, frame, sizeof(pdu));
+	l2cap_frame_pull((void *)frame, frame, sizeof(*pdu));
 
 	print_field("MTU: %u", le16_to_cpu(pdu->mtu));
 	print_field("MPS: %u", le16_to_cpu(pdu->mps));
@@ -1426,7 +1426,7 @@ static void sig_ecred_reconf_req(const struct l2cap_frame *frame)
 	const struct bt_l2cap_pdu_ecred_reconf_req *pdu = frame->data;
 	uint16_t scid;
 
-	l2cap_frame_pull((void *)frame, frame, sizeof(pdu));
+	l2cap_frame_pull((void *)frame, frame, sizeof(*pdu));
 
 	print_field("MTU: %u", le16_to_cpu(pdu->mtu));
 	print_field("MPS: %u", le16_to_cpu(pdu->mps));
@@ -2573,6 +2573,36 @@ static void att_handle_value_conf(const struct l2cap_frame *frame)
 {
 }
 
+static void att_multiple_vl_rsp(const struct l2cap_frame *frame)
+{
+	struct l2cap_frame *f = (void *) frame;
+
+	while (frame->size) {
+		uint16_t handle;
+		uint16_t len;
+
+		if (!l2cap_frame_get_le16(f, &handle))
+			return;
+
+		print_field("Handle: 0x%4.4x", handle);
+
+		if (!l2cap_frame_get_le16(f, &len))
+			return;
+
+		print_field("Length: 0x%4.4x", len);
+
+		print_hex_field("  Data", f->data,
+				len < f->size ? len : f->size);
+
+		if (len > f->size) {
+			print_text(COLOR_ERROR, "invalid size");
+			return;
+		}
+
+		l2cap_frame_pull(f, f, len);
+	}
+}
+
 static void att_write_command(const struct l2cap_frame *frame)
 {
 	print_field("Handle: 0x%4.4x", get_le16(frame->data));
@@ -2645,6 +2675,12 @@ static const struct att_opcode_data att_opcode_table[] = {
 			att_handle_value_ind, 2, false },
 	{ 0x1e, "Handle Value Confirmation",
 			att_handle_value_conf, 0, true },
+	{ 0x20, "Read Multiple Request Variable Length",
+			att_read_multiple_req, 4, false },
+	{ 0x21, "Read Multiple Response Variable Length",
+			att_multiple_vl_rsp, 4, false },
+	{ 0x23, "Handle Multiple Value Notification",
+			att_multiple_vl_rsp, 4, false },
 	{ 0x52, "Write Command",
 			att_write_command, 2, false },
 	{ 0xd2, "Signed Write Command", att_signed_write_command, 14, false },
@@ -3286,6 +3322,9 @@ void l2cap_frame(uint16_t index, bool in, uint16_t handle, uint16_t cid,
 			break;
 		case 0x001f:
 			att_packet(index, in, handle, cid, data, size);
+			break;
+		case 0x0027:
+			att_packet(index, in, handle, cid, data + 2, size - 2);
 			break;
 		case 0x0017:
 		case 0x001B:

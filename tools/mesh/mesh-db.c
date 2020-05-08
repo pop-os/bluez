@@ -41,6 +41,7 @@
 
 #include "tools/mesh/keys.h"
 #include "tools/mesh/remote.h"
+#include "tools/mesh/cfgcli.h"
 #include "tools/mesh/mesh-db.h"
 
 #define KEY_IDX_INVALID NET_IDX_INVALID
@@ -254,6 +255,20 @@ static uint16_t node_parse_key(json_object *jarray, int i)
 	return idx;
 }
 
+static int compare_group_addr(const void *a, const void *b, void *user_data)
+{
+	const struct mesh_group *grp0 = a;
+	const struct mesh_group *grp1 = b;
+
+	if (grp0->addr < grp1->addr)
+		return -1;
+
+	if (grp0->addr > grp1->addr)
+		return 1;
+
+	return 0;
+}
+
 static void load_remotes(json_object *jcfg)
 {
 	json_object *jnodes;
@@ -417,6 +432,24 @@ bool mesh_db_node_net_key_add(uint16_t unicast, uint16_t idx)
 		return false;
 
 	return add_node_key(jnode, "netKeys", idx);
+}
+
+bool mesh_db_node_ttl_set(uint16_t unicast, uint8_t ttl)
+{
+	json_object *jnode;
+
+	if (!cfg || !cfg->jcfg)
+		return false;
+
+	jnode = get_node_by_unicast(unicast);
+	if (!jnode)
+		return false;
+
+	if (!write_int(jnode, "defaultTTL", ttl))
+		return false;
+
+	return mesh_config_save((struct mesh_config *) cfg, true,
+								NULL, NULL);
 }
 
 static void jarray_key_del(json_object *jarray, int16_t idx)
@@ -630,6 +663,112 @@ bool mesh_db_app_key_del(uint16_t app_idx)
 		return false;
 
 	return delete_key(cfg->jcfg, "appKeys", app_idx);
+}
+
+bool mesh_db_add_group(struct mesh_group *grp)
+{
+	json_object *jgroup, *jgroups, *jval;
+	char buf[16];
+
+	if (!cfg || !cfg->jcfg)
+		return false;
+
+	if (!json_object_object_get_ex(cfg->jcfg, "groups", &jgroups))
+		return false;
+
+	jgroup = json_object_new_object();
+	if (!jgroup)
+		return false;
+
+	snprintf(buf, 11, "Group_%4.4x", grp->addr);
+	jval = json_object_new_string(buf);
+	json_object_object_add(jgroup, "name", jval);
+
+	if (IS_VIRTUAL(grp->addr)) {
+		if (!add_u8_16(jgroup, grp->label, "address"))
+			goto fail;
+	} else {
+		snprintf(buf, 5, "%4.4x", grp->addr);
+		jval = json_object_new_string(buf);
+		if (!jval)
+			goto fail;
+		json_object_object_add(jgroup, "address", jval);
+	}
+
+	json_object_array_add(jgroups, jgroup);
+
+	return mesh_config_save((struct mesh_config *) cfg, true, NULL, NULL);
+
+fail:
+	json_object_put(jgroup);
+	return false;
+}
+
+struct l_queue *mesh_db_load_groups(void)
+{
+	json_object *jgroups;
+	struct l_queue *groups;
+	int i, sz;
+
+	if (!cfg || !cfg->jcfg)
+		return NULL;
+
+	if (!json_object_object_get_ex(cfg->jcfg, "groups", &jgroups)) {
+		jgroups = json_object_new_array();
+		if (!jgroups)
+			return NULL;
+
+		json_object_object_add(cfg->jcfg, "groups", jgroups);
+	}
+
+	groups = l_queue_new();
+
+	sz = json_object_array_length(jgroups);
+
+	for (i = 0; i < sz; ++i) {
+		json_object *jgroup, *jval;
+		struct mesh_group *grp;
+		uint16_t addr, addr_len;
+		const char *str;
+
+		jgroup = json_object_array_get_idx(jgroups, i);
+		if (!jgroup)
+			continue;
+
+		if (!json_object_object_get_ex(jgroup, "name", &jval))
+			continue;
+
+		str = json_object_get_string(jval);
+		if (strlen(str) != 10)
+			continue;
+
+		if (sscanf(str + 6, "%04hx", &addr) != 1)
+			continue;
+
+		if (!json_object_object_get_ex(jgroup, "address", &jval))
+			continue;
+
+		str = json_object_get_string(jval);
+		addr_len = strlen(str);
+		if (addr_len != 4 && addr_len != 32)
+			continue;
+
+		if (addr_len == 32 && !IS_VIRTUAL(addr))
+			continue;
+
+		grp = l_new(struct mesh_group, 1);
+
+		if (addr_len == 4)
+			sscanf(str, "%04hx", &grp->addr);
+		else {
+			str2hex(str, 32, grp->label, 16);
+			grp->addr = addr;
+		}
+
+		l_queue_insert(groups, grp, compare_group_addr, NULL);
+	}
+
+	return groups;
 }
 
 bool mesh_db_add_node(uint8_t uuid[16], uint8_t num_els, uint16_t unicast,
