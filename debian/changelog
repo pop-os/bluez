@@ -7,6 +7,8 @@ bluez (5.54-0ubuntu1) groovy; urgency=medium
     - Add support for handling MTU auto-tuning option for AVDTP.
     - Add support for new policy for Just-Works repairing.
     - Add support for Enhanced ATT bearer (EATT).
+  * Dropped patches CVE-2020-0556-[1-4].patch as release 5.54 is not affected,
+    and they no longer apply.
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Fri, 08 May 2020 16:28:03 +0800
 
