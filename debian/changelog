@@ -1,3 +1,15 @@
+bluez (5.54-0ubuntu1) groovy; urgency=medium
+
+  * New upstream release 5.54 (LP: #1877536)
+    - Fix issue with HOGP to accept data only from bonded devices.
+    - Fix issue with A2DP sessions being connected at the same time.
+    - Fix issue with class UUID matches before connecting profile.
+    - Add support for handling MTU auto-tuning option for AVDTP.
+    - Add support for new policy for Just-Works repairing.
+    - Add support for Enhanced ATT bearer (EATT).
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Fri, 08 May 2020 16:28:03 +0800
+
 bluez (5.53-0ubuntu3) focal; urgency=medium
 
   * debian/patches/ubuntu_error_restart.patch:
