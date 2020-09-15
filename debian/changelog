@@ -1,3 +1,30 @@
+bluez (5.55-0ubuntu1) groovy; urgency=medium
+
+  * New upstream release 5.55 (LP: #1895640)
+    - Fix issue with handling security level for HoG.
+    - Fix issue with handling HIDSDPDisable attribute.
+    - Fix issue with handling HID virtual cable unplug.
+    - Fix issue with handling HID channel disconnect order.
+    - Fix issue with handling AVDTP delay reporting states.
+    - Fix issue with handling AVRCP notification events.
+    - Fix issue with handling AVRCP list player attributes.
+    - Fix issue with handling AVRCP category 1 player settings.
+    - Fix issue with handling AVRCP media player passthrough bitmask.
+    - Fix issue with handling HFP 1.7 default features.
+    - Fix issue with handling GATT disconnecting handling.
+    - Fix issue with handling GATT database hash.
+    - Fix issue with handling service changed characteristic.
+    - Fix issue with handling read of multiple characteristic values.
+    - Fix issue with handling Just-Works auto-accept pairing.
+    - Fix issue with handling authentication of bonded devices.
+    - Fix issue with handling L2CAP streaming mode for AVDTP.
+    - Fix issue with handling SysEx parser for MIDI support.
+    - Fix issue with handling configured scan parameter values.
+    - Fix issue with handling temporary devices removal.
+    - Fix issue with handling advertising flags.
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 15 Sep 2020 17:17:32 +0800
+
 bluez (5.54-0ubuntu1) groovy; urgency=medium
 
   * New upstream release 5.54 (LP: #1877536)
