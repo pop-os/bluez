@@ -1536,8 +1536,7 @@ am__tools_mesh_cfgclient_SOURCES_DIST = tools/mesh-cfgclient.c \
 	tools/mesh/keys.c tools/mesh/util.h tools/mesh/util.c \
 	tools/mesh/remote.h tools/mesh/remote.c tools/mesh/agent.h \
 	tools/mesh/agent.c tools/mesh/mesh-db.h tools/mesh/mesh-db.c \
-	mesh/util.h mesh/util.c mesh/mesh-config.h \
-	mesh/mesh-config-json.c mesh/crypto.h mesh/crypto.c
+	mesh/util.h mesh/util.c mesh/crypto.h mesh/crypto.c
 @MESH_TRUE@@TOOLS_TRUE@am_tools_mesh_cfgclient_OBJECTS =  \
 @MESH_TRUE@@TOOLS_TRUE@	tools/mesh-cfgclient.$(OBJEXT) \
 @MESH_TRUE@@TOOLS_TRUE@	tools/mesh/cfgcli.$(OBJEXT) \
@@ -1547,7 +1546,6 @@ am__tools_mesh_cfgclient_SOURCES_DIST = tools/mesh-cfgclient.c \
 @MESH_TRUE@@TOOLS_TRUE@	tools/mesh/agent.$(OBJEXT) \
 @MESH_TRUE@@TOOLS_TRUE@	tools/mesh/mesh-db.$(OBJEXT) \
 @MESH_TRUE@@TOOLS_TRUE@	mesh/util.$(OBJEXT) \
-@MESH_TRUE@@TOOLS_TRUE@	mesh/mesh-config-json.$(OBJEXT) \
 @MESH_TRUE@@TOOLS_TRUE@	mesh/crypto.$(OBJEXT)
 tools_mesh_cfgclient_OBJECTS = $(am_tools_mesh_cfgclient_OBJECTS)
 @MESH_TRUE@@TOOLS_TRUE@tools_mesh_cfgclient_DEPENDENCIES =  \
@@ -2976,7 +2974,7 @@ local_headers = $(foreach file,$(lib_headers), lib/bluetooth/$(notdir $(file)))
 BUILT_SOURCES = $(local_headers) $(ell_built_sources) src/builtin.h \
 	obexd/src/builtin.h
 @LIBRARY_TRUE@lib_libbluetooth_la_SOURCES = $(lib_headers) $(lib_sources)
-@LIBRARY_TRUE@lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:2:19
+@LIBRARY_TRUE@lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:3:19
 @LIBRARY_TRUE@lib_libbluetooth_la_DEPENDENCIES = $(local_headers)
 lib_libbluetooth_internal_la_SOURCES = $(lib_headers) $(lib_sources) \
 					$(extra_headers) $(extra_sources)
@@ -3463,7 +3461,6 @@ unit_tests = $(am__append_54) unit/test-eir unit/test-uuid \
 @MESH_TRUE@@TOOLS_TRUE@				tools/mesh/agent.h tools/mesh/agent.c \
 @MESH_TRUE@@TOOLS_TRUE@				tools/mesh/mesh-db.h tools/mesh/mesh-db.c \
 @MESH_TRUE@@TOOLS_TRUE@				mesh/util.h mesh/util.c \
-@MESH_TRUE@@TOOLS_TRUE@				mesh/mesh-config.h mesh/mesh-config-json.c \
 @MESH_TRUE@@TOOLS_TRUE@				mesh/crypto.h mesh/crypto.c
 
 @MESH_TRUE@@TOOLS_TRUE@tools_mesh_cfgclient_LDADD = lib/libbluetooth-internal.la src/libshared-ell.la \

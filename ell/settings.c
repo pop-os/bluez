@@ -885,17 +885,13 @@ static bool set_value(struct l_settings *settings, const char *group_name,
 	if (!validate_group_name(group_name)) {
 		l_util_debug(settings->debug_handler, settings->debug_data,
 				"Invalid group name %s", group_name);
-		l_free(value);
-
-		return false;
+		goto error;
 	}
 
 	if (!validate_key(key)) {
 		l_util_debug(settings->debug_handler, settings->debug_data,
 				"Invalid key %s", key);
-		l_free(value);
-
-		return false;
+		goto error;
 	}
 
 	group = l_queue_find(settings->groups, group_match, group_name);
@@ -919,10 +915,16 @@ add_pair:
 		return true;
 	}
 
+	explicit_bzero(pair->value, strlen(pair->value));
 	l_free(pair->value);
 	pair->value = value;
 
 	return true;
+
+error:
+	explicit_bzero(value, strlen(value));
+	l_free(value);
+	return false;
 }
 
 LIB_EXPORT bool l_settings_set_value(struct l_settings *settings,
@@ -998,7 +1000,7 @@ LIB_EXPORT bool l_settings_get_int(const struct l_settings *settings,
 
 	errno = 0;
 
-	t = r = strtol(value, &endp, 10);
+	t = r = strtol(value, &endp, 0);
 	if (*endp != '\0')
 		goto error;
 
@@ -1045,7 +1047,7 @@ LIB_EXPORT bool l_settings_get_uint(const struct l_settings *settings,
 
 	errno = 0;
 
-	t = r = strtoul(value, &endp, 10);
+	t = r = strtoul(value, &endp, 0);
 	if (*endp != '\0')
 		goto error;
 
@@ -1091,7 +1093,7 @@ LIB_EXPORT bool l_settings_get_int64(const struct l_settings *settings,
 
 	errno = 0;
 
-	r = strtoll(value, &endp, 10);
+	r = strtoll(value, &endp, 0);
 	if (*endp != '\0')
 		goto error;
 
@@ -1137,7 +1139,7 @@ LIB_EXPORT bool l_settings_get_uint64(const struct l_settings *settings,
 
 	errno = 0;
 
-	r = strtoull(value, &endp, 10);
+	r = strtoull(value, &endp, 0);
 	if (*endp != '\0')
 		goto error;
 
@@ -1318,7 +1320,7 @@ LIB_EXPORT bool l_settings_set_float(struct l_settings *settings,
 {
 	L_AUTO_FREE_VAR(char *, buf);
 
-	buf = l_strdup_printf("%f", in);
+	buf = l_strdup_printf("%f", (double)in);
 
 	return l_settings_set_value(settings, group_name, key, buf);
 }

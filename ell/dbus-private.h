@@ -179,7 +179,7 @@ void _dbus_property_introspection(struct _dbus_property *info,
 void _dbus_interface_introspection(struct l_dbus_interface *interface,
 						struct l_string *buf);
 
-struct l_dbus_interface *_dbus_interface_new(const char *interface);
+struct l_dbus_interface *_dbus_interface_new(const char *name);
 void _dbus_interface_free(struct l_dbus_interface *interface);
 
 struct _dbus_method *_dbus_interface_find_method(struct l_dbus_interface *i,
@@ -189,7 +189,7 @@ struct _dbus_signal *_dbus_interface_find_signal(struct l_dbus_interface *i,
 struct _dbus_property *_dbus_interface_find_property(struct l_dbus_interface *i,
 						const char *property);
 
-struct _dbus_object_tree *_dbus_object_tree_new();
+struct _dbus_object_tree *_dbus_object_tree_new(void);
 void _dbus_object_tree_free(struct _dbus_object_tree *tree);
 
 struct object_node *_dbus_object_tree_makepath(struct _dbus_object_tree *tree,
