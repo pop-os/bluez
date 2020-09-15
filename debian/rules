@@ -24,7 +24,8 @@ CONFIGURE_FLAGS := \
 	--enable-experimental \
 	--enable-deprecated \
 	--enable-testing \
-	--enable-phonebook-ebook
+	--enable-phonebook-ebook \
+	--enable-hid2hci
 
 ifeq ($(shell dpkg-vendor --is Ubuntu && echo yes) $(DEB_HOST_ARCH), yes i386)
    skip_packages = -Nbluez-cups
