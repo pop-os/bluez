@@ -12,3 +12,7 @@ lp1759836.patch
 0002-hostname-handle-chassis-type-handset.patch
 
 ubuntu_error_restart.patch
+
+raspi-bcm43xx-load-firmware.patch
+raspi-bcm43xx-3wire.patch
+raspi-cypress-305-bdaddr.patch
