@@ -1,4 +1,4 @@
-bluez (5.55-0ubuntu3) UNRELEASED; urgency=medium
+bluez (5.55-0ubuntu3) hirsute; urgency=medium
 
   * Revert the previous upload until the changes are properly reviewed and
     upstreamed, see the bug report for some more detailled discussions
