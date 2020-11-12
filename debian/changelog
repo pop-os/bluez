@@ -1,3 +1,11 @@
+bluez (5.55-0ubuntu3) UNRELEASED; urgency=medium
+
+  * Revert the previous upload until the changes are properly reviewed and
+    upstreamed, see the bug report for some more detailled discussions
+    (reopen bug 1903048)
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Thu, 12 Nov 2020 11:59:23 +0100
+
 bluez (5.55-0ubuntu2) hirsute; urgency=medium
 
   * Added patches from the Raspberry Pi Foundation
