@@ -1,3 +1,11 @@
+bluez (5.55-0ubuntu3.1) UNRELEASED; urgency=medium
+
+  * Restore the Raspi patches to avoid any potential delay in the SRU,
+    we will block the update in proposed instead which should be enough as
+    a reminder that things need to be sorted out in the current serie.
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Fri, 13 Nov 2020 15:08:07 +0100
+
 bluez (5.55-0ubuntu3) hirsute; urgency=medium
 
   * Revert the previous upload until the changes are properly reviewed and
