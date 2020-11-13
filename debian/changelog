@@ -1,4 +1,4 @@
-bluez (5.55-0ubuntu3.1) UNRELEASED; urgency=medium
+bluez (5.55-0ubuntu3.1) hirsute; urgency=medium
 
   * Restore the Raspi patches to avoid any potential delay in the SRU,
     we will block the update in proposed instead which should be enough as
