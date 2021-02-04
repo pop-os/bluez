@@ -1,5 +1,5 @@
 Author: Simon Long <simon@raspberrypi.org>
-Forwarded: no
+Forwarded: https://patchwork.kernel.org/project/bluetooth/patch/20201218190609.107898-2-dave.jones@canonical.com/
 Last-Update: 2017-04-05
 Description: Patches to add BCM43xx 3-wire variant
  This patch adds the bcm43xx-3wire variant to the hciattach tool; this is
