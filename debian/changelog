@@ -1,4 +1,4 @@
-bluez (5.55-0ubuntu3.2) UNRELEASED; urgency=medium
+bluez (5.55-0ubuntu3.2) hirsute; urgency=medium
 
   * Add the refined Raspi patches currently awaiting review upstream
     (LP: #1903048)
