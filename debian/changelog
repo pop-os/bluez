@@ -23,6 +23,7 @@ bluez (5.56-0ubuntu1) hirsute; urgency=medium
   * FIXME?: Disabled patches:
     - migrate_scripts_python3.patch
   * Removed packaging of deprecated files bccmd*
+  * debian/libbluetooth3.symbols: Added new function bt_malloc0
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 23 Feb 2021 17:58:00 +0800
 
