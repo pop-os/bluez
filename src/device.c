@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *
  *  BlueZ - Bluetooth protocol stack for Linux
@@ -5,20 +6,6 @@
  *  Copyright (C) 2006-2010  Nokia Corporation
  *  Copyright (C) 2004-2010  Marcel Holtmann <marcel@holtmann.org>
  *
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -57,7 +44,7 @@
 #include "btio/btio.h"
 #include "lib/mgmt.h"
 #include "attrib/att.h"
-#include "hcid.h"
+#include "btd.h"
 #include "adapter.h"
 #include "gatt-database.h"
 #include "attrib/gattrib.h"
@@ -522,7 +509,9 @@ void device_store_cached_name(struct btd_device *dev, const char *name)
 	char d_addr[18];
 	GKeyFile *key_file;
 	char *data;
+	char *data_old;
 	gsize length = 0;
+	gsize length_old = 0;
 
 	if (device_address_is_private(dev)) {
 		DBG("Can't store name for private addressed device %s",
@@ -537,11 +526,17 @@ void device_store_cached_name(struct btd_device *dev, const char *name)
 
 	key_file = g_key_file_new();
 	g_key_file_load_from_file(key_file, filename, 0, NULL);
+	data_old = g_key_file_to_data(key_file, &length_old, NULL);
+
 	g_key_file_set_string(key_file, "General", "Name", name);
 
 	data = g_key_file_to_data(key_file, &length, NULL);
-	g_file_set_contents(filename, data, length, NULL);
+
+	if ((length != length_old) || (memcmp(data, data_old, length)))
+		g_file_set_contents(filename, data, length, NULL);
+
 	g_free(data);
+	g_free(data_old);
 
 	g_key_file_free(key_file);
 }
@@ -566,7 +561,7 @@ static void browse_request_free(struct browse_req *req)
 
 static bool gatt_cache_is_enabled(struct btd_device *device)
 {
-	switch (main_opts.gatt_cache) {
+	switch (btd_opts.gatt_cache) {
 	case BT_GATT_CACHE_YES:
 		return device_is_paired(device, device->bdaddr_type);
 	case BT_GATT_CACHE_NO:
@@ -582,6 +577,7 @@ static void gatt_cache_cleanup(struct btd_device *device)
 	if (gatt_cache_is_enabled(device))
 		return;
 
+	bt_gatt_client_cancel_all(device->client);
 	gatt_db_clear(device->db);
 }
 
@@ -3007,6 +3003,7 @@ void device_remove_connection(struct btd_device *device, uint8_t bdaddr_type)
 {
 	struct bearer_state *state = get_state(device, bdaddr_type);
 	DBusMessage *reply;
+	bool remove_device = false;
 
 	if (!state->connected)
 		return;
@@ -3036,6 +3033,10 @@ void device_remove_connection(struct btd_device *device, uint8_t bdaddr_type)
 	while (device->disconnects) {
 		DBusMessage *msg = device->disconnects->data;
 
+		if (dbus_message_is_method_call(msg, ADAPTER_INTERFACE,
+								"RemoveDevice"))
+			remove_device = true;
+
 		g_dbus_send_reply(dbus_conn, msg, DBUS_TYPE_INVALID);
 		device->disconnects = g_slist_remove(device->disconnects, msg);
 		dbus_message_unref(msg);
@@ -3061,6 +3062,9 @@ void device_remove_connection(struct btd_device *device, uint8_t bdaddr_type)
 
 	g_dbus_emit_property_changed(dbus_conn, device->path,
 						DEVICE_INTERFACE, "Connected");
+
+	if (remove_device)
+		btd_adapter_remove_device(device->adapter, device);
 }
 
 guint device_add_disconnect_watch(struct btd_device *device,
@@ -4089,7 +4093,7 @@ static struct btd_device *device_new(struct btd_adapter *adapter,
 	device->db_id = gatt_db_register(device->db, gatt_service_added,
 					gatt_service_removed, device, NULL);
 
-	device->refresh_discovery = main_opts.refresh_discovery;
+	device->refresh_discovery = btd_opts.refresh_discovery;
 
 	return btd_device_ref(device);
 }
@@ -4289,7 +4293,7 @@ void device_update_last_seen(struct btd_device *device, uint8_t bdaddr_type)
 	if (device->temporary_timer)
 		g_source_remove(device->temporary_timer);
 
-	device->temporary_timer = g_timeout_add_seconds(main_opts.tmpto,
+	device->temporary_timer = g_timeout_add_seconds(btd_opts.tmpto,
 							device_disappeared,
 							device);
 }
@@ -4447,6 +4451,11 @@ void device_remove(struct btd_device *device, gboolean remove_stored)
 {
 	DBG("Removing device %s", device->path);
 
+	if (device->auto_connect) {
+		device->disable_auto_connect = TRUE;
+		device_set_auto_connect(device, FALSE);
+	}
+
 	if (device->bonding) {
 		uint8_t status;
 
@@ -4475,6 +4484,11 @@ void device_remove(struct btd_device *device, gboolean remove_stored)
 		if (device->disconn_timer > 0)
 			g_source_remove(device->disconn_timer);
 		disconnect_all(device);
+	}
+
+	if (device->temporary_timer > 0) {
+		g_source_remove(device->temporary_timer);
+		device->temporary_timer = 0;
 	}
 
 	if (device->store_id > 0) {
@@ -5164,7 +5178,7 @@ static void gatt_client_init(struct btd_device *device)
 {
 	gatt_client_cleanup(device);
 
-	if (!device->connect && !main_opts.reverse_discovery) {
+	if (!device->connect && !btd_opts.reverse_discovery) {
 		DBG("Reverse service discovery disabled: skipping GATT client");
 		return;
 	}
@@ -5217,7 +5231,7 @@ static void gatt_server_init(struct btd_device *device,
 	gatt_server_cleanup(device);
 
 	device->server = bt_gatt_server_new(db, device->att, device->att_mtu,
-						main_opts.key_size);
+						btd_opts.key_size);
 	if (!device->server) {
 		error("Failed to initialize bt_gatt_server");
 		return;
@@ -5280,7 +5294,7 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
 	}
 
 	if (dev->att) {
-		if (main_opts.gatt_channels == bt_att_get_channels(dev->att)) {
+		if (btd_opts.gatt_channels == bt_att_get_channels(dev->att)) {
 			DBG("EATT channel limit reached");
 			return false;
 		}
@@ -5308,7 +5322,7 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
 		}
 	}
 
-	dev->att_mtu = MIN(mtu, main_opts.gatt_mtu);
+	dev->att_mtu = MIN(mtu, btd_opts.gatt_mtu);
 	attrib = g_attrib_new(io,
 			cid == ATT_CID ? BT_ATT_DEFAULT_LE_MTU : dev->att_mtu,
 			false);
@@ -5321,6 +5335,8 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
 	dev->att = g_attrib_get_att(attrib);
 
 	bt_att_ref(dev->att);
+
+	bt_att_set_debug(dev->att, BT_ATT_DEBUG, gatt_debug, NULL, NULL);
 
 	dev->att_disconn_id = bt_att_register_disconnect(dev->att,
 						att_disconnected_cb, dev, NULL);
@@ -5681,7 +5697,11 @@ void btd_device_set_temporary(struct btd_device *device, bool temporary)
 		if (device->bredr)
 			adapter_whitelist_remove(device->adapter, device);
 		adapter_connect_list_remove(device->adapter, device);
-		device->temporary_timer = g_timeout_add_seconds(main_opts.tmpto,
+		if (device->auto_connect) {
+			device->disable_auto_connect = TRUE;
+			device_set_auto_connect(device, FALSE);
+		}
+		device->temporary_timer = g_timeout_add_seconds(btd_opts.tmpto,
 							device_disappeared,
 							device);
 		return;
@@ -5811,18 +5831,11 @@ void device_load_svc_chng_ccc(struct btd_device *device, uint16_t *ccc_le,
 	key_file = g_key_file_new();
 	g_key_file_load_from_file(key_file, filename, 0, NULL);
 
-	/*
-	 * If there is no "ServiceChanged" section we may be loading data from
-	 * old version which did not persist Service Changed CCC values. Let's
-	 * check if we are bonded and assume indications were enabled by peer
-	 * in such case - it should have done this anyway.
-	 */
 	if (!g_key_file_has_group(key_file, "ServiceChanged")) {
 		if (ccc_le)
-			*ccc_le = device->le_state.bonded ? 0x0002 : 0x0000;
+			*ccc_le = 0x0000;
 		if (ccc_bredr)
-			*ccc_bredr = device->bredr_state.bonded ?
-							0x0002 : 0x0000;
+			*ccc_bredr = 0x0000;
 		g_key_file_free(key_file);
 		return;
 	}
@@ -6082,7 +6095,7 @@ void device_bonding_complete(struct btd_device *device, uint8_t bdaddr_type,
 		bonding_request_free(bonding);
 	} else if (!state->svc_resolved) {
 		if (!device->browse && !device->discov_timer &&
-				main_opts.reverse_discovery) {
+				btd_opts.reverse_discovery) {
 			/* If we are not initiators and there is no currently
 			 * active discovery or discovery timer, set discovery
 			 * timer */
@@ -6126,7 +6139,7 @@ unsigned int device_wait_for_svc_complete(struct btd_device *dev,
 
 	dev->svc_callbacks = g_slist_prepend(dev->svc_callbacks, cb);
 
-	if (state->svc_resolved || !main_opts.reverse_discovery)
+	if (state->svc_resolved || !btd_opts.reverse_discovery)
 		cb->idle_id = g_idle_add(svc_idle_cb, cb);
 	else if (dev->discov_timer > 0) {
 		g_source_remove(dev->discov_timer);
@@ -6406,12 +6419,12 @@ int device_confirm_passkey(struct btd_device *device, uint8_t type,
 
 	/* Just-Works repairing policy */
 	if (confirm_hint && device_is_paired(device, type)) {
-		if (main_opts.jw_repairing == JW_REPAIRING_NEVER) {
+		if (btd_opts.jw_repairing == JW_REPAIRING_NEVER) {
 			btd_adapter_confirm_reply(device->adapter,
 						  &device->bdaddr,
 						  type, FALSE);
 			return 0;
-		} else if (main_opts.jw_repairing == JW_REPAIRING_ALWAYS) {
+		} else if (btd_opts.jw_repairing == JW_REPAIRING_ALWAYS) {
 			btd_adapter_confirm_reply(device->adapter,
 						  &device->bdaddr,
 						  type, TRUE);

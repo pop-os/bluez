@@ -1,19 +1,10 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
 /*
  *
  *  BlueZ - Bluetooth protocol stack for Linux
  *
  *  Copyright (C) 2018-2019  Intel Corporation. All rights reserved.
  *
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
  *
  */
 
@@ -2609,6 +2600,8 @@ static int key_refresh_finish(struct mesh_net *net, uint16_t idx)
 
 	l_queue_foreach(net->friends, frnd_kr_phase3, net);
 
+	appkey_finalize(net, idx);
+
 	if (!mesh_config_net_key_set_phase(node_config_get(net->node), idx,
 							KEY_REFRESH_PHASE_NONE))
 		return MESH_STATUS_STORAGE_FAIL;
@@ -2908,8 +2901,12 @@ struct mesh_io *mesh_net_detach(struct mesh_net *net)
 	io = net->io;
 
 	mesh_io_send_cancel(net->io, &type, 1);
-	mesh_io_deregister_recv_cb(io, snb, sizeof(snb));
-	mesh_io_deregister_recv_cb(io, pkt, sizeof(pkt));
+
+	/* Only deregister io if this is the last network detached.*/
+	if (l_queue_length(nets) < 2) {
+		mesh_io_deregister_recv_cb(io, snb, sizeof(snb));
+		mesh_io_deregister_recv_cb(io, pkt, sizeof(pkt));
+	}
 
 	net->io = NULL;
 	l_queue_remove(nets, net);
@@ -3587,16 +3584,21 @@ int mesh_net_set_heartbeat_sub(struct mesh_net *net, uint16_t src, uint16_t dst,
 		sub->max_hops = 0;
 
 	} else if (!period_log && src == sub->src && dst == sub->dst) {
+		if (IS_GROUP(sub->dst))
+			mesh_net_dst_unreg(net, sub->dst);
+
 		/* Preserve collected data, but disable */
 		sub->enabled = false;
 		sub->period = 0;
 
-	} else if (sub->dst != dst) {
-		if (IS_GROUP(sub->dst))
-			mesh_net_dst_unreg(net, sub->dst);
+	} else {
+		if (sub->dst != dst) {
+			if (IS_GROUP(sub->dst))
+				mesh_net_dst_unreg(net, sub->dst);
 
-		if (IS_GROUP(dst))
-			mesh_net_dst_reg(net, dst);
+			if (IS_GROUP(dst))
+				mesh_net_dst_reg(net, dst);
+		}
 
 		sub->enabled = !!period_log;
 		sub->src = src;

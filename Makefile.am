@@ -1,4 +1,4 @@
-
+# SPDX-License-Identifier: GPL-2.0
 AM_MAKEFLAGS = --no-print-directory
 AM_CPPFLAGS =
 
@@ -81,7 +81,7 @@ pkginclude_HEADERS += $(lib_headers)
 lib_LTLIBRARIES += lib/libbluetooth.la
 
 lib_libbluetooth_la_SOURCES = $(lib_headers) $(lib_sources)
-lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:3:19
+lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:4:19
 lib_libbluetooth_la_DEPENDENCIES = $(local_headers)
 endif
 
@@ -132,11 +132,10 @@ ell_headers = ell/util.h \
 			ell/cert.h \
 			ell/pem.h \
 			ell/base64.h \
-			ell/pkcs5.h \
 			ell/asn1-private.h \
-			ell/pkcs5-private.h \
 			ell/cert-private.h \
-			ell/pem-private.h
+			ell/pem-private.h \
+			ell/uuid.h
 
 ell_sources = ell/private.h ell/missing.h \
 			ell/util.c \
@@ -156,8 +155,8 @@ ell_sources = ell/private.h ell/missing.h \
 			ell/checksum.c \
 			ell/pem.c \
 			ell/cert.c \
+			ell/cert-crypto.c \
 			ell/key.c \
-			ell/pkcs5.c \
 			ell/base64.c \
 			ell/utf8.c \
 			ell/dbus-private.h \
@@ -171,7 +170,8 @@ ell_sources = ell/private.h ell/missing.h \
 			ell/gvariant-private.h \
 			ell/gvariant-util.c \
 			ell/siphash-private.h \
-			ell/siphash.c
+			ell/siphash.c \
+			ell/uuid.c
 
 ell_libell_internal_la_SOURCES = $(ell_headers) $(ell_sources)
 endif
@@ -272,7 +272,7 @@ src_bluetoothd_SOURCES = $(builtin_sources) \
 			src/bluetooth.ver \
 			src/main.c src/log.h src/log.c \
 			src/backtrace.h src/backtrace.c \
-			src/rfkill.c src/hcid.h src/sdpd.h \
+			src/rfkill.c src/btd.h src/sdpd.h \
 			src/sdpd-server.c src/sdpd-request.c \
 			src/sdpd-service.c src/sdpd-database.c \
 			src/attrib-server.h src/attrib-server.c \
@@ -293,7 +293,9 @@ src_bluetoothd_SOURCES = $(builtin_sources) \
 			src/gatt-client.h src/gatt-client.c \
 			src/device.h src/device.c \
 			src/dbus-common.c src/dbus-common.h \
-			src/eir.h src/eir.c
+			src/eir.h src/eir.c \
+			src/adv_monitor.h src/adv_monitor.c \
+			src/battery.h src/battery.c
 src_bluetoothd_LDADD = lib/libbluetooth-internal.la \
 			gdbus/libgdbus-internal.la \
 			src/libshared-glib.la \

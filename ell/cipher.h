@@ -33,10 +33,11 @@ enum l_cipher_type {
 	L_CIPHER_AES = 0,
 	L_CIPHER_AES_CBC,
 	L_CIPHER_AES_CTR,
-	/* L_CIPHER_ARC4, */
-	L_CIPHER_DES = 4,
+	L_CIPHER_ARC4,
+	L_CIPHER_DES,
 	L_CIPHER_DES_CBC,
 	L_CIPHER_DES3_EDE_CBC,
+	L_CIPHER_RC2_CBC,
 };
 
 struct l_cipher *l_cipher_new(enum l_cipher_type type,

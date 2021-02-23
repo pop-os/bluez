@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
 /*
  *
  *  BlueZ - Bluetooth protocol stack for Linux
@@ -5,20 +6,6 @@
  *  Copyright (C) 2011-2014  Intel Corporation
  *  Copyright (C) 2002-2010  Marcel Holtmann <marcel@holtmann.org>
  *
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -94,6 +81,7 @@ static const struct option main_options[] = {
 	{ "tty-speed", required_argument, NULL, 'B' },
 	{ "vendor",    required_argument, NULL, 'V' },
 	{ "mgmt",      no_argument,       NULL, 'M' },
+	{ "no-time",   no_argument,       NULL, 'N' },
 	{ "time",      no_argument,       NULL, 't' },
 	{ "date",      no_argument,       NULL, 'T' },
 	{ "sco",       no_argument,       NULL, 'S' },
@@ -132,8 +120,9 @@ int main(int argc, char *argv[])
 		int opt;
 		struct sockaddr_un addr;
 
-		opt = getopt_long(argc, argv, "r:w:a:s:p:i:d:B:V:MtTSAE:PJ:R:vh",
-							main_options, NULL);
+		opt = getopt_long(argc, argv,
+					"r:w:a:s:p:i:d:B:V:MNtTSAE:PJ:R:vh",
+					main_options, NULL);
 		if (opt < 0)
 			break;
 
@@ -184,6 +173,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'M':
 			filter_mask |= PACKET_FILTER_SHOW_MGMT_SOCKET;
+			break;
+		case 'N':
+			filter_mask &= ~PACKET_FILTER_SHOW_TIME_OFFSET;
 			break;
 		case 't':
 			filter_mask &= ~PACKET_FILTER_SHOW_TIME_OFFSET;

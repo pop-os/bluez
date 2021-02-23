@@ -21,6 +21,7 @@
  */
 
 #include <sys/syscall.h>
+#include <sys/socket.h>
 
 #ifndef __NR_getrandom
 #  if defined __x86_64__
@@ -60,5 +61,19 @@ static inline void explicit_bzero(void *s, size_t n)
 {
 	memset(s, 0, n);
 	__asm__ __volatile__ ("" : : "r"(s) : "memory");
+}
+#endif
+
+#ifndef SO_BINDTOIFINDEX
+#define SO_BINDTOIFINDEX 62
+#endif
+
+#ifndef HAVE_RAWMEMCHR
+static inline void *rawmemchr(const void *s, int c)
+{
+_Pragma("GCC diagnostic push")
+_Pragma("GCC diagnostic ignored \"-Wstringop-overflow=\"")
+	return memchr(s, c, (size_t) -1);
+_Pragma("GCC diagnostic pop")
 }
 #endif

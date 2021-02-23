@@ -23,6 +23,9 @@
 #ifndef __ELL_STRV_H
 #define __ELL_STRV_H
 
+#include <stdarg.h>
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

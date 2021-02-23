@@ -165,6 +165,8 @@ pkglibexec_PROGRAMS = src/bluetoothd$(EXEEXT) $(am__EXEEXT_17) \
 @MIDI_TRUE@am__append_26 = $(ALSA_LIBS)
 @SIXAXIS_TRUE@am__append_27 = plugins/sixaxis.la
 @MAINTAINER_MODE_TRUE@am__append_28 = plugins/external-dummy.la
+
+# SPDX-License-Identifier: GPL-2.0
 @CLIENT_TRUE@am__append_29 = client/bluetoothctl
 @MONITOR_TRUE@am__append_30 = monitor/btmon
 @LOGGER_TRUE@am__append_31 = tools/btmon-logger
@@ -177,9 +179,8 @@ pkglibexec_PROGRAMS = src/bluetoothd$(EXEEXT) $(am__EXEEXT_17) \
 @TESTING_TRUE@					tools/rfcomm-tester tools/bnep-tester \
 @TESTING_TRUE@					tools/userchan-tester
 
-@TOOLS_TRUE@am__append_34 = tools/rctest tools/l2test tools/l2ping tools/bccmd \
-@TOOLS_TRUE@			tools/bluemoon tools/hex2hcd tools/mpris-proxy \
-@TOOLS_TRUE@			tools/btattach
+@TOOLS_TRUE@am__append_34 = tools/rctest tools/l2test tools/l2ping tools/bluemoon \
+@TOOLS_TRUE@		tools/hex2hcd tools/mpris-proxy tools/btattach
 
 @TOOLS_TRUE@am__append_35 = tools/bdaddr tools/avinfo tools/avtest \
 @TOOLS_TRUE@			tools/scotest tools/amptest tools/hwdb \
@@ -195,7 +196,7 @@ pkglibexec_PROGRAMS = src/bluetoothd$(EXEEXT) $(am__EXEEXT_17) \
 @TOOLS_TRUE@			tools/test-runner tools/check-selftest \
 @TOOLS_TRUE@			tools/gatt-service profiles/iap/iapd
 
-@TOOLS_TRUE@am__append_36 = tools/rctest.1 tools/l2ping.1 tools/bccmd.1 tools/btattach.1
+@TOOLS_TRUE@am__append_36 = tools/rctest.1 tools/l2ping.1 tools/btattach.1
 @TOOLS_TRUE@am__append_37 = tools/bdaddr.1 \
 @TOOLS_TRUE@	tools/mesh-gatt/local_node.json \
 @TOOLS_TRUE@	tools/mesh-gatt/prov_db.json
@@ -212,7 +213,7 @@ pkglibexec_PROGRAMS = src/bluetoothd$(EXEEXT) $(am__EXEEXT_17) \
 @DEPRECATED_FALSE@@TOOLS_TRUE@			tools/hcitool.1 tools/hcidump.1 \
 @DEPRECATED_FALSE@@TOOLS_TRUE@			tools/rfcomm.1 tools/sdptool.1 tools/ciptool.1
 
-@TOOLS_FALSE@am__append_42 = tools/rctest.1 tools/l2ping.1 tools/bccmd.1 tools/btattach.1
+@TOOLS_FALSE@am__append_42 = tools/rctest.1 tools/l2ping.1 tools/btattach.1
 @HID2HCI_TRUE@udev_PROGRAMS = tools/hid2hci$(EXEEXT)
 @HID2HCI_TRUE@am__append_43 = tools/hid2hci.1
 @HID2HCI_FALSE@am__append_44 = tools/hid2hci.1
@@ -221,7 +222,7 @@ pkglibexec_PROGRAMS = src/bluetoothd$(EXEEXT) $(am__EXEEXT_17) \
 
 @DEPRECATED_TRUE@@READLINE_TRUE@am__append_46 = attrib/gatttool
 @CUPS_TRUE@cups_PROGRAMS = profiles/cups/bluetooth$(EXEEXT)
-@BTPCLIENT_TRUE@am__append_47 = tools/btpclient
+@BTPCLIENT_TRUE@am__append_47 = tools/btpclient tools/btpclientctl
 @EXPERIMENTAL_TRUE@@OBEX_TRUE@am__append_48 = pcsuite
 @EXPERIMENTAL_TRUE@@OBEX_TRUE@am__append_49 = obexd/plugins/pcsuite.c
 @OBEX_TRUE@am__append_50 = obexd/src/obexd
@@ -234,6 +235,8 @@ pkglibexec_PROGRAMS = src/bluetoothd$(EXEEXT) $(am__EXEEXT_17) \
 @ANDROID_TRUE@	android/audio.a2dp.default.la \
 @ANDROID_TRUE@	android/audio.sco.default.la
 @ANDROID_TRUE@am__append_54 = android/test-ipc
+
+# SPDX-License-Identifier: GPL-2.0
 @DATAFILES_TRUE@@MESH_TRUE@am__append_55 = mesh/bluetooth-mesh.conf
 @MESH_TRUE@@SYSTEMD_TRUE@am__append_56 = mesh/bluetooth-mesh.service
 @MESH_TRUE@@SYSTEMD_TRUE@am__append_57 = mesh/org.bluez.mesh.service
@@ -264,9 +267,9 @@ CONFIG_CLEAN_VPATH_FILES =
 @CLIENT_TRUE@am__EXEEXT_1 = client/bluetoothctl$(EXEEXT)
 @MONITOR_TRUE@am__EXEEXT_2 = monitor/btmon$(EXEEXT)
 @TOOLS_TRUE@am__EXEEXT_3 = tools/rctest$(EXEEXT) tools/l2test$(EXEEXT) \
-@TOOLS_TRUE@	tools/l2ping$(EXEEXT) tools/bccmd$(EXEEXT) \
-@TOOLS_TRUE@	tools/bluemoon$(EXEEXT) tools/hex2hcd$(EXEEXT) \
-@TOOLS_TRUE@	tools/mpris-proxy$(EXEEXT) tools/btattach$(EXEEXT)
+@TOOLS_TRUE@	tools/l2ping$(EXEEXT) tools/bluemoon$(EXEEXT) \
+@TOOLS_TRUE@	tools/hex2hcd$(EXEEXT) tools/mpris-proxy$(EXEEXT) \
+@TOOLS_TRUE@	tools/btattach$(EXEEXT)
 @MESH_TRUE@@TOOLS_TRUE@am__EXEEXT_4 = tools/meshctl$(EXEEXT) \
 @MESH_TRUE@@TOOLS_TRUE@	tools/mesh-cfgclient$(EXEEXT)
 @DEPRECATED_TRUE@@TOOLS_TRUE@am__EXEEXT_5 = tools/hciattach$(EXEEXT) \
@@ -325,7 +328,8 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(cupsdir)" \
 @READLINE_TRUE@	tools/obexctl$(EXEEXT)
 @DEPRECATED_TRUE@@READLINE_TRUE@am__EXEEXT_9 =  \
 @DEPRECATED_TRUE@@READLINE_TRUE@	attrib/gatttool$(EXEEXT)
-@BTPCLIENT_TRUE@am__EXEEXT_10 = tools/btpclient$(EXEEXT)
+@BTPCLIENT_TRUE@am__EXEEXT_10 = tools/btpclient$(EXEEXT) \
+@BTPCLIENT_TRUE@	tools/btpclientctl$(EXEEXT)
 @ANDROID_TRUE@am__EXEEXT_11 = android/system-emulator$(EXEEXT) \
 @ANDROID_TRUE@	android/bluetoothd-snoop$(EXEEXT) \
 @ANDROID_TRUE@	android/bluetoothd$(EXEEXT) \
@@ -479,17 +483,17 @@ am__ell_libell_internal_la_SOURCES_DIST = ell/util.h ell/log.h \
 	ell/timeout.h ell/cipher.h ell/checksum.h ell/io.h ell/idle.h \
 	ell/main.h ell/settings.h ell/strv.h ell/string.h ell/utf8.h \
 	ell/dbus.h ell/dbus-service.h ell/dbus-client.h ell/key.h \
-	ell/cert.h ell/pem.h ell/base64.h ell/pkcs5.h \
-	ell/asn1-private.h ell/pkcs5-private.h ell/cert-private.h \
-	ell/pem-private.h ell/private.h ell/missing.h ell/util.c \
-	ell/log.c ell/queue.c ell/hashmap.c ell/random.c ell/signal.c \
-	ell/timeout.c ell/io.c ell/idle.c ell/main.c ell/settings.c \
-	ell/strv.c ell/string.c ell/cipher.c ell/checksum.c ell/pem.c \
-	ell/cert.c ell/key.c ell/pkcs5.c ell/base64.c ell/utf8.c \
-	ell/dbus-private.h ell/dbus.c ell/dbus-message.c \
-	ell/dbus-util.c ell/dbus-service.c ell/dbus-client.c \
-	ell/dbus-name-cache.c ell/dbus-filter.c ell/gvariant-private.h \
-	ell/gvariant-util.c ell/siphash-private.h ell/siphash.c
+	ell/cert.h ell/pem.h ell/base64.h ell/asn1-private.h \
+	ell/cert-private.h ell/pem-private.h ell/uuid.h ell/private.h \
+	ell/missing.h ell/util.c ell/log.c ell/queue.c ell/hashmap.c \
+	ell/random.c ell/signal.c ell/timeout.c ell/io.c ell/idle.c \
+	ell/main.c ell/settings.c ell/strv.c ell/string.c ell/cipher.c \
+	ell/checksum.c ell/pem.c ell/cert.c ell/cert-crypto.c \
+	ell/key.c ell/base64.c ell/utf8.c ell/dbus-private.h \
+	ell/dbus.c ell/dbus-message.c ell/dbus-util.c \
+	ell/dbus-service.c ell/dbus-client.c ell/dbus-name-cache.c \
+	ell/dbus-filter.c ell/gvariant-private.h ell/gvariant-util.c \
+	ell/siphash-private.h ell/siphash.c ell/uuid.c
 am__objects_1 =
 @EXTERNAL_ELL_FALSE@am__objects_2 = ell/util.lo ell/log.lo \
 @EXTERNAL_ELL_FALSE@	ell/queue.lo ell/hashmap.lo ell/random.lo \
@@ -497,12 +501,13 @@ am__objects_1 =
 @EXTERNAL_ELL_FALSE@	ell/idle.lo ell/main.lo ell/settings.lo \
 @EXTERNAL_ELL_FALSE@	ell/strv.lo ell/string.lo ell/cipher.lo \
 @EXTERNAL_ELL_FALSE@	ell/checksum.lo ell/pem.lo ell/cert.lo \
-@EXTERNAL_ELL_FALSE@	ell/key.lo ell/pkcs5.lo ell/base64.lo \
-@EXTERNAL_ELL_FALSE@	ell/utf8.lo ell/dbus.lo \
+@EXTERNAL_ELL_FALSE@	ell/cert-crypto.lo ell/key.lo \
+@EXTERNAL_ELL_FALSE@	ell/base64.lo ell/utf8.lo ell/dbus.lo \
 @EXTERNAL_ELL_FALSE@	ell/dbus-message.lo ell/dbus-util.lo \
 @EXTERNAL_ELL_FALSE@	ell/dbus-service.lo ell/dbus-client.lo \
 @EXTERNAL_ELL_FALSE@	ell/dbus-name-cache.lo ell/dbus-filter.lo \
-@EXTERNAL_ELL_FALSE@	ell/gvariant-util.lo ell/siphash.lo
+@EXTERNAL_ELL_FALSE@	ell/gvariant-util.lo ell/siphash.lo \
+@EXTERNAL_ELL_FALSE@	ell/uuid.lo
 @EXTERNAL_ELL_FALSE@am_ell_libell_internal_la_OBJECTS =  \
 @EXTERNAL_ELL_FALSE@	$(am__objects_1) $(am__objects_2)
 ell_libell_internal_la_OBJECTS = $(am_ell_libell_internal_la_OBJECTS)
@@ -857,11 +862,12 @@ attrib_gatttool_OBJECTS = $(am_attrib_gatttool_OBJECTS)
 @DEPRECATED_TRUE@@READLINE_TRUE@	$(am__DEPENDENCIES_1)
 am__client_bluetoothctl_SOURCES_DIST = client/main.c client/display.h \
 	client/display.c client/agent.h client/agent.c \
-	client/advertising.h client/advertising.c client/gatt.h \
-	client/gatt.c
+	client/advertising.h client/advertising.c client/adv_monitor.h \
+	client/adv_monitor.c client/gatt.h client/gatt.c
 @CLIENT_TRUE@am_client_bluetoothctl_OBJECTS = client/main.$(OBJEXT) \
 @CLIENT_TRUE@	client/display.$(OBJEXT) client/agent.$(OBJEXT) \
 @CLIENT_TRUE@	client/advertising.$(OBJEXT) \
+@CLIENT_TRUE@	client/adv_monitor.$(OBJEXT) \
 @CLIENT_TRUE@	client/gatt.$(OBJEXT)
 client_bluetoothctl_OBJECTS = $(am_client_bluetoothctl_OBJECTS)
 @CLIENT_TRUE@client_bluetoothctl_DEPENDENCIES =  \
@@ -1122,7 +1128,7 @@ am__src_bluetoothd_SOURCES_DIST = plugins/hostname.c plugins/wiimote.c \
 	attrib/gattrib.c attrib/gatt-service.h attrib/gatt-service.c \
 	btio/btio.h btio/btio.c src/bluetooth.ver src/main.c src/log.h \
 	src/log.c src/backtrace.h src/backtrace.c src/rfkill.c \
-	src/hcid.h src/sdpd.h src/sdpd-server.c src/sdpd-request.c \
+	src/btd.h src/sdpd.h src/sdpd-server.c src/sdpd-request.c \
 	src/sdpd-service.c src/sdpd-database.c src/attrib-server.h \
 	src/attrib-server.c src/gatt-database.h src/gatt-database.c \
 	src/sdp-xml.h src/sdp-xml.c src/sdp-client.h src/sdp-client.c \
@@ -1133,7 +1139,8 @@ am__src_bluetoothd_SOURCES_DIST = plugins/hostname.c plugins/wiimote.c \
 	src/error.c src/adapter.h src/adapter.c src/profile.h \
 	src/profile.c src/service.h src/service.c src/gatt-client.h \
 	src/gatt-client.c src/device.h src/device.c src/dbus-common.c \
-	src/dbus-common.h src/eir.h src/eir.c
+	src/dbus-common.h src/eir.h src/eir.c src/adv_monitor.h \
+	src/adv_monitor.c src/battery.h src/battery.c
 @NFC_TRUE@am__objects_13 = plugins/bluetoothd-neard.$(OBJEXT)
 @SAP_TRUE@am__objects_14 = profiles/sap/bluetoothd-main.$(OBJEXT) \
 @SAP_TRUE@	profiles/sap/bluetoothd-manager.$(OBJEXT) \
@@ -1215,7 +1222,9 @@ am_src_bluetoothd_OBJECTS = $(am__objects_22) $(am__objects_23) \
 	src/bluetoothd-gatt-client.$(OBJEXT) \
 	src/bluetoothd-device.$(OBJEXT) \
 	src/bluetoothd-dbus-common.$(OBJEXT) \
-	src/bluetoothd-eir.$(OBJEXT)
+	src/bluetoothd-eir.$(OBJEXT) \
+	src/bluetoothd-adv_monitor.$(OBJEXT) \
+	src/bluetoothd-battery.$(OBJEXT)
 nodist_src_bluetoothd_OBJECTS = $(am__objects_12)
 src_bluetoothd_OBJECTS = $(am_src_bluetoothd_OBJECTS) \
 	$(nodist_src_bluetoothd_OBJECTS)
@@ -1243,16 +1252,6 @@ tools_avinfo_OBJECTS = tools/avinfo.$(OBJEXT)
 tools_avtest_SOURCES = tools/avtest.c
 tools_avtest_OBJECTS = tools/avtest.$(OBJEXT)
 @TOOLS_TRUE@tools_avtest_DEPENDENCIES = lib/libbluetooth-internal.la
-am__tools_bccmd_SOURCES_DIST = tools/bccmd.c tools/csr.h tools/csr.c \
-	tools/csr_hci.c tools/csr_usb.c tools/csr_h4.c \
-	tools/csr_3wire.c tools/csr_bcsp.c tools/ubcsp.h tools/ubcsp.c
-@TOOLS_TRUE@am_tools_bccmd_OBJECTS = tools/bccmd.$(OBJEXT) \
-@TOOLS_TRUE@	tools/csr.$(OBJEXT) tools/csr_hci.$(OBJEXT) \
-@TOOLS_TRUE@	tools/csr_usb.$(OBJEXT) tools/csr_h4.$(OBJEXT) \
-@TOOLS_TRUE@	tools/csr_3wire.$(OBJEXT) tools/csr_bcsp.$(OBJEXT) \
-@TOOLS_TRUE@	tools/ubcsp.$(OBJEXT)
-tools_bccmd_OBJECTS = $(am_tools_bccmd_OBJECTS)
-@TOOLS_TRUE@tools_bccmd_DEPENDENCIES = lib/libbluetooth-internal.la
 tools_bcmfw_SOURCES = tools/bcmfw.c
 tools_bcmfw_OBJECTS = tools/bcmfw.$(OBJEXT)
 tools_bcmfw_LDADD = $(LDADD)
@@ -1353,6 +1352,16 @@ am__tools_btpclient_SOURCES_DIST = tools/btpclient.c src/shared/btp.c \
 @BTPCLIENT_TRUE@	tools/btpclient.$(OBJEXT) \
 @BTPCLIENT_TRUE@	src/shared/btp.$(OBJEXT)
 tools_btpclient_OBJECTS = $(am_tools_btpclient_OBJECTS)
+am__tools_btpclientctl_SOURCES_DIST = tools/btpclientctl.c \
+	client/display.c
+@BTPCLIENT_TRUE@am_tools_btpclientctl_OBJECTS =  \
+@BTPCLIENT_TRUE@	tools/btpclientctl.$(OBJEXT) \
+@BTPCLIENT_TRUE@	client/display.$(OBJEXT)
+tools_btpclientctl_OBJECTS = $(am_tools_btpclientctl_OBJECTS)
+@BTPCLIENT_TRUE@tools_btpclientctl_DEPENDENCIES =  \
+@BTPCLIENT_TRUE@	src/libshared-mainloop.la \
+@BTPCLIENT_TRUE@	src/libshared-glib.la \
+@BTPCLIENT_TRUE@	lib/libbluetooth-internal.la
 am__tools_btproxy_SOURCES_DIST = tools/btproxy.c monitor/bt.h
 @TOOLS_TRUE@am_tools_btproxy_OBJECTS = tools/btproxy.$(OBJEXT)
 tools_btproxy_OBJECTS = $(am_tools_btproxy_OBJECTS)
@@ -1425,11 +1434,9 @@ am__tools_hciattach_SOURCES_DIST = tools/hciattach.c tools/hciattach.h \
 tools_hciattach_OBJECTS = $(am_tools_hciattach_OBJECTS)
 @DEPRECATED_TRUE@@TOOLS_TRUE@tools_hciattach_DEPENDENCIES =  \
 @DEPRECATED_TRUE@@TOOLS_TRUE@	lib/libbluetooth-internal.la
-am__tools_hciconfig_SOURCES_DIST = tools/hciconfig.c tools/csr.h \
-	tools/csr.c
+am__tools_hciconfig_SOURCES_DIST = tools/hciconfig.c
 @DEPRECATED_TRUE@@TOOLS_TRUE@am_tools_hciconfig_OBJECTS =  \
-@DEPRECATED_TRUE@@TOOLS_TRUE@	tools/hciconfig.$(OBJEXT) \
-@DEPRECATED_TRUE@@TOOLS_TRUE@	tools/csr.$(OBJEXT)
+@DEPRECATED_TRUE@@TOOLS_TRUE@	tools/hciconfig.$(OBJEXT)
 tools_hciconfig_OBJECTS = $(am_tools_hciconfig_OBJECTS)
 @DEPRECATED_TRUE@@TOOLS_TRUE@tools_hciconfig_DEPENDENCIES =  \
 @DEPRECATED_TRUE@@TOOLS_TRUE@	lib/libbluetooth-internal.la
@@ -1964,10 +1971,11 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	attrib/$(DEPDIR)/utils.Po \
 	btio/$(DEPDIR)/android_avdtptest-btio.Po \
 	btio/$(DEPDIR)/bluetoothd-btio.Po btio/$(DEPDIR)/btio.Po \
-	btio/$(DEPDIR)/obexd-btio.Po client/$(DEPDIR)/advertising.Po \
-	client/$(DEPDIR)/agent.Po client/$(DEPDIR)/display.Po \
-	client/$(DEPDIR)/gatt.Po client/$(DEPDIR)/main.Po \
-	ell/$(DEPDIR)/base64.Plo ell/$(DEPDIR)/cert.Plo \
+	btio/$(DEPDIR)/obexd-btio.Po client/$(DEPDIR)/adv_monitor.Po \
+	client/$(DEPDIR)/advertising.Po client/$(DEPDIR)/agent.Po \
+	client/$(DEPDIR)/display.Po client/$(DEPDIR)/gatt.Po \
+	client/$(DEPDIR)/main.Po ell/$(DEPDIR)/base64.Plo \
+	ell/$(DEPDIR)/cert-crypto.Plo ell/$(DEPDIR)/cert.Plo \
 	ell/$(DEPDIR)/checksum.Plo ell/$(DEPDIR)/cipher.Plo \
 	ell/$(DEPDIR)/dbus-client.Plo ell/$(DEPDIR)/dbus-filter.Plo \
 	ell/$(DEPDIR)/dbus-message.Plo \
@@ -1977,12 +1985,12 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	ell/$(DEPDIR)/hashmap.Plo ell/$(DEPDIR)/idle.Plo \
 	ell/$(DEPDIR)/io.Plo ell/$(DEPDIR)/key.Plo \
 	ell/$(DEPDIR)/log.Plo ell/$(DEPDIR)/main.Plo \
-	ell/$(DEPDIR)/pem.Plo ell/$(DEPDIR)/pkcs5.Plo \
-	ell/$(DEPDIR)/queue.Plo ell/$(DEPDIR)/random.Plo \
-	ell/$(DEPDIR)/settings.Plo ell/$(DEPDIR)/signal.Plo \
-	ell/$(DEPDIR)/siphash.Plo ell/$(DEPDIR)/string.Plo \
-	ell/$(DEPDIR)/strv.Plo ell/$(DEPDIR)/timeout.Plo \
-	ell/$(DEPDIR)/utf8.Plo ell/$(DEPDIR)/util.Plo \
+	ell/$(DEPDIR)/pem.Plo ell/$(DEPDIR)/queue.Plo \
+	ell/$(DEPDIR)/random.Plo ell/$(DEPDIR)/settings.Plo \
+	ell/$(DEPDIR)/signal.Plo ell/$(DEPDIR)/siphash.Plo \
+	ell/$(DEPDIR)/string.Plo ell/$(DEPDIR)/strv.Plo \
+	ell/$(DEPDIR)/timeout.Plo ell/$(DEPDIR)/utf8.Plo \
+	ell/$(DEPDIR)/util.Plo ell/$(DEPDIR)/uuid.Plo \
 	emulator/$(DEPDIR)/amp.Po \
 	emulator/$(DEPDIR)/android_android_tester-btdev.Po \
 	emulator/$(DEPDIR)/android_android_tester-bthost.Po \
@@ -2129,10 +2137,12 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	profiles/scanparam/$(DEPDIR)/scpp.Po \
 	src/$(DEPDIR)/android_avdtptest-log.Po \
 	src/$(DEPDIR)/bluetoothd-adapter.Po \
+	src/$(DEPDIR)/bluetoothd-adv_monitor.Po \
 	src/$(DEPDIR)/bluetoothd-advertising.Po \
 	src/$(DEPDIR)/bluetoothd-agent.Po \
 	src/$(DEPDIR)/bluetoothd-attrib-server.Po \
 	src/$(DEPDIR)/bluetoothd-backtrace.Po \
+	src/$(DEPDIR)/bluetoothd-battery.Po \
 	src/$(DEPDIR)/bluetoothd-dbus-common.Po \
 	src/$(DEPDIR)/bluetoothd-device.Po \
 	src/$(DEPDIR)/bluetoothd-eir.Po \
@@ -2191,9 +2201,8 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	src/shared/$(DEPDIR)/uhid.Plo src/shared/$(DEPDIR)/util.Plo \
 	tools/$(DEPDIR)/3dsp.Po tools/$(DEPDIR)/advtest.Po \
 	tools/$(DEPDIR)/amptest.Po tools/$(DEPDIR)/avinfo.Po \
-	tools/$(DEPDIR)/avtest.Po tools/$(DEPDIR)/bccmd.Po \
-	tools/$(DEPDIR)/bcmfw.Po tools/$(DEPDIR)/bdaddr.Po \
-	tools/$(DEPDIR)/bluemoon.Po \
+	tools/$(DEPDIR)/avtest.Po tools/$(DEPDIR)/bcmfw.Po \
+	tools/$(DEPDIR)/bdaddr.Po tools/$(DEPDIR)/bluemoon.Po \
 	tools/$(DEPDIR)/bluetooth-player.Po \
 	tools/$(DEPDIR)/bnep-tester.Po tools/$(DEPDIR)/bneptest.Po \
 	tools/$(DEPDIR)/btattach.Po tools/$(DEPDIR)/btconfig.Po \
@@ -2201,15 +2210,12 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	tools/$(DEPDIR)/btgatt-server.Po tools/$(DEPDIR)/btinfo.Po \
 	tools/$(DEPDIR)/btiotest.Po tools/$(DEPDIR)/btmgmt.Po \
 	tools/$(DEPDIR)/btmon-logger.Po tools/$(DEPDIR)/btpclient.Po \
-	tools/$(DEPDIR)/btproxy.Po tools/$(DEPDIR)/btsnoop.Po \
-	tools/$(DEPDIR)/check-selftest.Po tools/$(DEPDIR)/ciptool.Po \
-	tools/$(DEPDIR)/cltest.Po tools/$(DEPDIR)/create-image.Po \
-	tools/$(DEPDIR)/csr.Po tools/$(DEPDIR)/csr_3wire.Po \
-	tools/$(DEPDIR)/csr_bcsp.Po tools/$(DEPDIR)/csr_h4.Po \
-	tools/$(DEPDIR)/csr_hci.Po tools/$(DEPDIR)/csr_usb.Po \
-	tools/$(DEPDIR)/eddystone.Po tools/$(DEPDIR)/gap-tester.Po \
-	tools/$(DEPDIR)/gatt-service.Po tools/$(DEPDIR)/hci-tester.Po \
-	tools/$(DEPDIR)/hciattach.Po \
+	tools/$(DEPDIR)/btpclientctl.Po tools/$(DEPDIR)/btproxy.Po \
+	tools/$(DEPDIR)/btsnoop.Po tools/$(DEPDIR)/check-selftest.Po \
+	tools/$(DEPDIR)/ciptool.Po tools/$(DEPDIR)/cltest.Po \
+	tools/$(DEPDIR)/create-image.Po tools/$(DEPDIR)/eddystone.Po \
+	tools/$(DEPDIR)/gap-tester.Po tools/$(DEPDIR)/gatt-service.Po \
+	tools/$(DEPDIR)/hci-tester.Po tools/$(DEPDIR)/hciattach.Po \
 	tools/$(DEPDIR)/hciattach_ath3k.Po \
 	tools/$(DEPDIR)/hciattach_bcm43xx.Po \
 	tools/$(DEPDIR)/hciattach_intel.Po \
@@ -2233,7 +2239,7 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	tools/$(DEPDIR)/rtlfw.Po tools/$(DEPDIR)/sco-tester.Po \
 	tools/$(DEPDIR)/scotest.Po tools/$(DEPDIR)/sdptool.Po \
 	tools/$(DEPDIR)/seq2bseq.Po tools/$(DEPDIR)/smp-tester.Po \
-	tools/$(DEPDIR)/test-runner.Po tools/$(DEPDIR)/ubcsp.Po \
+	tools/$(DEPDIR)/test-runner.Po \
 	tools/$(DEPDIR)/userchan-tester.Po \
 	tools/mesh-gatt/$(DEPDIR)/config-client.Po \
 	tools/mesh-gatt/$(DEPDIR)/config-server.Po \
@@ -2324,14 +2330,14 @@ SOURCES = $(android_audio_a2dp_default_la_SOURCES) \
 	$(profiles_iap_iapd_SOURCES) $(src_bluetoothd_SOURCES) \
 	$(nodist_src_bluetoothd_SOURCES) $(tools_3dsp_SOURCES) \
 	$(tools_advtest_SOURCES) tools/amptest.c tools/avinfo.c \
-	tools/avtest.c $(tools_bccmd_SOURCES) tools/bcmfw.c \
-	$(tools_bdaddr_SOURCES) $(tools_bluemoon_SOURCES) \
-	$(tools_bluetooth_player_SOURCES) $(tools_bnep_tester_SOURCES) \
-	$(tools_bneptest_SOURCES) $(tools_btattach_SOURCES) \
-	$(tools_btconfig_SOURCES) $(tools_btgatt_client_SOURCES) \
-	$(tools_btgatt_server_SOURCES) $(tools_btinfo_SOURCES) \
-	$(tools_btiotest_SOURCES) $(tools_btmgmt_SOURCES) \
-	$(tools_btmon_logger_SOURCES) $(tools_btpclient_SOURCES) \
+	tools/avtest.c tools/bcmfw.c $(tools_bdaddr_SOURCES) \
+	$(tools_bluemoon_SOURCES) $(tools_bluetooth_player_SOURCES) \
+	$(tools_bnep_tester_SOURCES) $(tools_bneptest_SOURCES) \
+	$(tools_btattach_SOURCES) $(tools_btconfig_SOURCES) \
+	$(tools_btgatt_client_SOURCES) $(tools_btgatt_server_SOURCES) \
+	$(tools_btinfo_SOURCES) $(tools_btiotest_SOURCES) \
+	$(tools_btmgmt_SOURCES) $(tools_btmon_logger_SOURCES) \
+	$(tools_btpclient_SOURCES) $(tools_btpclientctl_SOURCES) \
 	$(tools_btproxy_SOURCES) $(tools_btsnoop_SOURCES) \
 	tools/check-selftest.c tools/ciptool.c $(tools_cltest_SOURCES) \
 	$(tools_create_image_SOURCES) $(tools_eddystone_SOURCES) \
@@ -2402,8 +2408,8 @@ DIST_SOURCES = $(am__android_audio_a2dp_default_la_SOURCES_DIST) \
 	$(am__src_bluetoothd_SOURCES_DIST) \
 	$(am__tools_3dsp_SOURCES_DIST) \
 	$(am__tools_advtest_SOURCES_DIST) tools/amptest.c \
-	tools/avinfo.c tools/avtest.c $(am__tools_bccmd_SOURCES_DIST) \
-	tools/bcmfw.c $(am__tools_bdaddr_SOURCES_DIST) \
+	tools/avinfo.c tools/avtest.c tools/bcmfw.c \
+	$(am__tools_bdaddr_SOURCES_DIST) \
 	$(am__tools_bluemoon_SOURCES_DIST) \
 	$(am__tools_bluetooth_player_SOURCES_DIST) \
 	$(am__tools_bnep_tester_SOURCES_DIST) \
@@ -2417,6 +2423,7 @@ DIST_SOURCES = $(am__android_audio_a2dp_default_la_SOURCES_DIST) \
 	$(am__tools_btmgmt_SOURCES_DIST) \
 	$(am__tools_btmon_logger_SOURCES_DIST) \
 	$(am__tools_btpclient_SOURCES_DIST) \
+	$(am__tools_btpclientctl_SOURCES_DIST) \
 	$(am__tools_btproxy_SOURCES_DIST) \
 	$(am__tools_btsnoop_SOURCES_DIST) tools/check-selftest.c \
 	tools/ciptool.c $(am__tools_cltest_SOURCES_DIST) \
@@ -2865,6 +2872,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+# SPDX-License-Identifier: GPL-2.0
 AM_MAKEFLAGS = --no-print-directory
 AM_CPPFLAGS = $(am__append_51) $(DBUS_CFLAGS) $(GLIB_CFLAGS) \
 	-I$(builddir)/lib
@@ -2974,7 +2983,7 @@ local_headers = $(foreach file,$(lib_headers), lib/bluetooth/$(notdir $(file)))
 BUILT_SOURCES = $(local_headers) $(ell_built_sources) src/builtin.h \
 	obexd/src/builtin.h
 @LIBRARY_TRUE@lib_libbluetooth_la_SOURCES = $(lib_headers) $(lib_sources)
-@LIBRARY_TRUE@lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:3:19
+@LIBRARY_TRUE@lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:4:19
 @LIBRARY_TRUE@lib_libbluetooth_la_DEPENDENCIES = $(local_headers)
 lib_libbluetooth_internal_la_SOURCES = $(lib_headers) $(lib_sources) \
 					$(extra_headers) $(extra_sources)
@@ -3014,11 +3023,10 @@ gdbus_libgdbus_internal_la_SOURCES = gdbus/gdbus.h \
 @EXTERNAL_ELL_FALSE@			ell/cert.h \
 @EXTERNAL_ELL_FALSE@			ell/pem.h \
 @EXTERNAL_ELL_FALSE@			ell/base64.h \
-@EXTERNAL_ELL_FALSE@			ell/pkcs5.h \
 @EXTERNAL_ELL_FALSE@			ell/asn1-private.h \
-@EXTERNAL_ELL_FALSE@			ell/pkcs5-private.h \
 @EXTERNAL_ELL_FALSE@			ell/cert-private.h \
-@EXTERNAL_ELL_FALSE@			ell/pem-private.h
+@EXTERNAL_ELL_FALSE@			ell/pem-private.h \
+@EXTERNAL_ELL_FALSE@			ell/uuid.h
 
 @EXTERNAL_ELL_FALSE@ell_sources = ell/private.h ell/missing.h \
 @EXTERNAL_ELL_FALSE@			ell/util.c \
@@ -3038,8 +3046,8 @@ gdbus_libgdbus_internal_la_SOURCES = gdbus/gdbus.h \
 @EXTERNAL_ELL_FALSE@			ell/checksum.c \
 @EXTERNAL_ELL_FALSE@			ell/pem.c \
 @EXTERNAL_ELL_FALSE@			ell/cert.c \
+@EXTERNAL_ELL_FALSE@			ell/cert-crypto.c \
 @EXTERNAL_ELL_FALSE@			ell/key.c \
-@EXTERNAL_ELL_FALSE@			ell/pkcs5.c \
 @EXTERNAL_ELL_FALSE@			ell/base64.c \
 @EXTERNAL_ELL_FALSE@			ell/utf8.c \
 @EXTERNAL_ELL_FALSE@			ell/dbus-private.h \
@@ -3053,7 +3061,8 @@ gdbus_libgdbus_internal_la_SOURCES = gdbus/gdbus.h \
 @EXTERNAL_ELL_FALSE@			ell/gvariant-private.h \
 @EXTERNAL_ELL_FALSE@			ell/gvariant-util.c \
 @EXTERNAL_ELL_FALSE@			ell/siphash-private.h \
-@EXTERNAL_ELL_FALSE@			ell/siphash.c
+@EXTERNAL_ELL_FALSE@			ell/siphash.c \
+@EXTERNAL_ELL_FALSE@			ell/uuid.c
 
 @EXTERNAL_ELL_FALSE@ell_libell_internal_la_SOURCES = $(ell_headers) $(ell_sources)
 shared_sources = src/shared/io.h src/shared/timeout.h \
@@ -3107,6 +3116,8 @@ gobex_sources = gobex/gobex.h gobex/gobex.c \
 			gobex/gobex-transfer.c gobex/gobex-debug.h \
 			gobex/gobex-apparam.c gobex/gobex-apparam.h
 
+
+# SPDX-License-Identifier: GPL-2.0
 builtin_modules = hostname wiimote autopair policy $(am__append_6) \
 	$(am__append_8) $(am__append_10) $(am__append_12) \
 	$(am__append_14) $(am__append_16) $(am__append_18) \
@@ -3123,9 +3134,7 @@ builtin_cppflags = $(am__append_25)
 builtin_nodist = 
 builtin_ldadd = $(am__append_26)
 @SIXAXIS_TRUE@plugins_sixaxis_la_SOURCES = plugins/sixaxis.c
-@SIXAXIS_TRUE@plugins_sixaxis_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version \
-@SIXAXIS_TRUE@						-no-undefined
-
+@SIXAXIS_TRUE@plugins_sixaxis_la_LDFLAGS = $(AM_LDFLAGS) -module -avoid-version
 @SIXAXIS_TRUE@plugins_sixaxis_la_LIBADD = $(UDEV_LIBS)
 @SIXAXIS_TRUE@plugins_sixaxis_la_CFLAGS = $(AM_CFLAGS) -fvisibility=hidden
 @MAINTAINER_MODE_TRUE@plugins_external_dummy_la_SOURCES = plugins/external-dummy.c
@@ -3138,7 +3147,7 @@ src_bluetoothd_SOURCES = $(builtin_sources) \
 			src/bluetooth.ver \
 			src/main.c src/log.h src/log.c \
 			src/backtrace.h src/backtrace.c \
-			src/rfkill.c src/hcid.h src/sdpd.h \
+			src/rfkill.c src/btd.h src/sdpd.h \
 			src/sdpd-server.c src/sdpd-request.c \
 			src/sdpd-service.c src/sdpd-database.c \
 			src/attrib-server.h src/attrib-server.c \
@@ -3159,7 +3168,9 @@ src_bluetoothd_SOURCES = $(builtin_sources) \
 			src/gatt-client.h src/gatt-client.c \
 			src/device.h src/device.c \
 			src/dbus-common.c src/dbus-common.h \
-			src/eir.h src/eir.c
+			src/eir.h src/eir.c \
+			src/adv_monitor.h src/adv_monitor.c \
+			src/battery.h src/battery.c
 
 src_bluetoothd_LDADD = lib/libbluetooth-internal.la \
 			gdbus/libgdbus-internal.la \
@@ -3209,6 +3220,8 @@ unit_tests = $(am__append_54) unit/test-eir unit/test-uuid \
 @CLIENT_TRUE@					client/agent.h client/agent.c \
 @CLIENT_TRUE@					client/advertising.h \
 @CLIENT_TRUE@					client/advertising.c \
+@CLIENT_TRUE@					client/adv_monitor.h \
+@CLIENT_TRUE@					client/adv_monitor.c \
 @CLIENT_TRUE@					client/gatt.h client/gatt.c
 
 @CLIENT_TRUE@client_bluetoothctl_LDADD = gdbus/libgdbus-internal.la src/libshared-glib.la \
@@ -3414,12 +3427,6 @@ unit_tests = $(am__append_54) unit/test-eir unit/test-uuid \
 @TOOLS_TRUE@tools_rctest_LDADD = lib/libbluetooth-internal.la
 @TOOLS_TRUE@tools_l2test_LDADD = lib/libbluetooth-internal.la
 @TOOLS_TRUE@tools_l2ping_LDADD = lib/libbluetooth-internal.la
-@TOOLS_TRUE@tools_bccmd_SOURCES = tools/bccmd.c tools/csr.h tools/csr.c \
-@TOOLS_TRUE@			tools/csr_hci.c tools/csr_usb.c \
-@TOOLS_TRUE@			tools/csr_h4.c tools/csr_3wire.c \
-@TOOLS_TRUE@			tools/csr_bcsp.c tools/ubcsp.h tools/ubcsp.c
-
-@TOOLS_TRUE@tools_bccmd_LDADD = lib/libbluetooth-internal.la
 @TOOLS_TRUE@tools_bluemoon_SOURCES = tools/bluemoon.c monitor/bt.h
 @TOOLS_TRUE@tools_bluemoon_LDADD = src/libshared-mainloop.la
 @TOOLS_TRUE@tools_hex2hcd_SOURCES = tools/hex2hcd.c
@@ -3476,7 +3483,7 @@ unit_tests = $(am__append_54) unit/test-eir unit/test-uuid \
 @DEPRECATED_TRUE@@TOOLS_TRUE@						tools/hciattach_bcm43xx.c
 
 @DEPRECATED_TRUE@@TOOLS_TRUE@tools_hciattach_LDADD = lib/libbluetooth-internal.la
-@DEPRECATED_TRUE@@TOOLS_TRUE@tools_hciconfig_SOURCES = tools/hciconfig.c tools/csr.h tools/csr.c
+@DEPRECATED_TRUE@@TOOLS_TRUE@tools_hciconfig_SOURCES = tools/hciconfig.c
 @DEPRECATED_TRUE@@TOOLS_TRUE@tools_hciconfig_LDADD = lib/libbluetooth-internal.la
 @DEPRECATED_TRUE@@TOOLS_TRUE@tools_hcitool_SOURCES = tools/hcitool.c src/oui.h src/oui.c
 @DEPRECATED_TRUE@@TOOLS_TRUE@tools_hcitool_LDADD = lib/libbluetooth-internal.la $(UDEV_LIBS)
@@ -3561,6 +3568,12 @@ unit_tests = $(am__append_54) unit/test-eir unit/test-uuid \
 @BTPCLIENT_TRUE@				src/libshared-ell.la $(ell_ldadd)
 
 @BTPCLIENT_TRUE@tools_btpclient_DEPENDENCIES = lib/libbluetooth-internal.la $(ell_dependencies)
+@BTPCLIENT_TRUE@tools_btpclientctl_SOURCES = tools/btpclientctl.c client/display.c
+@BTPCLIENT_TRUE@tools_btpclientctl_LDADD = src/libshared-mainloop.la src/libshared-glib.la \
+@BTPCLIENT_TRUE@				lib/libbluetooth-internal.la -lreadline
+
+
+# SPDX-License-Identifier: GPL-2.0
 @SYSTEMD_TRUE@systemduserunitdir = $(SYSTEMD_USERUNITDIR)
 @SYSTEMD_TRUE@systemduserunit_DATA = obexd/src/obex.service
 @SYSTEMD_TRUE@dbussessionbusdir = $(DBUS_SESSIONBUSDIR)
@@ -4438,8 +4451,8 @@ ell/cipher.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/checksum.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/pem.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/cert.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
+ell/cert-crypto.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/key.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
-ell/pkcs5.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/base64.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/utf8.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/dbus.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
@@ -4453,6 +4466,7 @@ ell/dbus-filter.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 ell/gvariant-util.lo: ell/$(am__dirstamp) \
 	ell/$(DEPDIR)/$(am__dirstamp)
 ell/siphash.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
+ell/uuid.lo: ell/$(am__dirstamp) ell/$(DEPDIR)/$(am__dirstamp)
 
 ell/libell-internal.la: $(ell_libell_internal_la_OBJECTS) $(ell_libell_internal_la_DEPENDENCIES) $(EXTRA_ell_libell_internal_la_DEPENDENCIES) ell/$(am__dirstamp)
 	$(AM_V_CCLD)$(LINK) $(am_ell_libell_internal_la_rpath) $(ell_libell_internal_la_OBJECTS) $(ell_libell_internal_la_LIBADD) $(LIBS)
@@ -4911,6 +4925,8 @@ client/main.$(OBJEXT): client/$(am__dirstamp) \
 client/agent.$(OBJEXT): client/$(am__dirstamp) \
 	client/$(DEPDIR)/$(am__dirstamp)
 client/advertising.$(OBJEXT): client/$(am__dirstamp) \
+	client/$(DEPDIR)/$(am__dirstamp)
+client/adv_monitor.$(OBJEXT): client/$(am__dirstamp) \
 	client/$(DEPDIR)/$(am__dirstamp)
 client/gatt.$(OBJEXT): client/$(am__dirstamp) \
 	client/$(DEPDIR)/$(am__dirstamp)
@@ -5438,6 +5454,10 @@ src/bluetoothd-dbus-common.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/bluetoothd-eir.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/bluetoothd-adv_monitor.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/bluetoothd-battery.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 
 src/bluetoothd$(EXEEXT): $(src_bluetoothd_OBJECTS) $(src_bluetoothd_DEPENDENCIES) $(EXTRA_src_bluetoothd_DEPENDENCIES) src/$(am__dirstamp)
 	@rm -f src/bluetoothd$(EXEEXT)
@@ -5478,26 +5498,6 @@ tools/avtest.$(OBJEXT): tools/$(am__dirstamp) \
 tools/avtest$(EXEEXT): $(tools_avtest_OBJECTS) $(tools_avtest_DEPENDENCIES) $(EXTRA_tools_avtest_DEPENDENCIES) tools/$(am__dirstamp)
 	@rm -f tools/avtest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tools_avtest_OBJECTS) $(tools_avtest_LDADD) $(LIBS)
-tools/bccmd.$(OBJEXT): tools/$(am__dirstamp) \
-	tools/$(DEPDIR)/$(am__dirstamp)
-tools/csr.$(OBJEXT): tools/$(am__dirstamp) \
-	tools/$(DEPDIR)/$(am__dirstamp)
-tools/csr_hci.$(OBJEXT): tools/$(am__dirstamp) \
-	tools/$(DEPDIR)/$(am__dirstamp)
-tools/csr_usb.$(OBJEXT): tools/$(am__dirstamp) \
-	tools/$(DEPDIR)/$(am__dirstamp)
-tools/csr_h4.$(OBJEXT): tools/$(am__dirstamp) \
-	tools/$(DEPDIR)/$(am__dirstamp)
-tools/csr_3wire.$(OBJEXT): tools/$(am__dirstamp) \
-	tools/$(DEPDIR)/$(am__dirstamp)
-tools/csr_bcsp.$(OBJEXT): tools/$(am__dirstamp) \
-	tools/$(DEPDIR)/$(am__dirstamp)
-tools/ubcsp.$(OBJEXT): tools/$(am__dirstamp) \
-	tools/$(DEPDIR)/$(am__dirstamp)
-
-tools/bccmd$(EXEEXT): $(tools_bccmd_OBJECTS) $(tools_bccmd_DEPENDENCIES) $(EXTRA_tools_bccmd_DEPENDENCIES) tools/$(am__dirstamp)
-	@rm -f tools/bccmd$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(tools_bccmd_OBJECTS) $(tools_bccmd_LDADD) $(LIBS)
 tools/bcmfw.$(OBJEXT): tools/$(am__dirstamp) \
 	tools/$(DEPDIR)/$(am__dirstamp)
 
@@ -5593,6 +5593,12 @@ src/shared/btp.$(OBJEXT): src/shared/$(am__dirstamp) \
 tools/btpclient$(EXEEXT): $(tools_btpclient_OBJECTS) $(tools_btpclient_DEPENDENCIES) $(EXTRA_tools_btpclient_DEPENDENCIES) tools/$(am__dirstamp)
 	@rm -f tools/btpclient$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tools_btpclient_OBJECTS) $(tools_btpclient_LDADD) $(LIBS)
+tools/btpclientctl.$(OBJEXT): tools/$(am__dirstamp) \
+	tools/$(DEPDIR)/$(am__dirstamp)
+
+tools/btpclientctl$(EXEEXT): $(tools_btpclientctl_OBJECTS) $(tools_btpclientctl_DEPENDENCIES) $(EXTRA_tools_btpclientctl_DEPENDENCIES) tools/$(am__dirstamp)
+	@rm -f tools/btpclientctl$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tools_btpclientctl_OBJECTS) $(tools_btpclientctl_LDADD) $(LIBS)
 tools/btproxy.$(OBJEXT): tools/$(am__dirstamp) \
 	tools/$(DEPDIR)/$(am__dirstamp)
 
@@ -6340,12 +6346,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@btio/$(DEPDIR)/bluetoothd-btio.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@btio/$(DEPDIR)/btio.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@btio/$(DEPDIR)/obexd-btio.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/adv_monitor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/advertising.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/agent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/display.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/gatt.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@client/$(DEPDIR)/main.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/base64.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/cert-crypto.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/cert.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/checksum.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/cipher.Plo@am__quote@ # am--include-marker
@@ -6364,7 +6372,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/log.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/main.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/pem.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/pkcs5.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/queue.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/random.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/settings.Plo@am__quote@ # am--include-marker
@@ -6375,6 +6382,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/timeout.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/utf8.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/util.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ell/$(DEPDIR)/uuid.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/amp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/android_android_tester-btdev.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@emulator/$(DEPDIR)/android_android_tester-bthost.Po@am__quote@ # am--include-marker
@@ -6561,10 +6569,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@profiles/scanparam/$(DEPDIR)/scpp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/android_avdtptest-log.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-adapter.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-adv_monitor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-advertising.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-agent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-attrib-server.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-backtrace.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-battery.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-dbus-common.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-device.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-eir.Po@am__quote@ # am--include-marker
@@ -6638,7 +6648,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/amptest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/avinfo.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/avtest.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/bccmd.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/bcmfw.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/bdaddr.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/bluemoon.Po@am__quote@ # am--include-marker
@@ -6654,18 +6663,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/btmgmt.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/btmon-logger.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/btpclient.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/btpclientctl.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/btproxy.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/btsnoop.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/check-selftest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/ciptool.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/cltest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/create-image.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/csr.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/csr_3wire.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/csr_bcsp.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/csr_h4.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/csr_hci.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/csr_usb.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/eddystone.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/gap-tester.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/gatt-service.Po@am__quote@ # am--include-marker
@@ -6710,7 +6714,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/seq2bseq.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/smp-tester.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/test-runner.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/ubcsp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/$(DEPDIR)/userchan-tester.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/config-client.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tools/mesh-gatt/$(DEPDIR)/config-server.Po@am__quote@ # am--include-marker
@@ -9261,6 +9264,34 @@ src/bluetoothd-eir.obj: src/eir.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/bluetoothd-eir.obj `if test -f 'src/eir.c'; then $(CYGPATH_W) 'src/eir.c'; else $(CYGPATH_W) '$(srcdir)/src/eir.c'; fi`
 
+src/bluetoothd-adv_monitor.o: src/adv_monitor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/bluetoothd-adv_monitor.o -MD -MP -MF src/$(DEPDIR)/bluetoothd-adv_monitor.Tpo -c -o src/bluetoothd-adv_monitor.o `test -f 'src/adv_monitor.c' || echo '$(srcdir)/'`src/adv_monitor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/bluetoothd-adv_monitor.Tpo src/$(DEPDIR)/bluetoothd-adv_monitor.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/adv_monitor.c' object='src/bluetoothd-adv_monitor.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/bluetoothd-adv_monitor.o `test -f 'src/adv_monitor.c' || echo '$(srcdir)/'`src/adv_monitor.c
+
+src/bluetoothd-adv_monitor.obj: src/adv_monitor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/bluetoothd-adv_monitor.obj -MD -MP -MF src/$(DEPDIR)/bluetoothd-adv_monitor.Tpo -c -o src/bluetoothd-adv_monitor.obj `if test -f 'src/adv_monitor.c'; then $(CYGPATH_W) 'src/adv_monitor.c'; else $(CYGPATH_W) '$(srcdir)/src/adv_monitor.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/bluetoothd-adv_monitor.Tpo src/$(DEPDIR)/bluetoothd-adv_monitor.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/adv_monitor.c' object='src/bluetoothd-adv_monitor.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/bluetoothd-adv_monitor.obj `if test -f 'src/adv_monitor.c'; then $(CYGPATH_W) 'src/adv_monitor.c'; else $(CYGPATH_W) '$(srcdir)/src/adv_monitor.c'; fi`
+
+src/bluetoothd-battery.o: src/battery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/bluetoothd-battery.o -MD -MP -MF src/$(DEPDIR)/bluetoothd-battery.Tpo -c -o src/bluetoothd-battery.o `test -f 'src/battery.c' || echo '$(srcdir)/'`src/battery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/bluetoothd-battery.Tpo src/$(DEPDIR)/bluetoothd-battery.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/battery.c' object='src/bluetoothd-battery.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/bluetoothd-battery.o `test -f 'src/battery.c' || echo '$(srcdir)/'`src/battery.c
+
+src/bluetoothd-battery.obj: src/battery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/bluetoothd-battery.obj -MD -MP -MF src/$(DEPDIR)/bluetoothd-battery.Tpo -c -o src/bluetoothd-battery.obj `if test -f 'src/battery.c'; then $(CYGPATH_W) 'src/battery.c'; else $(CYGPATH_W) '$(srcdir)/src/battery.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/bluetoothd-battery.Tpo src/$(DEPDIR)/bluetoothd-battery.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/battery.c' object='src/bluetoothd-battery.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/bluetoothd-battery.obj `if test -f 'src/battery.c'; then $(CYGPATH_W) 'src/battery.c'; else $(CYGPATH_W) '$(srcdir)/src/battery.c'; fi`
+
 unit/test_mesh_crypto-test-mesh-crypto.o: unit/test-mesh-crypto.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unit_test_mesh_crypto_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT unit/test_mesh_crypto-test-mesh-crypto.o -MD -MP -MF unit/$(DEPDIR)/test_mesh_crypto-test-mesh-crypto.Tpo -c -o unit/test_mesh_crypto-test-mesh-crypto.o `test -f 'unit/test-mesh-crypto.c' || echo '$(srcdir)/'`unit/test-mesh-crypto.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) unit/$(DEPDIR)/test_mesh_crypto-test-mesh-crypto.Tpo unit/$(DEPDIR)/test_mesh_crypto-test-mesh-crypto.Po
@@ -10452,12 +10483,14 @@ distclean: distclean-am
 	-rm -f btio/$(DEPDIR)/bluetoothd-btio.Po
 	-rm -f btio/$(DEPDIR)/btio.Po
 	-rm -f btio/$(DEPDIR)/obexd-btio.Po
+	-rm -f client/$(DEPDIR)/adv_monitor.Po
 	-rm -f client/$(DEPDIR)/advertising.Po
 	-rm -f client/$(DEPDIR)/agent.Po
 	-rm -f client/$(DEPDIR)/display.Po
 	-rm -f client/$(DEPDIR)/gatt.Po
 	-rm -f client/$(DEPDIR)/main.Po
 	-rm -f ell/$(DEPDIR)/base64.Plo
+	-rm -f ell/$(DEPDIR)/cert-crypto.Plo
 	-rm -f ell/$(DEPDIR)/cert.Plo
 	-rm -f ell/$(DEPDIR)/checksum.Plo
 	-rm -f ell/$(DEPDIR)/cipher.Plo
@@ -10476,7 +10509,6 @@ distclean: distclean-am
 	-rm -f ell/$(DEPDIR)/log.Plo
 	-rm -f ell/$(DEPDIR)/main.Plo
 	-rm -f ell/$(DEPDIR)/pem.Plo
-	-rm -f ell/$(DEPDIR)/pkcs5.Plo
 	-rm -f ell/$(DEPDIR)/queue.Plo
 	-rm -f ell/$(DEPDIR)/random.Plo
 	-rm -f ell/$(DEPDIR)/settings.Plo
@@ -10487,6 +10519,7 @@ distclean: distclean-am
 	-rm -f ell/$(DEPDIR)/timeout.Plo
 	-rm -f ell/$(DEPDIR)/utf8.Plo
 	-rm -f ell/$(DEPDIR)/util.Plo
+	-rm -f ell/$(DEPDIR)/uuid.Plo
 	-rm -f emulator/$(DEPDIR)/amp.Po
 	-rm -f emulator/$(DEPDIR)/android_android_tester-btdev.Po
 	-rm -f emulator/$(DEPDIR)/android_android_tester-bthost.Po
@@ -10673,10 +10706,12 @@ distclean: distclean-am
 	-rm -f profiles/scanparam/$(DEPDIR)/scpp.Po
 	-rm -f src/$(DEPDIR)/android_avdtptest-log.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-adapter.Po
+	-rm -f src/$(DEPDIR)/bluetoothd-adv_monitor.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-advertising.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-agent.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-attrib-server.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-backtrace.Po
+	-rm -f src/$(DEPDIR)/bluetoothd-battery.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-dbus-common.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-device.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-eir.Po
@@ -10750,7 +10785,6 @@ distclean: distclean-am
 	-rm -f tools/$(DEPDIR)/amptest.Po
 	-rm -f tools/$(DEPDIR)/avinfo.Po
 	-rm -f tools/$(DEPDIR)/avtest.Po
-	-rm -f tools/$(DEPDIR)/bccmd.Po
 	-rm -f tools/$(DEPDIR)/bcmfw.Po
 	-rm -f tools/$(DEPDIR)/bdaddr.Po
 	-rm -f tools/$(DEPDIR)/bluemoon.Po
@@ -10766,18 +10800,13 @@ distclean: distclean-am
 	-rm -f tools/$(DEPDIR)/btmgmt.Po
 	-rm -f tools/$(DEPDIR)/btmon-logger.Po
 	-rm -f tools/$(DEPDIR)/btpclient.Po
+	-rm -f tools/$(DEPDIR)/btpclientctl.Po
 	-rm -f tools/$(DEPDIR)/btproxy.Po
 	-rm -f tools/$(DEPDIR)/btsnoop.Po
 	-rm -f tools/$(DEPDIR)/check-selftest.Po
 	-rm -f tools/$(DEPDIR)/ciptool.Po
 	-rm -f tools/$(DEPDIR)/cltest.Po
 	-rm -f tools/$(DEPDIR)/create-image.Po
-	-rm -f tools/$(DEPDIR)/csr.Po
-	-rm -f tools/$(DEPDIR)/csr_3wire.Po
-	-rm -f tools/$(DEPDIR)/csr_bcsp.Po
-	-rm -f tools/$(DEPDIR)/csr_h4.Po
-	-rm -f tools/$(DEPDIR)/csr_hci.Po
-	-rm -f tools/$(DEPDIR)/csr_usb.Po
 	-rm -f tools/$(DEPDIR)/eddystone.Po
 	-rm -f tools/$(DEPDIR)/gap-tester.Po
 	-rm -f tools/$(DEPDIR)/gatt-service.Po
@@ -10822,7 +10851,6 @@ distclean: distclean-am
 	-rm -f tools/$(DEPDIR)/seq2bseq.Po
 	-rm -f tools/$(DEPDIR)/smp-tester.Po
 	-rm -f tools/$(DEPDIR)/test-runner.Po
-	-rm -f tools/$(DEPDIR)/ubcsp.Po
 	-rm -f tools/$(DEPDIR)/userchan-tester.Po
 	-rm -f tools/mesh-gatt/$(DEPDIR)/config-client.Po
 	-rm -f tools/mesh-gatt/$(DEPDIR)/config-server.Po
@@ -11038,12 +11066,14 @@ maintainer-clean: maintainer-clean-am
 	-rm -f btio/$(DEPDIR)/bluetoothd-btio.Po
 	-rm -f btio/$(DEPDIR)/btio.Po
 	-rm -f btio/$(DEPDIR)/obexd-btio.Po
+	-rm -f client/$(DEPDIR)/adv_monitor.Po
 	-rm -f client/$(DEPDIR)/advertising.Po
 	-rm -f client/$(DEPDIR)/agent.Po
 	-rm -f client/$(DEPDIR)/display.Po
 	-rm -f client/$(DEPDIR)/gatt.Po
 	-rm -f client/$(DEPDIR)/main.Po
 	-rm -f ell/$(DEPDIR)/base64.Plo
+	-rm -f ell/$(DEPDIR)/cert-crypto.Plo
 	-rm -f ell/$(DEPDIR)/cert.Plo
 	-rm -f ell/$(DEPDIR)/checksum.Plo
 	-rm -f ell/$(DEPDIR)/cipher.Plo
@@ -11062,7 +11092,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ell/$(DEPDIR)/log.Plo
 	-rm -f ell/$(DEPDIR)/main.Plo
 	-rm -f ell/$(DEPDIR)/pem.Plo
-	-rm -f ell/$(DEPDIR)/pkcs5.Plo
 	-rm -f ell/$(DEPDIR)/queue.Plo
 	-rm -f ell/$(DEPDIR)/random.Plo
 	-rm -f ell/$(DEPDIR)/settings.Plo
@@ -11073,6 +11102,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ell/$(DEPDIR)/timeout.Plo
 	-rm -f ell/$(DEPDIR)/utf8.Plo
 	-rm -f ell/$(DEPDIR)/util.Plo
+	-rm -f ell/$(DEPDIR)/uuid.Plo
 	-rm -f emulator/$(DEPDIR)/amp.Po
 	-rm -f emulator/$(DEPDIR)/android_android_tester-btdev.Po
 	-rm -f emulator/$(DEPDIR)/android_android_tester-bthost.Po
@@ -11259,10 +11289,12 @@ maintainer-clean: maintainer-clean-am
 	-rm -f profiles/scanparam/$(DEPDIR)/scpp.Po
 	-rm -f src/$(DEPDIR)/android_avdtptest-log.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-adapter.Po
+	-rm -f src/$(DEPDIR)/bluetoothd-adv_monitor.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-advertising.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-agent.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-attrib-server.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-backtrace.Po
+	-rm -f src/$(DEPDIR)/bluetoothd-battery.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-dbus-common.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-device.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-eir.Po
@@ -11336,7 +11368,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tools/$(DEPDIR)/amptest.Po
 	-rm -f tools/$(DEPDIR)/avinfo.Po
 	-rm -f tools/$(DEPDIR)/avtest.Po
-	-rm -f tools/$(DEPDIR)/bccmd.Po
 	-rm -f tools/$(DEPDIR)/bcmfw.Po
 	-rm -f tools/$(DEPDIR)/bdaddr.Po
 	-rm -f tools/$(DEPDIR)/bluemoon.Po
@@ -11352,18 +11383,13 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tools/$(DEPDIR)/btmgmt.Po
 	-rm -f tools/$(DEPDIR)/btmon-logger.Po
 	-rm -f tools/$(DEPDIR)/btpclient.Po
+	-rm -f tools/$(DEPDIR)/btpclientctl.Po
 	-rm -f tools/$(DEPDIR)/btproxy.Po
 	-rm -f tools/$(DEPDIR)/btsnoop.Po
 	-rm -f tools/$(DEPDIR)/check-selftest.Po
 	-rm -f tools/$(DEPDIR)/ciptool.Po
 	-rm -f tools/$(DEPDIR)/cltest.Po
 	-rm -f tools/$(DEPDIR)/create-image.Po
-	-rm -f tools/$(DEPDIR)/csr.Po
-	-rm -f tools/$(DEPDIR)/csr_3wire.Po
-	-rm -f tools/$(DEPDIR)/csr_bcsp.Po
-	-rm -f tools/$(DEPDIR)/csr_h4.Po
-	-rm -f tools/$(DEPDIR)/csr_hci.Po
-	-rm -f tools/$(DEPDIR)/csr_usb.Po
 	-rm -f tools/$(DEPDIR)/eddystone.Po
 	-rm -f tools/$(DEPDIR)/gap-tester.Po
 	-rm -f tools/$(DEPDIR)/gatt-service.Po
@@ -11408,7 +11434,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tools/$(DEPDIR)/seq2bseq.Po
 	-rm -f tools/$(DEPDIR)/smp-tester.Po
 	-rm -f tools/$(DEPDIR)/test-runner.Po
-	-rm -f tools/$(DEPDIR)/ubcsp.Po
 	-rm -f tools/$(DEPDIR)/userchan-tester.Po
 	-rm -f tools/mesh-gatt/$(DEPDIR)/config-client.Po
 	-rm -f tools/mesh-gatt/$(DEPDIR)/config-server.Po

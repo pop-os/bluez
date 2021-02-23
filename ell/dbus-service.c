@@ -25,7 +25,6 @@
 #endif
 
 #define _GNU_SOURCE
-#include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1749,6 +1748,16 @@ bool _dbus_object_tree_dispatch(struct _dbus_object_tree *tree,
 	interface = l_dbus_message_get_interface(message);
 	member = l_dbus_message_get_member(message);
 	msg_sig = l_dbus_message_get_signature(message);
+
+	/*
+	 * Nothing in the spec explicitly forbids this, but handling of such
+	 * messages is left up to the implementation.
+	 *
+	 * TODO: Another route is to go looking for a matching method under this
+	 * object and call it.
+	 */
+	if (!interface)
+		return false;
 
 	if (!msg_sig)
 		msg_sig = "";
