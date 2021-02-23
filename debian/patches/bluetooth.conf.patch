@@ -7,7 +7,7 @@ Index: bluez/src/bluetooth.conf
 ===================================================================
 --- bluez.orig/src/bluetooth.conf
 +++ bluez/src/bluetooth.conf
-@@ -22,6 +22,11 @@
+@@ -23,6 +23,11 @@
      <allow send_interface="org.mpris.MediaPlayer2.Player"/>
    </policy>
  

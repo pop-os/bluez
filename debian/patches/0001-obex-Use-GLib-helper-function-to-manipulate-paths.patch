@@ -13,7 +13,7 @@ Index: bluez/obexd/src/manager.c
 ===================================================================
 --- bluez.orig/obexd/src/manager.c
 +++ bluez/obexd/src/manager.c
-@@ -653,14 +653,14 @@ static void agent_reply(DBusPendingCall
+@@ -640,14 +640,14 @@ static void agent_reply(DBusPendingCall
  				DBUS_TYPE_STRING, &name,
  				DBUS_TYPE_INVALID)) {
  		/* Splits folder and name */

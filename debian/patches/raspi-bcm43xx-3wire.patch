@@ -6,9 +6,11 @@ Description: Patches to add BCM43xx 3-wire variant
  for use when the mini-UART (which lacks flow-control) is used instead of the
  PL011 UART to drive the bluetooth module
 
---- a/tools/hciattach.c
-+++ b/tools/hciattach.c
-@@ -1091,6 +1091,9 @@
+Index: bluez/tools/hciattach.c
+===================================================================
+--- bluez.orig/tools/hciattach.c
++++ bluez/tools/hciattach.c
+@@ -1078,6 +1078,9 @@ struct uart_t uart[] = {
  	{ "bcm43xx",    0x0000, 0x0000, HCI_UART_H4,   115200, 3000000,
  				FLOW_CTL, DISABLE_PM, NULL, bcm43xx, NULL  },
  

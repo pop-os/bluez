@@ -6,11 +6,11 @@ Subject: Patch Cypress 305 devices to behave as Broadcom devices
  tools/bdaddr.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/tools/bdaddr.c b/tools/bdaddr.c
-index 952e99077..55fad4b46 100644
---- a/tools/bdaddr.c
-+++ b/tools/bdaddr.c
-@@ -316,6 +316,7 @@ static struct {
+Index: bluez/tools/bdaddr.c
+===================================================================
+--- bluez.orig/tools/bdaddr.c
++++ bluez/tools/bdaddr.c
+@@ -303,6 +303,7 @@ static struct {
  	{ 48,		st_write_bd_addr,	generic_reset_device	},
  	{ 57,		ericsson_write_bd_addr,	generic_reset_device	},
  	{ 72,		mrvl_write_bd_addr,	generic_reset_device	},
@@ -18,6 +18,3 @@ index 952e99077..55fad4b46 100644
  	{ 65535,	NULL,			NULL			},
  };
  
--- 
-2.25.1
-

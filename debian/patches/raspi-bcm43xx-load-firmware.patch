@@ -8,9 +8,11 @@ Description: Patches for loading the bcm43xx firmware
  also introduces a short wait after the firmware load before the module is
  reset.
 
---- a/tools/hciattach_bcm43xx.c
-+++ b/tools/hciattach_bcm43xx.c
-@@ -44,7 +44,7 @@
+Index: bluez/tools/hciattach_bcm43xx.c
+===================================================================
+--- bluez.orig/tools/hciattach_bcm43xx.c
++++ bluez/tools/hciattach_bcm43xx.c
+@@ -31,7 +31,7 @@
  #include "hciattach.h"
  
  #ifndef FIRMWARE_DIR
@@ -19,7 +21,7 @@ Description: Patches for loading the bcm43xx firmware
  #endif
  
  #define FW_EXT ".hcd"
-@@ -369,9 +369,6 @@
+@@ -356,9 +356,6 @@ int bcm43xx_init(int fd, int def_speed,
  	if (bcm43xx_locate_patch(FIRMWARE_DIR, chip_name, fw_path)) {
  		fprintf(stderr, "Patch not found, continue anyway\n");
  	} else {

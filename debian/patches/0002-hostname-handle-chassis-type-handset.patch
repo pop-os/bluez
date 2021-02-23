@@ -13,7 +13,7 @@ Index: bluez/plugins/hostname.c
 ===================================================================
 --- bluez.orig/plugins/hostname.c
 +++ bluez/plugins/hostname.c
-@@ -40,10 +40,11 @@
+@@ -27,10 +27,11 @@
  #include "src/adapter.h"
  #include "src/log.h"
  
@@ -26,7 +26,7 @@ Index: bluez/plugins/hostname.c
  
  #define MINOR_CLASS_UNCATEGORIZED	0x00
  #define MINOR_CLASS_DESKTOP		0x01
-@@ -54,6 +55,8 @@
+@@ -41,6 +42,8 @@
  #define MINOR_CLASS_WEARABLE		0x06
  #define MINOR_CLASS_TABLET		0x07
  
@@ -35,7 +35,7 @@ Index: bluez/plugins/hostname.c
  static uint8_t major_class = MAJOR_CLASS_MISCELLANEOUS;
  static uint8_t minor_class = MINOR_CLASS_UNCATEGORIZED;
  
-@@ -122,8 +125,14 @@ static const struct {
+@@ -109,8 +112,14 @@ static const struct {
  	{ "desktop",  MAJOR_CLASS_COMPUTER, MINOR_CLASS_DESKTOP  },
  	{ "server",   MAJOR_CLASS_COMPUTER, MINOR_CLASS_SERVER   },
  	{ "laptop",   MAJOR_CLASS_COMPUTER, MINOR_CLASS_LAPTOP   },

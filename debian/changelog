@@ -11,6 +11,17 @@ bluez (5.56-0ubuntu1) hirsute; urgency=medium
     - Fix issue with HID report value callback registration.
     - Add support for new advertising management command.
     - Add support for battery D-Bus interface.
+  * Refreshed patches:
+    - 0001-Allow-using-obexd-without-systemd-in-the-user-sessio.patch
+    - 0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch
+    - 0002-hostname-handle-chassis-type-handset.patch
+    - bluetooth.conf.patch
+    - change_path_of_hogsuspend.patch
+    - raspi-bcm43xx-3wire.patch
+    - raspi-bcm43xx-load-firmware.patch
+    - raspi-cypress-305-bdaddr.patch
+  * FIXME?: Disabled patches:
+    - migrate_scripts_python3.patch
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 23 Feb 2021 17:58:00 +0800
 
