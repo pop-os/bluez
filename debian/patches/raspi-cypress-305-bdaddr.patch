@@ -1,5 +1,5 @@
 From: Phil Elwell <phil@raspberrypi.com>
-Forwarded: no
+Forwarded: https://patchwork.kernel.org/project/bluetooth/patch/20201218190609.107898-3-dave.jones@canonical.com/
 Subject: Patch Cypress 305 devices to behave as Broadcom devices
 
 ---

@@ -1,3 +1,9 @@
+bluez (5.55-0ubuntu5) hirsute; urgency=medium
+
+  * Correctly include the updated patches now
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Thu, 04 Feb 2021 13:37:23 +0100
+
 bluez (5.55-0ubuntu3.2) hirsute; urgency=medium
 
   * Add the refined Raspi patches currently awaiting review upstream
