@@ -22,6 +22,7 @@ bluez (5.56-0ubuntu1) hirsute; urgency=medium
     - raspi-cypress-305-bdaddr.patch
   * FIXME?: Disabled patches:
     - migrate_scripts_python3.patch
+  * Removed packaging of deprecated files bccmd*
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 23 Feb 2021 17:58:00 +0800
 
