@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Ubuntu Bluetooth team <ubuntu-bluetooth@lists.ubuntu.com>
 XSBC-Original-Maintainer: Debian Bluetooth Maintainers <pkg-bluetooth-maintainers@lists.alioth.debian.org>
 Uploaders: Nobuhiro Iwamatsu <iwamatsu@debian.org>
-Build-Depends: debhelper (>= 9),
+Build-Depends: debhelper (>= 9.20160709),
 	autotools-dev,
 	dh-autoreconf,
 	flex,
@@ -18,7 +18,6 @@ Build-Depends: debhelper (>= 9),
 	libical-dev,
 	check (>= 0.9.8-1.1),
 	systemd,
-	dh-systemd (>= 1.5),
 	libebook1.2-dev (>= 3.12)
 Vcs-Git: https://git.launchpad.net/~bluetooth/bluez
 Vcs-Browser: https://git.launchpad.net/~bluetooth/bluez
