@@ -1,3 +1,9 @@
+bluez (5.56-0ubuntu3) hirsute; urgency=medium
+
+  * Mark symbols as option, not seen when building with lto.
+
+ -- Matthias Klose <doko@ubuntu.com>  Mon, 22 Mar 2021 19:59:17 +0100
+
 bluez (5.56-0ubuntu2) hirsute; urgency=medium
 
   * Drop build-dependency on obsolete dh-systemd.
