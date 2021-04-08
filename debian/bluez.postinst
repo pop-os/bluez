@@ -38,6 +38,23 @@ case "$1" in
             addgroup --quiet --system bluetooth
         fi
 
+        # If running on a raspberry pi and no bluetooth device is found
+        # a reboot will be required
+        if [ -f /proc/device-tree/model ] && grep -q 'Raspberry Pi' /proc/device-tree/model; then
+            if ! ( /usr/bin/hcitool dev | grep -q -E '\s(B8:27:EB:|DC:A6:32:)' ); then
+                echo "A reboot is required to re-intialize bluetooth devices." >&2
+                echo "Please reboot the system when convenient." >&2
+
+                # trigger an update notification that recommends a reboot
+                # (used by unattended-upgrades etc.)
+                touch /var/run/reboot-required || true
+
+                if ! grep -Fqsx bluez /run/reboot-required.pkgs; then
+                    echo bluez >> /run/reboot-required.pkgs || true
+                fi
+            fi
+        fi
+
         # reload dbus config file
         if [ -x /etc/init.d/dbus ]; then
             invoke-rc.d dbus force-reload || true

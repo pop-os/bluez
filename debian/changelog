@@ -1,3 +1,10 @@
+bluez (5.56-0ubuntu4) hirsute; urgency=medium
+
+  * Check for a scenario that might require a reboot when upgrading or
+    installing on the raspberry pi (LP: #1922792)
+
+ -- William 'jawn-smith' Wilson <william.wilson@canonical.com>  Tue, 06 Apr 2021 17:07:52 -0500
+
 bluez (5.56-0ubuntu3) hirsute; urgency=medium
 
   * Mark symbols as option, not seen when building with lto.
