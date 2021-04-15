@@ -1,3 +1,10 @@
+bluez (5.56-0ubuntu5) UNRELEASED; urgency=medium
+
+  * Add hog-lib-Fix-crash-when-receiving-UHID_GET_REPORT.patch to fix crashes
+    when connecting Bluetooth keyboards (LP: #1924217)
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 15 Apr 2021 14:47:04 +0800
+
 bluez (5.56-0ubuntu4) hirsute; urgency=medium
 
   * Check for a scenario that might require a reboot when upgrading or
