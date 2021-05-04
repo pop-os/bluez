@@ -1,3 +1,14 @@
+bluez (5.58-0ubuntu1) UNRELEASED; urgency=medium
+
+  * New upstream release 5.58 (LP: #1923564):
+    - Fix issue with usage of deprecated GLib functions.
+  * New upstream release 5.57:
+    - Fix issue with handling GATT notification PDU parsing.
+    - Fix issue with registering DIS without a valid source.
+    - Fix issue with removing remote SEPs when loading from cache.
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 04 May 2021 15:23:46 +0800
+
 bluez (5.56-0ubuntu4) hirsute; urgency=medium
 
   * Add hog-lib-Fix-crash-when-receiving-UHID_GET_REPORT.patch to fix crashes
