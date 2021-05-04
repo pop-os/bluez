@@ -141,6 +141,12 @@ struct btdev {
 	uint8_t  le_scan_own_addr_type;
 	uint8_t  le_filter_dup;
 	uint8_t  le_adv_enable;
+	uint8_t  le_periodic_adv_enable;
+	uint16_t le_periodic_adv_properties;
+	uint16_t le_periodic_min_interval;
+	uint16_t le_periodic_max_interval;
+	uint8_t  le_periodic_data_len;
+	uint8_t  le_periodic_data[31];
 	uint8_t  le_ltk[16];
 	struct {
 		struct bt_hci_cmd_le_set_cig_params params;
@@ -3934,22 +3940,54 @@ static int cmd_clear_adv_sets(struct btdev *dev, const void *data,
 static int cmd_set_per_adv_params(struct btdev *dev, const void *data,
 							uint8_t len)
 {
-	/* TODO */
-	return -ENOTSUP;
+	const struct bt_hci_cmd_le_set_periodic_adv_params *cmd = data;
+	uint8_t status;
+
+	if (dev->le_periodic_adv_enable) {
+		status = BT_HCI_ERR_COMMAND_DISALLOWED;
+	} else {
+		status = BT_HCI_ERR_SUCCESS;
+		dev->le_periodic_adv_properties = le16_to_cpu(cmd->properties);
+		dev->le_periodic_min_interval = cmd->min_interval;
+		dev->le_periodic_max_interval = cmd->max_interval;
+	}
+
+	cmd_complete(dev, BT_HCI_CMD_LE_SET_PERIODIC_ADV_PARAMS, &status,
+							sizeof(status));
+	return 0;
 }
 
 static int cmd_set_per_adv_data(struct btdev *dev, const void *data,
 							uint8_t len)
 {
-	/* TODO */
-	return -ENOTSUP;
+	const struct bt_hci_cmd_le_set_periodic_adv_data *cmd = data;
+	uint8_t status = BT_HCI_ERR_SUCCESS;
+
+	dev->le_periodic_data_len = cmd->data_len;
+	memcpy(dev->le_periodic_data, cmd->data, 31);
+	cmd_complete(dev, BT_HCI_CMD_LE_SET_PERIODIC_ADV_DATA, &status,
+							sizeof(status));
+
+	return 0;
 }
 
 static int cmd_set_per_adv_enable(struct btdev *dev, const void *data,
 							uint8_t len)
 {
-	/* TODO */
-	return -ENOTSUP;
+	const struct bt_hci_cmd_le_set_periodic_adv_enable *cmd = data;
+	uint8_t status;
+
+	if (dev->le_periodic_adv_enable == cmd->enable) {
+		status = BT_HCI_ERR_COMMAND_DISALLOWED;
+	} else {
+		dev->le_periodic_adv_enable = cmd->enable;
+		status = BT_HCI_ERR_SUCCESS;
+	}
+
+	cmd_complete(dev, BT_HCI_CMD_LE_SET_PERIODIC_ADV_ENABLE, &status,
+							sizeof(status));
+
+	return 0;
 }
 
 static int cmd_set_ext_scan_params(struct btdev *dev, const void *data,
@@ -4343,11 +4381,11 @@ static void le_cis_estabilished(struct btdev *dev, struct btdev_conn *conn,
 	memset(&evt, 0, sizeof(evt));
 
 	evt.status = status;
+	evt.conn_handle = cpu_to_le16(conn->handle);
 
 	if (!evt.status) {
 		struct btdev *remote = conn->link->dev;
 
-		evt.conn_handle = cpu_to_le16(conn->handle);
 		/* TODO: Figure out if these values makes sense */
 		memcpy(evt.cig_sync_delay, remote->le_cig.params.m_interval,
 				sizeof(remote->le_cig.params.m_interval));
@@ -4409,8 +4447,8 @@ static int cmd_create_cis_complete(struct btdev *dev, const void *data,
 
 		evt.acl_handle = cpu_to_le16(acl->handle);
 		evt.cis_handle = cpu_to_le16(iso->handle);
-		evt.cig_id = 0x00;
-		evt.cis_id = 0x00;
+		evt.cig_id = iso->dev->le_cig.params.cig_id;
+		evt.cis_id = iso->dev->le_cig.cis.cis_id;
 
 		le_meta_event(iso->link->dev, BT_HCI_EVT_LE_CIS_REQ, &evt,
 					sizeof(evt));
@@ -4614,6 +4652,83 @@ static int cmd_set_host_feature(struct btdev *dev, const void *data,
 	return 0;
 }
 
+static int cmd_read_local_codecs_v2(struct btdev *dev, const void *data,
+							uint8_t len)
+{
+	struct {
+		struct bt_hci_rsp_read_local_codecs rsp;
+		struct bt_hci_codec codec[6];
+		uint8_t num_vnd_codecs;
+	} pdu;
+
+	memset(&pdu, 0, sizeof(pdu));
+
+	pdu.rsp.status = BT_HCI_ERR_SUCCESS;
+	pdu.rsp.num_codecs = 0x06;
+	pdu.codec[0].id = 0x00;
+	pdu.codec[0].transport = BT_HCI_LOCAL_CODEC_BREDR_SCO;
+	pdu.codec[1].id = 0x01;
+	pdu.codec[1].transport = BT_HCI_LOCAL_CODEC_BREDR_SCO;
+	pdu.codec[2].id = 0x02;
+	pdu.codec[2].transport = BT_HCI_LOCAL_CODEC_BREDR_SCO;
+	pdu.codec[3].id = 0x03;
+	pdu.codec[3].transport = BT_HCI_LOCAL_CODEC_BREDR_SCO;
+	pdu.codec[4].id = 0x04;
+	pdu.codec[4].transport = BT_HCI_LOCAL_CODEC_BREDR_SCO;
+	pdu.codec[5].id = 0x05;
+	pdu.codec[5].transport = BT_HCI_LOCAL_CODEC_BREDR_SCO;
+
+	cmd_complete(dev, BT_HCI_CMD_READ_LOCAL_CODECS_V2, &pdu, sizeof(pdu));
+
+	return 0;
+}
+
+static int cmd_read_local_codec_caps(struct btdev *dev, const void *data,
+						uint8_t len)
+{
+	const struct bt_hci_cmd_read_local_codec_caps *cmd = data;
+	struct bt_hci_rsp_read_local_codec_caps rsp;
+
+	memset(&rsp, 0, sizeof(rsp));
+
+	if (cmd->codec.id > 0x05)
+		rsp.status = BT_HCI_ERR_INVALID_PARAMETERS;
+
+	cmd_complete(dev, BT_HCI_CMD_READ_LOCAL_CODEC_CAPS, &rsp, sizeof(rsp));
+
+	return 0;
+}
+
+static int cmd_read_local_ctrl_delay(struct btdev *dev, const void *data,
+					uint8_t len)
+{
+	const struct bt_hci_cmd_read_local_ctrl_delay *cmd = data;
+	struct bt_hci_rsp_read_local_ctrl_delay rsp;
+
+	memset(&rsp, 0, sizeof(rsp));
+
+	if (cmd->codec.id > 0x05)
+		rsp.status = BT_HCI_ERR_INVALID_PARAMETERS;
+
+	cmd_complete(dev, BT_HCI_CMD_READ_LOCAL_CTRL_DELAY, &rsp, sizeof(rsp));
+
+	return 0;
+}
+
+static int cmd_config_data_path(struct btdev *dev, const void *data,
+					uint8_t len)
+{
+	const struct bt_hci_cmd_config_data_path *cmd = data;
+	uint8_t status = BT_HCI_ERR_SUCCESS;
+
+	if (cmd->id > 0x05)
+		status = BT_HCI_ERR_INVALID_PARAMETERS;
+
+	cmd_complete(dev, BT_HCI_CMD_CONFIG_DATA_PATH, &status, sizeof(status));
+
+	return 0;
+}
+
 #define CMD_LE_52 \
 	CMD(BT_HCI_CMD_LE_READ_BUFFER_SIZE_V2, cmd_read_size_v2, NULL), \
 	CMD(BT_HCI_CMD_LE_READ_ISO_TX_SYNC, cmd_read_iso_tx_sync, NULL), \
@@ -4638,7 +4753,13 @@ static int cmd_set_host_feature(struct btdev *dev, const void *data,
 	CMD(BT_HCI_CMD_LE_ISO_READ_TEST_COUNTER, cmd_iso_read_test_counter, \
 					NULL), \
 	CMD(BT_HCI_CMD_LE_ISO_TEST_END, cmd_iso_test_end, NULL), \
-	CMD(BT_HCI_CMD_LE_SET_HOST_FEATURE, cmd_set_host_feature, NULL)
+	CMD(BT_HCI_CMD_LE_SET_HOST_FEATURE, cmd_set_host_feature, NULL), \
+	CMD(BT_HCI_CMD_READ_LOCAL_CODECS_V2, cmd_read_local_codecs_v2, NULL), \
+	CMD(BT_HCI_CMD_READ_LOCAL_CODEC_CAPS, cmd_read_local_codec_caps, \
+					NULL), \
+	CMD(BT_HCI_CMD_READ_LOCAL_CTRL_DELAY, cmd_read_local_ctrl_delay, \
+					NULL), \
+	CMD(BT_HCI_CMD_CONFIG_DATA_PATH, cmd_config_data_path, NULL)
 
 static const struct btdev_cmd cmd_le_5_2[] = {
 	CMD_COMMON_ALL,
@@ -4672,6 +4793,10 @@ static void set_le_52_commands(struct btdev *btdev)
 	btdev->commands[43] |= 0x80;	/* LE ISO Read Test Counter */
 	btdev->commands[44] |= 0x01;	/* LE ISO Test End */
 	btdev->commands[44] |= 0x02;	/* LE ISO Set Host Feature */
+	btdev->commands[45] |= 0x04;	/* Read Local Supported Codecs v2 */
+	btdev->commands[45] |= 0x08;	/* Read Local Supported Codecs Caps */
+	btdev->commands[45] |= 0x10;	/* Read Local Supported Ctrl Delay */
+	btdev->commands[45] |= 0x20;	/* Config Data Path */
 	btdev->cmds = cmd_le_5_2;
 }
 

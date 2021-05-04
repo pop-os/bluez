@@ -41,6 +41,7 @@
 
 #include "shared/att-types.h"
 #include "shared/mainloop.h"
+#include "shared/timeout.h"
 #include "lib/uuid.h"
 #include "shared/util.h"
 #include "btd.h"
@@ -188,9 +189,15 @@ static void parse_did(const char *did)
 	int result;
 	uint16_t vendor, product, version , source;
 
-	/* version and source are optional */
+	vendor = 0x0000;
+	product = 0x0000;
 	version = 0x0000;
 	source = 0x0002;
+
+	if (!strcasecmp(did, "false")) {
+		source = 0x0000;
+		goto done;
+	}
 
 	result = sscanf(did, "bluetooth:%4hx:%4hx:%4hx",
 					&vendor, &product, &version);
@@ -847,7 +854,7 @@ void btd_exit(void)
 	mainloop_quit();
 }
 
-static gboolean quit_eventloop(gpointer user_data)
+static bool quit_eventloop(gpointer user_data)
 {
 	btd_exit();
 	return FALSE;
@@ -862,8 +869,8 @@ static void signal_callback(int signum, void *user_data)
 	case SIGTERM:
 		if (!terminated) {
 			info("Terminating");
-			g_timeout_add_seconds(SHUTDOWN_GRACE_SECONDS,
-							quit_eventloop, NULL);
+			timeout_add_seconds(SHUTDOWN_GRACE_SECONDS,
+						quit_eventloop, NULL, NULL);
 
 			mainloop_sd_notify("STATUS=Powering down");
 			adapter_shutdown();

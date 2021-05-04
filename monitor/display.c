@@ -28,15 +28,31 @@
 #include "display.h"
 
 static pid_t pager_pid = 0;
+int default_pager_num_columns = FALLBACK_TERMINAL_WIDTH;
+enum monitor_color setting_monitor_color = COLOR_AUTO;
+
+void set_monitor_color(enum monitor_color color)
+{
+	setting_monitor_color = color;
+}
 
 bool use_color(void)
 {
 	static int cached_use_color = -1;
 
-	if (__builtin_expect(!!(cached_use_color < 0), 0))
+	if (setting_monitor_color == COLOR_ALWAYS)
+		cached_use_color = 1;
+	else if (setting_monitor_color == COLOR_NEVER)
+		cached_use_color = 0;
+	else if (__builtin_expect(!!(cached_use_color < 0), 0))
 		cached_use_color = isatty(STDOUT_FILENO) > 0 || pager_pid > 0;
 
 	return cached_use_color;
+}
+
+void set_default_pager_num_columns(int num_columns)
+{
+	default_pager_num_columns = num_columns;
 }
 
 int num_columns(void)
@@ -48,7 +64,7 @@ int num_columns(void)
 
 		if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) < 0 ||
 								ws.ws_col == 0)
-			cached_num_columns = FALLBACK_TERMINAL_WIDTH;
+			cached_num_columns = default_pager_num_columns;
 		else
 			cached_num_columns = ws.ws_col;
 	}

@@ -43,19 +43,16 @@ _Pragma("GCC diagnostic ignored \"-Wcast-align\"")			\
 _Pragma("GCC diagnostic pop")						\
 	})
 
-#define likely(x)   __builtin_expect(!!(x), 1)
-#define unlikely(x) __builtin_expect(!!(x), 0)
-
 #define L_STRINGIFY(val) L_STRINGIFY_ARG(val)
 #define L_STRINGIFY_ARG(contents) #contents
 
 #define L_WARN_ON(condition) __extension__ ({				\
 		bool r = !!(condition);					\
-		if (unlikely(r))					\
+		if (r)							\
 			l_warn("WARNING: %s:%s() condition %s failed",	\
 				__FILE__, __func__,			\
 				#condition);				\
-		unlikely(r);						\
+		r;							\
 	})
 
 #define L_PTR_TO_UINT(p) ((unsigned int) ((uintptr_t) (p)))
@@ -229,9 +226,6 @@ static inline void l_put_be64(uint64_t val, void *ptr)
 	L_PUT_UNALIGNED(L_CPU_TO_BE64(val), (uint64_t *) ptr);
 }
 
-#define L_AUTO_CLEANUP_VAR(vartype,varname,destroy) \
-	vartype varname __attribute__((cleanup(destroy)))
-
 #define L_AUTO_FREE_VAR(vartype,varname) \
 	vartype varname __attribute__((cleanup(auto_free)))
 
@@ -249,14 +243,6 @@ static inline void auto_free(void *a)
 {
 	void **p = (void **)a;
 	l_free(*p);
-}
-
-static inline size_t minsize(size_t a, size_t b)
-{
-	if (a <= b)
-		return a;
-
-	return b;
 }
 
 /**

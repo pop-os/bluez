@@ -25,3 +25,4 @@
 #include <ell/cert-private.h>
 #include <ell/pem-private.h>
 #include <ell/uuid.h>
+#include <ell/main-private.h>

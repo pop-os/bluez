@@ -1,8 +1,10 @@
 /*
  *
- *  Embedded Linux library
+ *  BlueZ - Bluetooth protocol stack for Linux
  *
- *  Copyright (C) 2011-2014  Intel Corporation. All rights reserved.
+ *  Copyright (C) 2011-2014  Intel Corporation
+ *  Copyright (C) 2002-2010  Marcel Holtmann <marcel@holtmann.org>
+ *
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,6 +22,10 @@
  *
  */
 
-#include <ell/util.h>
+#include <stdint.h>
 
-#define LIB_EXPORT __attribute__ ((visibility("default")))
+struct vendor_ocf;
+struct vendor_evt;
+
+const struct vendor_ocf *msft_vendor_ocf(void);
+const struct vendor_evt *msft_vendor_evt(void);

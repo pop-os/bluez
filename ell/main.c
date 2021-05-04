@@ -38,8 +38,9 @@
 #include "signal.h"
 #include "queue.h"
 #include "log.h"
-#include "util.h"
+#include "useful.h"
 #include "main.h"
+#include "main-private.h"
 #include "private.h"
 #include "timeout.h"
 

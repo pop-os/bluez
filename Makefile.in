@@ -484,16 +484,17 @@ am__ell_libell_internal_la_SOURCES_DIST = ell/util.h ell/log.h \
 	ell/main.h ell/settings.h ell/strv.h ell/string.h ell/utf8.h \
 	ell/dbus.h ell/dbus-service.h ell/dbus-client.h ell/key.h \
 	ell/cert.h ell/pem.h ell/base64.h ell/asn1-private.h \
-	ell/cert-private.h ell/pem-private.h ell/uuid.h ell/private.h \
-	ell/missing.h ell/util.c ell/log.c ell/queue.c ell/hashmap.c \
-	ell/random.c ell/signal.c ell/timeout.c ell/io.c ell/idle.c \
-	ell/main.c ell/settings.c ell/strv.c ell/string.c ell/cipher.c \
-	ell/checksum.c ell/pem.c ell/cert.c ell/cert-crypto.c \
-	ell/key.c ell/base64.c ell/utf8.c ell/dbus-private.h \
-	ell/dbus.c ell/dbus-message.c ell/dbus-util.c \
-	ell/dbus-service.c ell/dbus-client.c ell/dbus-name-cache.c \
-	ell/dbus-filter.c ell/gvariant-private.h ell/gvariant-util.c \
-	ell/siphash-private.h ell/siphash.c ell/uuid.c
+	ell/cert-private.h ell/pem-private.h ell/uuid.h \
+	ell/main-private.h ell/private.h ell/missing.h ell/util.c \
+	ell/log.c ell/queue.c ell/hashmap.c ell/random.c ell/signal.c \
+	ell/timeout.c ell/io.c ell/idle.c ell/main.c ell/settings.c \
+	ell/strv.c ell/string.c ell/cipher.c ell/checksum.c ell/pem.c \
+	ell/cert.c ell/cert-crypto.c ell/key.c ell/base64.c ell/utf8.c \
+	ell/dbus-private.h ell/dbus.c ell/dbus-message.c \
+	ell/dbus-util.c ell/dbus-service.c ell/dbus-client.c \
+	ell/dbus-name-cache.c ell/dbus-filter.c ell/gvariant-private.h \
+	ell/gvariant-util.c ell/siphash-private.h ell/siphash.c \
+	ell/uuid.c ell/useful.h
 am__objects_1 =
 @EXTERNAL_ELL_FALSE@am__objects_2 = ell/util.lo ell/log.lo \
 @EXTERNAL_ELL_FALSE@	ell/queue.lo ell/hashmap.lo ell/random.lo \
@@ -509,7 +510,8 @@ am__objects_1 =
 @EXTERNAL_ELL_FALSE@	ell/gvariant-util.lo ell/siphash.lo \
 @EXTERNAL_ELL_FALSE@	ell/uuid.lo
 @EXTERNAL_ELL_FALSE@am_ell_libell_internal_la_OBJECTS =  \
-@EXTERNAL_ELL_FALSE@	$(am__objects_1) $(am__objects_2)
+@EXTERNAL_ELL_FALSE@	$(am__objects_1) $(am__objects_2) \
+@EXTERNAL_ELL_FALSE@	$(am__objects_1)
 ell_libell_internal_la_OBJECTS = $(am_ell_libell_internal_la_OBJECTS)
 @EXTERNAL_ELL_FALSE@am_ell_libell_internal_la_rpath =
 gdbus_libgdbus_internal_la_LIBADD =
@@ -941,8 +943,8 @@ am__monitor_btmon_SOURCES_DIST = monitor/main.c monitor/bt.h \
 	monitor/bnep.c monitor/hwdb.h monitor/hwdb.c monitor/keys.h \
 	monitor/keys.c monitor/analyze.h monitor/analyze.c \
 	monitor/intel.h monitor/intel.c monitor/broadcom.h \
-	monitor/broadcom.c monitor/jlink.h monitor/jlink.c \
-	monitor/tty.h
+	monitor/broadcom.c monitor/msft.h monitor/msft.c \
+	monitor/jlink.h monitor/jlink.c monitor/tty.h
 @MONITOR_TRUE@am_monitor_btmon_OBJECTS = monitor/main.$(OBJEXT) \
 @MONITOR_TRUE@	monitor/display.$(OBJEXT) \
 @MONITOR_TRUE@	monitor/hcidump.$(OBJEXT) \
@@ -958,7 +960,7 @@ am__monitor_btmon_SOURCES_DIST = monitor/main.c monitor/bt.h \
 @MONITOR_TRUE@	monitor/keys.$(OBJEXT) monitor/analyze.$(OBJEXT) \
 @MONITOR_TRUE@	monitor/intel.$(OBJEXT) \
 @MONITOR_TRUE@	monitor/broadcom.$(OBJEXT) \
-@MONITOR_TRUE@	monitor/jlink.$(OBJEXT)
+@MONITOR_TRUE@	monitor/msft.$(OBJEXT) monitor/jlink.$(OBJEXT)
 monitor_btmon_OBJECTS = $(am_monitor_btmon_OBJECTS)
 @MONITOR_TRUE@monitor_btmon_DEPENDENCIES =  \
 @MONITOR_TRUE@	lib/libbluetooth-internal.la \
@@ -2041,8 +2043,9 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	monitor/$(DEPDIR)/jlink.Po monitor/$(DEPDIR)/keys.Po \
 	monitor/$(DEPDIR)/l2cap.Po monitor/$(DEPDIR)/ll.Po \
 	monitor/$(DEPDIR)/lmp.Po monitor/$(DEPDIR)/main.Po \
-	monitor/$(DEPDIR)/packet.Po monitor/$(DEPDIR)/rfcomm.Po \
-	monitor/$(DEPDIR)/sdp.Po monitor/$(DEPDIR)/vendor.Po \
+	monitor/$(DEPDIR)/msft.Po monitor/$(DEPDIR)/packet.Po \
+	monitor/$(DEPDIR)/rfcomm.Po monitor/$(DEPDIR)/sdp.Po \
+	monitor/$(DEPDIR)/vendor.Po \
 	obexd/client/$(DEPDIR)/obexd-bluetooth.Po \
 	obexd/client/$(DEPDIR)/obexd-driver.Po \
 	obexd/client/$(DEPDIR)/obexd-ftp.Po \
@@ -2983,7 +2986,7 @@ local_headers = $(foreach file,$(lib_headers), lib/bluetooth/$(notdir $(file)))
 BUILT_SOURCES = $(local_headers) $(ell_built_sources) src/builtin.h \
 	obexd/src/builtin.h
 @LIBRARY_TRUE@lib_libbluetooth_la_SOURCES = $(lib_headers) $(lib_sources)
-@LIBRARY_TRUE@lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:4:19
+@LIBRARY_TRUE@lib_libbluetooth_la_LDFLAGS = $(AM_LDFLAGS) -version-info 22:5:19
 @LIBRARY_TRUE@lib_libbluetooth_la_DEPENDENCIES = $(local_headers)
 lib_libbluetooth_internal_la_SOURCES = $(lib_headers) $(lib_sources) \
 					$(extra_headers) $(extra_sources)
@@ -2998,8 +3001,8 @@ gdbus_libgdbus_internal_la_SOURCES = gdbus/gdbus.h \
 @EXTERNAL_ELL_TRUE@ell_ldadd = @ELL_LIBS@
 @EXTERNAL_ELL_FALSE@ell_dependencies = $(ell_ldadd)
 @EXTERNAL_ELL_TRUE@ell_dependencies = 
-@EXTERNAL_ELL_FALSE@ell_built_sources = ell/internal ell/ell.h
-@EXTERNAL_ELL_TRUE@ell_built_sources = 
+@EXTERNAL_ELL_FALSE@ell_built_sources = ell/shared ell/internal ell/ell.h
+@EXTERNAL_ELL_TRUE@ell_built_sources = ell/shared
 @EXTERNAL_ELL_FALSE@ell_headers = ell/util.h \
 @EXTERNAL_ELL_FALSE@			ell/log.h \
 @EXTERNAL_ELL_FALSE@			ell/queue.h \
@@ -3026,7 +3029,8 @@ gdbus_libgdbus_internal_la_SOURCES = gdbus/gdbus.h \
 @EXTERNAL_ELL_FALSE@			ell/asn1-private.h \
 @EXTERNAL_ELL_FALSE@			ell/cert-private.h \
 @EXTERNAL_ELL_FALSE@			ell/pem-private.h \
-@EXTERNAL_ELL_FALSE@			ell/uuid.h
+@EXTERNAL_ELL_FALSE@			ell/uuid.h \
+@EXTERNAL_ELL_FALSE@			ell/main-private.h
 
 @EXTERNAL_ELL_FALSE@ell_sources = ell/private.h ell/missing.h \
 @EXTERNAL_ELL_FALSE@			ell/util.c \
@@ -3064,7 +3068,8 @@ gdbus_libgdbus_internal_la_SOURCES = gdbus/gdbus.h \
 @EXTERNAL_ELL_FALSE@			ell/siphash.c \
 @EXTERNAL_ELL_FALSE@			ell/uuid.c
 
-@EXTERNAL_ELL_FALSE@ell_libell_internal_la_SOURCES = $(ell_headers) $(ell_sources)
+@EXTERNAL_ELL_FALSE@ell_shared = ell/useful.h
+@EXTERNAL_ELL_FALSE@ell_libell_internal_la_SOURCES = $(ell_headers) $(ell_sources) $(ell_shared)
 shared_sources = src/shared/io.h src/shared/timeout.h \
 	src/shared/queue.h src/shared/queue.c src/shared/util.h \
 	src/shared/util.c src/shared/mgmt.h src/shared/mgmt.c \
@@ -3251,6 +3256,7 @@ unit_tests = $(am__append_54) unit/test-eir unit/test-uuid \
 @MONITOR_TRUE@				monitor/analyze.h monitor/analyze.c \
 @MONITOR_TRUE@				monitor/intel.h monitor/intel.c \
 @MONITOR_TRUE@				monitor/broadcom.h monitor/broadcom.c \
+@MONITOR_TRUE@				monitor/msft.h monitor/msft.c \
 @MONITOR_TRUE@				monitor/jlink.h monitor/jlink.c \
 @MONITOR_TRUE@				monitor/tty.h
 
@@ -5076,6 +5082,8 @@ monitor/intel.$(OBJEXT): monitor/$(am__dirstamp) \
 	monitor/$(DEPDIR)/$(am__dirstamp)
 monitor/broadcom.$(OBJEXT): monitor/$(am__dirstamp) \
 	monitor/$(DEPDIR)/$(am__dirstamp)
+monitor/msft.$(OBJEXT): monitor/$(am__dirstamp) \
+	monitor/$(DEPDIR)/$(am__dirstamp)
 monitor/jlink.$(OBJEXT): monitor/$(am__dirstamp) \
 	monitor/$(DEPDIR)/$(am__dirstamp)
 
@@ -6467,6 +6475,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/ll.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/lmp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/msft.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/packet.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/rfcomm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@monitor/$(DEPDIR)/sdp.Po@am__quote@ # am--include-marker
@@ -10604,6 +10613,7 @@ distclean: distclean-am
 	-rm -f monitor/$(DEPDIR)/ll.Po
 	-rm -f monitor/$(DEPDIR)/lmp.Po
 	-rm -f monitor/$(DEPDIR)/main.Po
+	-rm -f monitor/$(DEPDIR)/msft.Po
 	-rm -f monitor/$(DEPDIR)/packet.Po
 	-rm -f monitor/$(DEPDIR)/rfcomm.Po
 	-rm -f monitor/$(DEPDIR)/sdp.Po
@@ -11187,6 +11197,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f monitor/$(DEPDIR)/ll.Po
 	-rm -f monitor/$(DEPDIR)/lmp.Po
 	-rm -f monitor/$(DEPDIR)/main.Po
+	-rm -f monitor/$(DEPDIR)/msft.Po
 	-rm -f monitor/$(DEPDIR)/packet.Po
 	-rm -f monitor/$(DEPDIR)/rfcomm.Po
 	-rm -f monitor/$(DEPDIR)/sdp.Po
@@ -11606,6 +11617,13 @@ $(lib_libbluetooth_la_OBJECTS): $(local_headers)
 lib/bluetooth/%.h: lib/%.h
 	$(AM_V_at)$(MKDIR_P) lib/bluetooth
 	$(AM_V_GEN)$(LN_S) -f $(abspath $<) $@
+
+ell/shared: Makefile
+	$(AM_V_GEN)for f in $(ell_shared) ; do \
+		if [ ! -f $$f ] ; then \
+			$(LN_S) -t ell -f $(abs_srcdir)/../ell/$$f ; \
+		fi \
+	done > $@
 
 ell/internal: Makefile
 	$(AM_V_at)$(MKDIR_P) ell

@@ -26,11 +26,13 @@
 
 #define _GNU_SOURCE
 #include <unistd.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <errno.h>
 #include <sys/socket.h>
 #include <alloca.h>
 
-#include "util.h"
+#include "useful.h"
 #include "cipher.h"
 #include "private.h"
 #include "random.h"
@@ -195,7 +197,7 @@ LIB_EXPORT struct l_cipher *l_cipher_new(enum l_cipher_type type,
 						size_t key_length)
 {
 	struct l_cipher *cipher;
-	const char *uninitialized_var(alg_name);
+	const char *alg_name;
 
 	if (unlikely(!key))
 		return NULL;
