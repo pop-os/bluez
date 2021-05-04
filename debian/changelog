@@ -6,6 +6,8 @@ bluez (5.58-0ubuntu1) UNRELEASED; urgency=medium
     - Fix issue with handling GATT notification PDU parsing.
     - Fix issue with registering DIS without a valid source.
     - Fix issue with removing remote SEPs when loading from cache.
+  * Drop hog-lib-Fix-crash-when-receiving-UHID_GET_REPORT.patch because
+    it is upstreamed in version 5.57.
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Tue, 04 May 2021 15:23:46 +0800
 

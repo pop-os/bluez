@@ -4,7 +4,6 @@ bluetooth.conf.patch
 0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch
 change_path_of_hogsuspend.patch
 lp1759836.patch
-hog-lib-Fix-crash-when-receiving-UHID_GET_REPORT.patch
 
 # This currently stays specific for Ubuntu
 0001-obexd-plugins-import-PBAP-ebook-support-from-upstrea.patch
