@@ -5,7 +5,11 @@ bluez (5.59-0ubuntu1) impish; urgency=medium
     - Fix issue with connect request if SDP search failed.
     - Fix issue with accepting invalid AVDTP capabilities.
     - Fix issue with unregister handling of AVRCP player.
-  * debian/control: Add new build-dep 'python3-docutils' required for rst2man
+  * Add new build-dep 'python3-docutils' required for rst2man.
+  * Add new package 'bluez-meshd' and --enable-mesh (LP: #1929833).
+  * Cleanups from upstream debian:
+    - Remove empty packages: libbluetooth3-dbg, bluez-dbg
+    - Lots of benign formatting changes in debian/control to shrink the diff.
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Mon, 21 Jun 2021 17:02:38 +0800
 

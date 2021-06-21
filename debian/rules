@@ -11,6 +11,7 @@ CONFIGURE_FLAGS := \
 	--enable-usb \
 	--enable-tools \
 	--enable-cups \
+	--enable-mesh \
 	--enable-datafiles \
 	--enable-debug \
 	--enable-library \
@@ -42,9 +43,6 @@ override_dh_installinit:
 
 override_dh_install:
 	dh_install --list-missing
-
-override_dh_strip:
-	dh_strip -a --dbg-package=bluez-dbg libbluetooth3-dbg
 
 override_dh_systemd_enable:
 	dh_systemd_enable -pbluez bluetooth.service
