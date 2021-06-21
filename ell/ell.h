@@ -4,6 +4,8 @@
 #include <ell/hashmap.h>
 #include <ell/random.h>
 #include <ell/signal.h>
+#include <ell/time.h>
+#include <ell/time-private.h>
 #include <ell/timeout.h>
 #include <ell/cipher.h>
 #include <ell/checksum.h>
@@ -25,4 +27,11 @@
 #include <ell/cert-private.h>
 #include <ell/pem-private.h>
 #include <ell/uuid.h>
+#include <ell/useful.h>
 #include <ell/main-private.h>
+#include <ell/tester.h>
+#include <ell/tls.h>
+#include <ell/tls-private.h>
+#include <ell/ecc.h>
+#include <ell/ecc-private.h>
+#include <ell/ecdh.h>
