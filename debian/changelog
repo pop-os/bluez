@@ -1,3 +1,13 @@
+bluez (5.59-0ubuntu1) impish; urgency=medium
+
+  * New upstream release 5.59 (LP: #1933078):
+    - Fix issue with string to UUID-32 conversion.
+    - Fix issue with connect request if SDP search failed.
+    - Fix issue with accepting invalid AVDTP capabilities.
+    - Fix issue with unregister handling of AVRCP player.
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Mon, 21 Jun 2021 17:02:38 +0800
+
 bluez (5.58-0ubuntu1) impish; urgency=medium
 
   * New upstream release 5.58 (LP: #1923564):
