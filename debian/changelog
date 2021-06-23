@@ -13,6 +13,8 @@ bluez (5.59-0ubuntu1) impish; urgency=medium
     - Lots of benign formatting changes in debian/control to shrink the diff.
   * Add binaries 'b1ee', 'btvirt', 'hfp' to 'bluez-tests' (LP: #1932022).
   * Add binary 'avinfo' to 'bluez' (LP: #1907886).
+  * Add patch Fix-reading-from-rfkill-socket.patch to resolve Bluetooth
+    on/off toggle issues with newer kernel versions (LP: #1926062).
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Mon, 21 Jun 2021 17:02:38 +0800
 
