@@ -7,6 +7,7 @@ bluez (5.60-0ubuntu1) impish; urgency=medium
     - Fix issue with RegisterProfile if UUID already exists.
     - Fix issue with GATT client attribute read with offset.
     - Fix issue with non-discoverable device and advertising monitor.
+  * Drop upstreamed patch: Fix-reading-from-rfkill-socket.patch
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Mon, 12 Jul 2021 16:36:13 +0800
 
