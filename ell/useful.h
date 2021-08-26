@@ -69,3 +69,17 @@ static inline unsigned char bit_field(const unsigned char oct,
 
 #define _auto_(func)					\
 	_AUTODESTRUCT(__COUNTER__, func)
+
+/*
+ * Trick the compiler into thinking that var might be changed somehow by
+ * the asm
+ */
+#define DO_NOT_OPTIMIZE(var) \
+	__asm__ ("" : "=r" (var) : "0" (var));
+
+static inline int secure_select(int select_left, int l, int r)
+{
+	int mask = -(!!select_left);
+
+	return r ^ ((l ^ r) & mask);
+}

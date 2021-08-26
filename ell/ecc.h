@@ -44,20 +44,31 @@ enum l_ecc_point_type {
 	L_ECC_POINT_TYPE_FULL = 0x04,
 };
 
-const struct l_ecc_curve *l_ecc_curve_get(const char *name);
+const unsigned int *l_ecc_supported_ike_groups(void);
+const unsigned int *l_ecc_supported_tls_groups(void);
+
+const struct l_ecc_curve *l_ecc_curve_from_name(const char *name);
+const struct l_ecc_curve *l_ecc_curve_from_ike_group(unsigned int group);
+const struct l_ecc_curve *l_ecc_curve_from_tls_group(unsigned int group);
+
 const char *l_ecc_curve_get_name(const struct l_ecc_curve *curve);
+unsigned int l_ecc_curve_get_ike_group(const struct l_ecc_curve *curve);
+unsigned int l_ecc_curve_get_tls_group(const struct l_ecc_curve *curve);
+struct l_ecc_scalar *l_ecc_curve_get_order(const struct l_ecc_curve *curve);
+struct l_ecc_scalar *l_ecc_curve_get_prime(const struct l_ecc_curve *curve);
 size_t l_ecc_curve_get_scalar_bytes(const struct l_ecc_curve *curve);
-const unsigned int *l_ecc_curve_get_supported_ike_groups(void);
-const unsigned int *l_ecc_curve_get_supported_tls_groups(void);
-const struct l_ecc_curve *l_ecc_curve_get_ike_group(unsigned int group);
-const struct l_ecc_curve *l_ecc_curve_get_tls_group(unsigned int group);
 
 struct l_ecc_point *l_ecc_point_new(const struct l_ecc_curve *curve);
 struct l_ecc_point *l_ecc_point_from_data(const struct l_ecc_curve *curve,
 					enum l_ecc_point_type type,
 					const void *data, size_t len);
+struct l_ecc_point *l_ecc_point_from_sswu(const struct l_ecc_scalar *u);
+struct l_ecc_point *l_ecc_point_clone(const struct l_ecc_point *p);
 
+const struct l_ecc_curve *l_ecc_point_get_curve(const struct l_ecc_point *p);
 ssize_t l_ecc_point_get_x(const struct l_ecc_point *p, void *x, size_t xlen);
+ssize_t l_ecc_point_get_y(const struct l_ecc_point *p, void *y, size_t ylen);
+
 ssize_t l_ecc_point_get_data(const struct l_ecc_point *p, void *buf, size_t len);
 void l_ecc_point_free(struct l_ecc_point *p);
 
@@ -65,12 +76,16 @@ struct l_ecc_scalar *l_ecc_scalar_new(const struct l_ecc_curve *curve,
 						const void *buf, size_t len);
 struct l_ecc_scalar *l_ecc_scalar_new_random(
 					const struct l_ecc_curve *curve);
+struct l_ecc_scalar *l_ecc_scalar_new_modp(const struct l_ecc_curve *curve,
+						const void *buf, size_t len);
+struct l_ecc_scalar *l_ecc_scalar_new_reduced_1_to_n(
+					const struct l_ecc_curve *curve,
+					const void *buf, size_t len);
 ssize_t l_ecc_scalar_get_data(const struct l_ecc_scalar *c, void *buf,
 					size_t len);
 void l_ecc_scalar_free(struct l_ecc_scalar *c);
 
 /* Constant operations */
-struct l_ecc_scalar *l_ecc_curve_get_order(const struct l_ecc_curve *curve);
 bool l_ecc_scalar_add(struct l_ecc_scalar *ret, const struct l_ecc_scalar *a,
 				const struct l_ecc_scalar *b,
 				const struct l_ecc_scalar *mod);
@@ -89,8 +104,6 @@ bool l_ecc_scalar_multiply(struct l_ecc_scalar *ret,
 				const struct l_ecc_scalar *b);
 int l_ecc_scalar_legendre(struct l_ecc_scalar *value);
 bool l_ecc_scalar_sum_x(struct l_ecc_scalar *ret, const struct l_ecc_scalar *x);
-
-struct l_ecc_scalar *l_ecc_curve_get_prime(const struct l_ecc_curve *curve);
 
 bool l_ecc_scalars_are_equal(const struct l_ecc_scalar *a,
 				const struct l_ecc_scalar *b);

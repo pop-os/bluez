@@ -43,6 +43,7 @@ struct l_ecc_curve {
 	uint64_t p[L_ECC_MAX_DIGITS];
 	uint64_t n[L_ECC_MAX_DIGITS];
 	uint64_t b[L_ECC_MAX_DIGITS];
+	int z;
 };
 
 struct l_ecc_scalar {
@@ -100,20 +101,25 @@ void _vli_mod_add(uint64_t *result, const uint64_t *left, const uint64_t *right,
 
 void _vli_rshift1(uint64_t *vli, unsigned int ndigits);
 
+bool _vli_mmod_fast(uint64_t *result, uint64_t *product,
+			const uint64_t *curve_prime, unsigned int ndigits);
+
 void _vli_mod_mult_fast(uint64_t *result, const uint64_t *left,
 		const uint64_t *right, const uint64_t *curve_prime,
 		unsigned int ndigits);
 void _vli_mod_square_fast(uint64_t *result, const uint64_t *left,
 					const uint64_t *curve_prime,
 					unsigned int ndigits);
-void _vli_mod_exp(uint64_t *result, uint64_t *base, uint64_t *exp,
+void _vli_mod_exp(uint64_t *result, const uint64_t *base, const uint64_t *exp,
 		const uint64_t *mod, unsigned int ndigits);
 
 int _vli_cmp(const uint64_t *left, const uint64_t *right, unsigned int ndigits);
+bool _vli_is_zero_or_one(const uint64_t *vli, unsigned int ndigits);
 
+uint64_t _vli_add(uint64_t *result, const uint64_t *left,
+				const uint64_t *right, unsigned int ndigits);
 uint64_t _vli_sub(uint64_t *result, const uint64_t *left,
-							const uint64_t *right,
-							unsigned int ndigits);
+				const uint64_t *right, unsigned int ndigits);
 
 int _vli_legendre(uint64_t *val, const uint64_t *p, unsigned int ndigits);
 
@@ -121,7 +127,8 @@ bool _ecc_point_is_zero(const struct l_ecc_point *point);
 
 void _ecc_calculate_p2(const struct l_ecc_curve *curve, uint64_t *p2);
 
-bool _ecc_compute_y(const struct l_ecc_curve *curve, uint64_t *y, uint64_t *x);
+bool _ecc_compute_y(const struct l_ecc_curve *curve, uint64_t *y,
+							const uint64_t *x);
 
 void _ecc_point_mult(struct l_ecc_point *result,
 			const struct l_ecc_point *point, const uint64_t *scalar,

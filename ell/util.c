@@ -342,6 +342,19 @@ LIB_EXPORT bool l_str_has_suffix(const char *str, const char *suffix)
 	return !strcmp(&str[len_diff], suffix);
 }
 
+/**
+ * l_streq0:
+ * @a: First operand
+ * @b: Second operand
+ *
+ * Returns: True if @a and @b are both NULL or both non-NULL and identical
+ * according to strcmp.  False otherwise.
+ */
+LIB_EXPORT bool l_streq0(const char *a, const char *b)
+{
+	return a == b || (a && b && !strcmp(a, b));
+}
+
 static char *hexstring_common(const unsigned char *buf, size_t len,
 				const char hexdigits[static 16])
 {
@@ -372,7 +385,7 @@ static char *hexstring_common(const unsigned char *buf, size_t len,
  * lower case hex digits a-f.  If you require upper case hex digits, use
  * @l_util_hexstring_upper
  **/
-LIB_EXPORT char *l_util_hexstring(const unsigned char *buf, size_t len)
+LIB_EXPORT char *l_util_hexstring(const void *buf, size_t len)
 {
 	static const char hexdigits[] = "0123456789abcdef";
 	return hexstring_common(buf, len, hexdigits);
@@ -387,7 +400,7 @@ LIB_EXPORT char *l_util_hexstring(const unsigned char *buf, size_t len)
  * upper case hex digits a-f.  If you require lower case hex digits, use
  * @l_util_hexstring
  **/
-LIB_EXPORT char *l_util_hexstring_upper(const unsigned char *buf, size_t len)
+LIB_EXPORT char *l_util_hexstring_upper(const void *buf, size_t len)
 {
 	static const char hexdigits[] = "0123456789ABCDEF";
 	return hexstring_common(buf, len, hexdigits);
@@ -654,14 +667,21 @@ LIB_EXPORT bool l_memeq(const void *field, size_t size, uint8_t byte)
 	return true;
 }
 
+__attribute__((noinline)) static int __secure_memeq(const void *field,
+						size_t size, uint8_t byte)
+{
+	unsigned int diff = 0;
+	size_t i;
+
+	for (i = 0; i < size; i++) {
+		diff |= ((uint8_t *) field)[i] ^ byte;
+		DO_NOT_OPTIMIZE(diff);
+	}
+
+	return diff;
+}
+
 LIB_EXPORT bool l_secure_memeq(const void *field, size_t size, uint8_t byte)
 {
-	const volatile uint8_t *mem = field;
-	size_t i;
-	bool diff = false;
-
-	for (i = 0; i < size; i++)
-		diff |= mem[i] != byte;
-
-	return !diff;
+	return __secure_memeq(field, size, byte) == 0 ? true : false;
 }
