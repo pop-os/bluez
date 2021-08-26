@@ -1,3 +1,15 @@
+bluez (5.61-0ubuntu1) UNRELEASED; urgency=medium
+
+  * New upstream release 5.61 (LP: #1941708):
+    - Fix issue with A2DP while waiting for command response.
+    - Fix issue with A2DP when SetConfiguration fails.
+    - Fix issue with device removal handling.
+    - Fix issue with storing discoverable setting.
+    - Add support for Central Address Resolution characteristic.
+    - Add support for admin policy plugin.
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 26 Aug 2021 15:41:04 +0800
+
 bluez (5.60-0ubuntu1) impish; urgency=medium
 
   * New upstream release 5.60 (LP: #1935794):
