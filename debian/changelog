@@ -7,6 +7,9 @@ bluez (5.61-0ubuntu1) UNRELEASED; urgency=medium
     - Fix issue with storing discoverable setting.
     - Add support for Central Address Resolution characteristic.
     - Add support for admin policy plugin.
+  * Merges from Debian:
+    - Change debian/watch to use HTTPS.
+    - Add to debian/README.Debian
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 26 Aug 2021 15:41:04 +0800
 
