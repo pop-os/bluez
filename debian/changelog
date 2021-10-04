@@ -7,9 +7,17 @@ bluez (5.61-0ubuntu1) UNRELEASED; urgency=medium
     - Fix issue with storing discoverable setting.
     - Add support for Central Address Resolution characteristic.
     - Add support for admin policy plugin.
-  * Merges from Debian:
+  * Merges from Debian 5.61-1:
     - Change debian/watch to use HTTPS.
     - Add to debian/README.Debian
+    - Replace 0001-Allow-using-obexd-without-systemd-in-the-user-sessio.patch
+      with allow-using-obexd-without-systemd-in-the-user-sessio.patch which
+      also fixes LP: #1945887.
+    - Rename 0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch
+      to obex-Use-GLib-helper-function-to-manipulate-paths.patch
+    - Rename 0001-work-around-Logitech-diNovo-Edge-keyboard-firmware-i.patch
+      to work-around-Logitech-diNovo-Edge-keyboard-firmware-i.patch although
+      Ubuntu still carries an additional fix that's not in the Debian branch.
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 26 Aug 2021 15:41:04 +0800
 
