@@ -607,7 +607,10 @@ LIB_EXPORT bool l_aead_cipher_encrypt(struct l_aead_cipher *cipher,
 	if (unlikely(!cipher))
 		return false;
 
-	if (unlikely(!in) || unlikely(!out))
+	if (unlikely(!in && !ad) || unlikely(!out))
+		return false;
+
+	if (unlikely(!in && in_len) || unlikely(!ad && ad_len))
 		return false;
 
 	if (cipher->type == L_AEAD_CIPHER_AES_CCM) {
@@ -677,6 +680,10 @@ static void init_supported()
 
 	initialized = true;
 
+	for (c = 0; c < L_ARRAY_SIZE(local_impl_ciphers); c++)
+		if (HAVE_LOCAL_IMPLEMENTATION(c))
+			supported_ciphers |= 1 << c;
+
 	sk = socket(PF_ALG, SOCK_SEQPACKET | SOCK_CLOEXEC, 0);
 	if (sk < 0)
 		return;
@@ -697,10 +704,6 @@ static void init_supported()
 
 		supported_ciphers |= 1 << c;
 	}
-
-	for (c = 0; c < L_ARRAY_SIZE(local_impl_ciphers); c++)
-		if (HAVE_LOCAL_IMPLEMENTATION(c))
-			supported_ciphers |= 1 << c;
 
 	strcpy((char *) salg.salg_type, "aead");
 

@@ -86,7 +86,7 @@ parameters are hexadecimal bytes.
 .B con
 Display active baseband connections
 .TP
-.B cc [\-\-\fIrole\fP=m|s] [\-\-\fIpkt\-type\fP=<\fIptype\fP>] <\fIbdaddr\fP>
+.B cc [\-\-\fIrole\fP=c|p] [\-\-\fIpkt\-type\fP=<\fIptype\fP>] <\fIbdaddr\fP>
 Create baseband connection to remote device with Bluetooth address \fIbdaddr\fP\&.
 .sp
 Option \fB\-\-pkt\-type\fP specifies a list  of  allowed packet types.
@@ -94,9 +94,9 @@ Option \fB\-\-pkt\-type\fP specifies a list  of  allowed packet types.
 packet types are \fBDM1\fP, \fBDM3\fP, \fBDM5\fP, \fBDH1\fP, \fBDH3\fP, \fBDH5\fP,
 \fBHV1\fP, \fBHV2\fP, \fBHV3\fP\&. Default is to allow all packet types.
 .sp
-Option  \fB\-\-role\fP can have value \fBm\fP (do not allow role switch, stay
-master) or \fBs\fP (allow role switch, become slave if the peer asks to become
-master). Default is \fBm\fP\&.
+Option  \fB\-\-role\fP can have value \fBc\fP (do not allow role switch, stay
+central) or \fBp\fP (allow role switch, become peripheral if the peer asks to
+become central). Default is \fBc\fP\&.
 .TP
 .B dc <\fIbdaddr\fP> [\fIreason\fP]
 Delete baseband connection from remote device with Bluetooth address
@@ -108,7 +108,7 @@ decimal.
 .TP
 .B sr <\fIbdaddr\fP> <\fIrole\fP>
 Switch role for the baseband connection from the remote device to
-\fBmaster\fP or \fBslave\fP\&.
+\fBcentral\fP or \fBperipheral\fP\&.
 .TP
 .B cpt <\fIbdaddr\fP> <\fIptypes\fP>
 Change packet types for baseband connection to device with Bluetooth
@@ -169,23 +169,23 @@ Read the clock for the device with Bluetooth address \fIbdaddr\fP\&.
 The \fIclock\fP can be \fB0\fP for the local clock or \fB1\fP for the piconet
 clock (which is default).
 .TP
-.B lescan [\-\-\fIprivacy\fP] [\-\-\fIpassive\fP] [\-\-\fIwhitelist\fP] [\-\-\fIdiscovery\fP=g|l] [\-\-\fIduplicates\fP]
+.B lescan [\-\-\fIprivacy\fP] [\-\-\fIpassive\fP] [\-\-\fIacceptlist\fP] [\-\-\fIdiscovery\fP=g|l] [\-\-\fIduplicates\fP]
 Start LE scan
 .TP
 .B leinfo [\-\-\fIstatic\fP] [\-\-\fIrandom\fP] <\fIbdaddr\fP>
 Get LE remote information
 .TP
-.B lewladd [\-\-\fIrandom\fP] <\fIbdaddr\fP>
-Add device to LE White List
+.B lealadd [\-\-\fIrandom\fP] <\fIbdaddr\fP>
+Add device to LE Accept List
 .TP
-.B lewlrm <\fIbdaddr\fP>
-Remove device from LE White List
+.B lealrm <\fIbdaddr\fP>
+Remove device from LE Accept List
 .TP
-.B lewlsz
-Read size of LE White List
+.B lealsz
+Read size of LE Accept List
 .TP
-.B lewlclr
-Clear LE White List
+.B lealclr
+Clear LE Accept List
 .TP
 .B lerladd [\-\-\fIlocal_irk\fP] [\-\-\fIpeer_irk\fP] [\-\-\fIrandom\fP] <\fIbdaddr\fP>
 Add device to LE Resolving List
@@ -205,7 +205,7 @@ Enable LE Address Resolution
 .B lerloff
 Disable LE Address Resolution
 .TP
-.B lecc [\-\-\fIstatic\fP] [\-\-\fIrandom\fP] <\fIbdaddr\fP> | [\-\-\fIwhitelist\fP]
+.B lecc [\-\-\fIstatic\fP] [\-\-\fIrandom\fP] <\fIbdaddr\fP> | [\-\-\fIacceptlist\fP]
 Create a LE Connection
 .TP
 .B ledc <\fIhandle\fP> [\fIreason\fP]
