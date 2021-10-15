@@ -1,6 +1,13 @@
-bluez (5.61-0ubuntu1) UNRELEASED; urgency=medium
+bluez (5.62-0ubuntu1) UNRELEASED; urgency=medium
 
-  * New upstream release 5.61 (LP: #1941708):
+  * New upstream release 5.62 (LP: #1941708):
+    - Fix issue with handling truncation when loading LTKs.
+    - Fix issue with accepting Exchange MTU on EATT bearer.
+    - Fix issue with clearing DeviceLost timers on power down.
+    - Fix issue with AVCTP browsing channel and missing ERTM.
+    - Fix issue with AVDTP and local SEID pool for each adapter.
+    - Add support for BR/EDR and LE connection failure reasons.
+  * New upstream release 5.61:
     - Fix issue with A2DP while waiting for command response.
     - Fix issue with A2DP when SetConfiguration fails.
     - Fix issue with device removal handling.
@@ -19,7 +26,7 @@ bluez (5.61-0ubuntu1) UNRELEASED; urgency=medium
       to work-around-Logitech-diNovo-Edge-keyboard-firmware-i.patch although
       Ubuntu still carries an additional fix that's not in the Debian branch.
 
- -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Thu, 26 Aug 2021 15:41:04 +0800
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Fri, 15 Oct 2021 15:18:43 +0800
 
 bluez (5.60-0ubuntu2) impish; urgency=medium
 
