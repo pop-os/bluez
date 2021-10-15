@@ -1,6 +1,3 @@
-# upstream git backport
-git_glibc234_buildfix.patch
-
 work-around-Logitech-diNovo-Edge-keyboard-firmware-i.patch
 bluetooth.conf.patch
 allow-using-obexd-without-systemd-in-the-user-sessio.patch

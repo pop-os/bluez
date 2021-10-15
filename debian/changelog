@@ -7,6 +7,7 @@ bluez (5.62-0ubuntu1) UNRELEASED; urgency=medium
     - Fix issue with AVCTP browsing channel and missing ERTM.
     - Fix issue with AVDTP and local SEID pool for each adapter.
     - Add support for BR/EDR and LE connection failure reasons.
+  * Drop patch git_glibc234_buildfix.patch as it is included in 5.62.
   * New upstream release 5.61:
     - Fix issue with A2DP while waiting for command response.
     - Fix issue with A2DP when SetConfiguration fails.
