@@ -1,4 +1,4 @@
-bluez (5.62-0ubuntu1) UNRELEASED; urgency=medium
+bluez (5.62-0ubuntu1) jammy; urgency=medium
 
   * New upstream release 5.62 (LP: #1941708):
     - Fix issue with handling truncation when loading LTKs.
