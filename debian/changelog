@@ -1,3 +1,13 @@
+bluez (5.62-0ubuntu2) jammy; urgency=medium
+
+  * SECURITY UPDATE: DoS via memory leak in sdp_cstate_alloc_buf
+    - debian/patches/CVE-2021-41229.patch: fix leaking buffers stored in
+      cstates cache in src/sdpd-request.c, src/sdpd-server.c, src/sdpd.h,
+      unit/test-sdp.c.
+    - CVE-2021-41229
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 17 Nov 2021 10:06:07 -0500
+
 bluez (5.62-0ubuntu1) jammy; urgency=medium
 
   * New upstream release 5.62 (LP: #1941708):
