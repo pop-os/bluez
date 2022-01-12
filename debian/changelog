@@ -4,6 +4,12 @@ bluez (5.63-0ubuntu1) jammy; urgency=medium
     - Fix issue with storing IRK causing invalid read access.
     - Fix issue with disconnecting due to GattCharacteristic1.MTU.
     - Add support for Device{Found,Lost} of advertising monitoring.
+  * Drop upstreamed patches:
+    - 0001-obexd-plugins-import-PBAP-ebook-support-from-upstrea.patch
+    - 0001-obexd-plugins-port-ebook-support-to-the-latest-EDS.patch
+    - CVE-2021-41229.patch
+  * Refreshed patches:
+    - allow-using-obexd-without-systemd-in-the-user-sessio.patch
 
  -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Wed, 12 Jan 2022 18:28:06 +0800
 

@@ -6,8 +6,6 @@ change_path_of_hogsuspend.patch
 lp1759836.patch
 
 # This currently stays specific for Ubuntu
-0001-obexd-plugins-import-PBAP-ebook-support-from-upstrea.patch
-0001-obexd-plugins-port-ebook-support-to-the-latest-EDS.patch
 0002-hostname-handle-chassis-type-handset.patch
 
 ubuntu_error_restart.patch
@@ -15,4 +13,3 @@ ubuntu_error_restart.patch
 raspi-bcm43xx-load-firmware.patch
 raspi-bcm43xx-3wire.patch
 raspi-cypress-305-bdaddr.patch
-CVE-2021-41229.patch
