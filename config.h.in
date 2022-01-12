@@ -18,11 +18,26 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the `asan' library (-lasan). */
+#undef HAVE_LIBASAN
+
+/* Define to 1 if you have the `lsan' library (-llsan). */
+#undef HAVE_LIBLSAN
+
+/* Define to 1 if you have the `ubsan' library (-lubsan). */
+#undef HAVE_LIBUBSAN
+
 /* Define to 1 if you have the <linux/if_alg.h> header file. */
 #undef HAVE_LINUX_IF_ALG_H
 
 /* Define to 1 if you have the <linux/types.h> header file. */
 #undef HAVE_LINUX_TYPES_H
+
+/* Define to 1 if you have the <linux/uhid.h> header file. */
+#undef HAVE_LINUX_UHID_H
+
+/* Define to 1 if you have the <linux/uinput.h> header file. */
+#undef HAVE_LINUX_UINPUT_H
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H

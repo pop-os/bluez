@@ -55,9 +55,10 @@
 
 #define BLUEZ_NAME "org.bluez"
 
-#define DEFAULT_PAIRABLE_TIMEOUT       0 /* disabled */
-#define DEFAULT_DISCOVERABLE_TIMEOUT 180 /* 3 minutes */
-#define DEFAULT_TEMPORARY_TIMEOUT     30 /* 30 seconds */
+#define DEFAULT_PAIRABLE_TIMEOUT           0 /* disabled */
+#define DEFAULT_DISCOVERABLE_TIMEOUT     180 /* 3 minutes */
+#define DEFAULT_TEMPORARY_TIMEOUT         30 /* 30 seconds */
+#define DEFAULT_NAME_REQUEST_RETRY_DELAY 300 /* 5 minutes */
 
 #define SHUTDOWN_GRACE_SECONDS 10
 
@@ -82,6 +83,7 @@ static const char *supported_options[] = {
 	"JustWorksRepairing",
 	"TemporaryTimeout",
 	"Experimental",
+	"RemoteNameRequestRetryDelay",
 	NULL
 };
 
@@ -666,11 +668,27 @@ static void parse_config(GKeyFile *config)
 	} else {
 		DBG("privacy=%s", str);
 
-		if (!strcmp(str, "device"))
+		if (!strcmp(str, "network") || !strcmp(str, "on")) {
 			btd_opts.privacy = 0x01;
-		else if (!strcmp(str, "off"))
+		} else if (!strcmp(str, "device")) {
+			btd_opts.privacy = 0x01;
+			btd_opts.device_privacy = true;
+		} else if (!strcmp(str, "limited-network")) {
+			if (btd_opts.mode != BT_MODE_DUAL) {
+				DBG("Invalid privacy option: %s", str);
+				btd_opts.privacy = 0x00;
+			}
+			btd_opts.privacy = 0x01;
+		} else if (!strcmp(str, "limited-device")) {
+			if (btd_opts.mode != BT_MODE_DUAL) {
+				DBG("Invalid privacy option: %s", str);
+				btd_opts.privacy = 0x00;
+			}
+			btd_opts.privacy = 0x02;
+			btd_opts.device_privacy = true;
+		} else if (!strcmp(str, "off")) {
 			btd_opts.privacy = 0x00;
-		else {
+		} else {
 			DBG("Invalid privacy option: %s", str);
 			btd_opts.privacy = 0x00;
 		}
@@ -800,6 +818,16 @@ static void parse_config(GKeyFile *config)
 		g_strfreev(strlist);
 	}
 
+	val = g_key_file_get_integer(config, "General",
+					"RemoteNameRequestRetryDelay", &err);
+	if (err) {
+		DBG("%s", err->message);
+		g_clear_error(&err);
+	} else {
+		DBG("RemoteNameRequestRetryDelay=%d", val);
+		btd_opts.name_request_retry_delay = val;
+	}
+
 	str = g_key_file_get_string(config, "GATT", "Cache", &err);
 	if (err) {
 		DBG("%s", err->message);
@@ -911,6 +939,7 @@ static void init_defaults(void)
 	btd_opts.name_resolv = TRUE;
 	btd_opts.debug_keys = FALSE;
 	btd_opts.refresh_discovery = TRUE;
+	btd_opts.name_request_retry_delay = DEFAULT_NAME_REQUEST_RETRY_DELAY;
 
 	btd_opts.defaults.num_entries = 0;
 	btd_opts.defaults.br.page_scan_type = 0xFFFF;
@@ -932,7 +961,7 @@ static void init_defaults(void)
 	btd_opts.avdtp.session_mode = BT_IO_MODE_BASIC;
 	btd_opts.avdtp.stream_mode = BT_IO_MODE_BASIC;
 
-	btd_opts.advmon.rssi_sampling_period = 0;
+	btd_opts.advmon.rssi_sampling_period = 0xFF;
 }
 
 static void log_handler(const gchar *log_domain, GLogLevelFlags log_level,

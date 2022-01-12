@@ -24,7 +24,8 @@ pkgincludedir = $(includedir)/bluetooth
 
 pkginclude_HEADERS =
 
-AM_CFLAGS = $(WARNING_CFLAGS) $(MISC_CFLAGS) $(UDEV_CFLAGS) $(LIBEBOOK_CFLAGS) $(LIBEDATASERVER_CFLAGS) $(ell_cflags)
+AM_CFLAGS = $(MISC_CFLAGS) $(WARNING_CFLAGS) $(UDEV_CFLAGS) $(LIBEBOOK_CFLAGS) \
+				$(LIBEDATASERVER_CFLAGS) $(ell_cflags)
 AM_LDFLAGS = $(MISC_LDFLAGS)
 
 if DATAFILES
@@ -145,6 +146,7 @@ ell_headers = ell/util.h \
 			ell/tls-private.h \
 			ell/ecc.h \
 			ell/ecc-private.h \
+			ell/cleanup.h \
 			ell/ecdh.h
 
 ell_sources = ell/private.h ell/missing.h \
@@ -241,6 +243,8 @@ src_libshared_glib_la_SOURCES = $(shared_sources) \
 				src/shared/mainloop-notify.h \
 				src/shared/mainloop-notify.c \
 				src/shared/tester.c
+src_libshared_glib_la_LDFLAGS = $(AM_LDFLAGS)
+src_libshared_glib_la_CFLAGS = $(AM_CFLAGS)
 
 src_libshared_mainloop_la_SOURCES = $(shared_sources) \
 				src/shared/io-mainloop.c \
@@ -248,6 +252,8 @@ src_libshared_mainloop_la_SOURCES = $(shared_sources) \
 				src/shared/mainloop.h src/shared/mainloop.c \
 				src/shared/mainloop-notify.h \
 				src/shared/mainloop-notify.c
+src_libshared_mainloop_la_LDFLAGS = $(AM_LDFLAGS)
+src_libshared_mainloop_la_CFLAGS = $(AM_CFLAGS)
 
 if LIBSHARED_ELL
 src_libshared_ell_la_SOURCES = $(shared_sources) \
@@ -255,6 +261,8 @@ src_libshared_ell_la_SOURCES = $(shared_sources) \
 				src/shared/timeout-ell.c \
 				src/shared/mainloop.h \
 				src/shared/mainloop-ell.c
+src_libshared_ell_la_LDFLAGS = $(AM_LDFLAGS)
+src_libshared_ell_la_CFLAGS = $(AM_CFLAGS)
 endif
 
 attrib_sources = attrib/att.h attrib/att-database.h attrib/att.c \
@@ -303,7 +311,6 @@ src_bluetoothd_SOURCES = $(builtin_sources) \
 			src/sdp-client.h src/sdp-client.c \
 			src/textfile.h src/textfile.c \
 			src/uuid-helper.h src/uuid-helper.c \
-			src/uinput.h \
 			src/plugin.h src/plugin.c \
 			src/storage.h src/storage.c \
 			src/advertising.h src/advertising.c \

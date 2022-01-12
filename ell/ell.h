@@ -34,4 +34,5 @@
 #include <ell/tls-private.h>
 #include <ell/ecc.h>
 #include <ell/ecc-private.h>
+#include <ell/cleanup.h>
 #include <ell/ecdh.h>

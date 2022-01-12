@@ -330,7 +330,8 @@ static void print_packet(struct timeval *tv, struct ucred *cred, char ident,
 	if ((filter_mask & PACKET_FILTER_SHOW_INDEX) &&
 					index != HCI_DEV_NONE) {
 		if (use_color()) {
-			n = sprintf(ts_str + ts_pos, "%s", COLOR_INDEX_LABEL);
+			n = snprintf(ts_str + ts_pos, sizeof(ts_str) - ts_pos,
+				     "%s", COLOR_INDEX_LABEL);
 			if (n > 0)
 				ts_pos += n;
 		}
@@ -4020,6 +4021,15 @@ void packet_monitor(struct timeval *tv, struct ucred *cred,
 				 * 0xFCF0 for VsMsftOpCode.
 				 */
 				index_list[index].msft_opcode = 0xFCF0;
+				break;
+			case 1521:
+				/*
+				 * Emulator controllers use Linux Foundation as
+				 * manufacturer and support the
+				 * Microsoft vendor extenions using
+				 * 0xFC1E for VsMsftOpCode.
+				 */
+				index_list[index].msft_opcode = 0xFC1E;
 				break;
 			}
 		}
@@ -13369,7 +13379,8 @@ static void mgmt_set_exp_feature_rsp(const void *data, uint16_t size)
 }
 
 static const struct bitfield_data mgmt_added_device_flags_table[] = {
-	{ 0, "Remote Wakeup"	},
+	{ 0, "Remote Wakeup"		},
+	{ 1, "Device Privacy Mode"	},
 	{ }
 };
 

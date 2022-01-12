@@ -1,7 +1,8 @@
 /*
+ *
  *  Embedded Linux library
  *
- *  Copyright (C) 2015  Intel Corporation. All rights reserved.
+ *  Copyright (C) 2021  Intel Corporation. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -16,21 +17,11 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
  */
 
-#ifndef __ELL_BASE64_H
-#define __ELL_BASE64_H
+#pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-uint8_t *l_base64_decode(const char *in, size_t in_len, size_t *n_written);
-
-char *l_base64_encode(const uint8_t *in, size_t in_len, int columns);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __ELL_BASE64_H */
+#define DEFINE_CLEANUP_FUNC(func)			\
+	inline __attribute__((always_inline))		\
+	void func ## _cleanup(void *p) { func(*(void **) p); }

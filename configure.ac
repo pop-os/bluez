@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 AC_PREREQ(2.60)
-AC_INIT(bluez, 5.62)
+AC_INIT(bluez, 5.63)
 
 AM_INIT_AUTOMAKE([foreign subdir-objects color-tests silent-rules
 					tar-pax no-dist-gzip dist-xz])
@@ -23,6 +23,9 @@ AC_C_RESTRICT
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_CC_PIE
+AC_PROG_CC_ASAN
+AC_PROG_CC_LSAN
+AC_PROG_CC_UBSAN
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 
@@ -40,9 +43,11 @@ if (test "$USE_MAINTAINER_MODE" = "yes"); then
 fi
 AM_CONDITIONAL(COVERAGE, test "${enable_coverage}" = "yes")
 AM_CONDITIONAL(DBUS_RUN_SESSION, test "${enable_dbus_run_session}" = "yes")
-AM_CONDITIONAL(VALGRIND, test "${enable_valgrind}" = "yes")
 
 MISC_FLAGS
+
+AM_CONDITIONAL(VALGRIND, test "${enable_valgrind}" = "yes" &&
+		test "$ASAN_LIB" != "yes" && test "LSAN_LIB" != "yes")
 
 AC_ARG_ENABLE(threads, AC_HELP_STRING([--enable-threads],
 		[enable threading support]), [enable_threads=${enableval}])
@@ -63,7 +68,7 @@ AC_CHECK_LIB(pthread, pthread_create, dummy=yes,
 AC_CHECK_LIB(dl, dlopen, dummy=yes,
 			AC_MSG_ERROR(dynamic linking loader is required))
 
-AC_CHECK_HEADERS(linux/types.h linux/if_alg.h)
+AC_CHECK_HEADERS(linux/types.h linux/if_alg.h linux/uinput.h linux/uhid.h)
 
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.28, dummy=yes,
 				AC_MSG_ERROR(GLib >= 2.28 is required))
@@ -242,7 +247,7 @@ AM_CONDITIONAL(MIDI, test "${enable_midi}" = "yes")
 
 if (test "${enable_midi}" = "yes"); then
 	PKG_CHECK_MODULES(ALSA, alsa, dummy=yes,
-				AC_MSG_ERROR(ALSA lib is required for MIDI support))
+			AC_MSG_ERROR(ALSA lib is required for MIDI support))
 	AC_SUBST(ALSA_CFLAGS)
 	AC_SUBST(ALSA_LIBS)
 fi
@@ -333,7 +338,8 @@ if (test "${enable_manpages}" != "no"); then
 	fi
 fi
 AM_CONDITIONAL(MANPAGES, test "${enable_manpages}" != "no")
-AM_CONDITIONAL(RUN_RST2MAN, test "${enable_manpages}" != "no" && test "${RST2MAN}" != "no")
+AM_CONDITIONAL(RUN_RST2MAN, test "${enable_manpages}" != "no" &&
+				test "${RST2MAN}" != "no")
 
 AC_ARG_ENABLE(testing, AC_HELP_STRING([--enable-testing],
 			[enable testing tools]),
@@ -405,14 +411,14 @@ AM_CONDITIONAL(ANDROID, test "${enable_android}" = "yes")
 
 if (test "${enable_android}" = "yes"); then
 	PKG_CHECK_MODULES(SBC, sbc >= 1.2, dummy=yes,
-					AC_MSG_ERROR(SBC library >= 1.2 is required))
+			AC_MSG_ERROR(SBC library >= 1.2 is required))
 	AC_SUBST(SBC_CFLAGS)
 	AC_SUBST(SBC_LIBS)
 fi
 
 if (test "${enable_android}" = "yes"); then
 	PKG_CHECK_MODULES(SPEEXDSP, speexdsp >= 1.2, dummy=yes,
-					AC_MSG_ERROR(SPEEXDSP library >= 1.2 is required))
+			AC_MSG_ERROR(SPEEXDSP library >= 1.2 is required))
 	AC_SUBST(SPEEXDSP_CFLAGS)
 	AC_SUBST(SPEEXDSP_LIBS)
 fi
@@ -421,17 +427,20 @@ AC_DEFINE_UNQUOTED(ANDROID_STORAGEDIR, "${storagedir}/android",
 			[Directory for the Android daemon storage files])
 
 AC_ARG_WITH([phonebook], AC_HELP_STRING([--with-phonebook=PLUGIN],
-				[obexd phonebook plugin (default=dummy)]),
-					[plugin_phonebook=${withval}])
+			[obexd phonebook plugin (default=dummy)]),
+			[plugin_phonebook=${withval}])
 if (test -z "${plugin_phonebook}"); then
 	plugin_phonebook=dummy
 fi
 
 if (test "${plugin_phonebook}" = "ebook"); then
-	PKG_CHECK_MODULES(LIBEBOOK, [libebook-1.2 >= 3.3], dummy=yes, AC_MSG_ERROR(libebook >= 3.3 is required))
+	PKG_CHECK_MODULES(LIBEBOOK, [libebook-1.2 >= 3.3], dummy=yes,
+			AC_MSG_ERROR(libebook >= 3.3 is required))
 	AC_SUBST(LIBEBOOK_CFLAGS)
 	AC_SUBST(LIBEBOOK_LIBS)
-	PKG_CHECK_MODULES(LIBEDATESERVER, [libedataserver-1.2 >= 3.3], dummy=yes, AC_MSG_ERROR(libedataserver >= 3.3 is required))
+	PKG_CHECK_MODULES(LIBEDATESERVER, [libedataserver-1.2 >= 3.3],
+			dummy=yes,
+			AC_MSG_ERROR(libedataserver >= 3.3 is required))
 	AC_SUBST(LIBEDATESERVER_CFLAGS)
 	AC_SUBST(LIBEDATESERVER_LIBS)
 fi
