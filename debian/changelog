@@ -1,3 +1,12 @@
+bluez (5.63-0ubuntu1) jammy; urgency=medium
+
+  * New upstream release 5.63 (LP: #1957160):
+    - Fix issue with storing IRK causing invalid read access.
+    - Fix issue with disconnecting due to GattCharacteristic1.MTU.
+    - Add support for Device{Found,Lost} of advertising monitoring.
+
+ -- Daniel van Vugt <daniel.van.vugt@canonical.com>  Wed, 12 Jan 2022 18:28:06 +0800
+
 bluez (5.62-0ubuntu2) jammy; urgency=medium
 
   * SECURITY UPDATE: DoS via memory leak in sdp_cstate_alloc_buf
