@@ -13,3 +13,7 @@ ubuntu_error_restart.patch
 raspi-bcm43xx-load-firmware.patch
 raspi-bcm43xx-3wire.patch
 raspi-cypress-305-bdaddr.patch
+
+hog-Fix-read-order-of-attributes.patch
+media-Fix-crash-when-endpoint-replies-with-an-error-to-Se.patch
+gdbus-Emit-InterfacesAdded-of-parents-objects-first.patch
