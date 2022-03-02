@@ -1,3 +1,10 @@
+bluez (5.63-0ubuntu2) jammy; urgency=medium
+
+  * Cherry-pick 3 patches to fix some crash & reconnect issues
+    (LP: #1962542)
+
+ -- Jeremy Bicha <jeremy.bicha@canonical.com>  Wed, 02 Mar 2022 10:26:23 +0100
+
 bluez (5.63-0ubuntu1) jammy; urgency=medium
 
   * New upstream release 5.63 (LP: #1957160):
