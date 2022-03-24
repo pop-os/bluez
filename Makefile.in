@@ -1036,7 +1036,8 @@ am__monitor_btmon_SOURCES_DIST = monitor/main.c monitor/bt.h \
 	monitor/keys.c monitor/analyze.h monitor/analyze.c \
 	monitor/intel.h monitor/intel.c monitor/broadcom.h \
 	monitor/broadcom.c monitor/msft.h monitor/msft.c \
-	monitor/jlink.h monitor/jlink.c monitor/tty.h
+	monitor/jlink.h monitor/jlink.c monitor/tty.h \
+	monitor/emulator.h
 @MONITOR_TRUE@am_monitor_btmon_OBJECTS = monitor/main.$(OBJEXT) \
 @MONITOR_TRUE@	monitor/display.$(OBJEXT) \
 @MONITOR_TRUE@	monitor/hcidump.$(OBJEXT) \
@@ -1138,9 +1139,9 @@ obexd_src_obexd_OBJECTS = $(am_obexd_src_obexd_OBJECTS) \
 	$(nodist_obexd_src_obexd_OBJECTS)
 @OBEX_TRUE@obexd_src_obexd_DEPENDENCIES =  \
 @OBEX_TRUE@	lib/libbluetooth-internal.la \
-@OBEX_TRUE@	gdbus/libgdbus-internal.la $(am__DEPENDENCIES_1) \
+@OBEX_TRUE@	gdbus/libgdbus-internal.la src/libshared-glib.la \
 @OBEX_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-@OBEX_TRUE@	$(am__DEPENDENCIES_1)
+@OBEX_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 obexd_src_obexd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(obexd_src_obexd_CFLAGS) $(CFLAGS) $(obexd_src_obexd_LDFLAGS) \
@@ -1220,22 +1221,21 @@ am__src_bluetoothd_SOURCES_DIST = plugins/hostname.c plugins/wiimote.c \
 	profiles/midi/midi.c profiles/midi/libmidi.h \
 	profiles/midi/libmidi.c profiles/battery/battery.c \
 	attrib/att.h attrib/att-database.h attrib/att.c attrib/gatt.h \
-	attrib/gatt.c attrib/gattrib.h attrib/gattrib.c \
-	attrib/gatt-service.h attrib/gatt-service.c btio/btio.h \
+	attrib/gatt.c attrib/gattrib.h attrib/gattrib.c btio/btio.h \
 	btio/btio.c src/bluetooth.ver src/main.c src/log.h src/log.c \
 	src/backtrace.h src/backtrace.c src/rfkill.c src/btd.h \
 	src/sdpd.h src/sdpd-server.c src/sdpd-request.c \
-	src/sdpd-service.c src/sdpd-database.c src/attrib-server.h \
-	src/attrib-server.c src/gatt-database.h src/gatt-database.c \
-	src/sdp-xml.h src/sdp-xml.c src/sdp-client.h src/sdp-client.c \
-	src/textfile.h src/textfile.c src/uuid-helper.h \
-	src/uuid-helper.c src/plugin.h src/plugin.c src/storage.h \
-	src/storage.c src/advertising.h src/advertising.c src/agent.h \
-	src/agent.c src/error.h src/error.c src/adapter.h \
-	src/adapter.c src/profile.h src/profile.c src/service.h \
-	src/service.c src/gatt-client.h src/gatt-client.c src/device.h \
-	src/device.c src/dbus-common.c src/dbus-common.h src/eir.h \
-	src/eir.c src/adv_monitor.h src/adv_monitor.c src/battery.h \
+	src/sdpd-service.c src/sdpd-database.c src/gatt-database.h \
+	src/gatt-database.c src/sdp-xml.h src/sdp-xml.c \
+	src/sdp-client.h src/sdp-client.c src/textfile.h \
+	src/textfile.c src/uuid-helper.h src/uuid-helper.c \
+	src/plugin.h src/plugin.c src/storage.h src/storage.c \
+	src/advertising.h src/advertising.c src/agent.h src/agent.c \
+	src/error.h src/error.c src/adapter.h src/adapter.c \
+	src/profile.h src/profile.c src/service.h src/service.c \
+	src/gatt-client.h src/gatt-client.c src/device.h src/device.c \
+	src/dbus-common.c src/dbus-common.h src/eir.h src/eir.c \
+	src/adv_monitor.h src/adv_monitor.c src/battery.h \
 	src/battery.c
 @ADMIN_TRUE@am__objects_17 = plugins/bluetoothd-admin.$(OBJEXT)
 @NFC_TRUE@am__objects_18 = plugins/bluetoothd-neard.$(OBJEXT)
@@ -1292,8 +1292,7 @@ am__objects_27 = plugins/bluetoothd-hostname.$(OBJEXT) \
 	profiles/battery/bluetoothd-battery.$(OBJEXT)
 am__objects_28 = attrib/bluetoothd-att.$(OBJEXT) \
 	attrib/bluetoothd-gatt.$(OBJEXT) \
-	attrib/bluetoothd-gattrib.$(OBJEXT) \
-	attrib/bluetoothd-gatt-service.$(OBJEXT)
+	attrib/bluetoothd-gattrib.$(OBJEXT)
 am__objects_29 = btio/bluetoothd-btio.$(OBJEXT)
 am_src_bluetoothd_OBJECTS = $(am__objects_27) $(am__objects_28) \
 	$(am__objects_29) src/bluetoothd-main.$(OBJEXT) \
@@ -1304,7 +1303,6 @@ am_src_bluetoothd_OBJECTS = $(am__objects_27) $(am__objects_28) \
 	src/bluetoothd-sdpd-request.$(OBJEXT) \
 	src/bluetoothd-sdpd-service.$(OBJEXT) \
 	src/bluetoothd-sdpd-database.$(OBJEXT) \
-	src/bluetoothd-attrib-server.$(OBJEXT) \
 	src/bluetoothd-gatt-database.$(OBJEXT) \
 	src/bluetoothd-sdp-xml.$(OBJEXT) \
 	src/bluetoothd-sdp-client.$(OBJEXT) \
@@ -1507,8 +1505,10 @@ am__tools_gatt_service_SOURCES_DIST = tools/gatt-service.c
 @TOOLS_TRUE@am_tools_gatt_service_OBJECTS =  \
 @TOOLS_TRUE@	tools/gatt-service.$(OBJEXT)
 tools_gatt_service_OBJECTS = $(am_tools_gatt_service_OBJECTS)
-@TOOLS_TRUE@tools_gatt_service_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-@TOOLS_TRUE@	$(am__DEPENDENCIES_1) gdbus/libgdbus-internal.la
+@TOOLS_TRUE@tools_gatt_service_DEPENDENCIES =  \
+@TOOLS_TRUE@	gdbus/libgdbus-internal.la \
+@TOOLS_TRUE@	src/libshared-mainloop.la $(am__DEPENDENCIES_1) \
+@TOOLS_TRUE@	$(am__DEPENDENCIES_1)
 am__tools_hci_tester_SOURCES_DIST = tools/hci-tester.c monitor/bt.h
 @TESTING_TRUE@am_tools_hci_tester_OBJECTS =  \
 @TESTING_TRUE@	tools/hci-tester.$(OBJEXT)
@@ -1739,7 +1739,7 @@ am__objects_31 = btio/btio.$(OBJEXT)
 tools_obex_client_tool_OBJECTS = $(am_tools_obex_client_tool_OBJECTS)
 @READLINE_TRUE@tools_obex_client_tool_DEPENDENCIES =  \
 @READLINE_TRUE@	lib/libbluetooth-internal.la \
-@READLINE_TRUE@	$(am__DEPENDENCIES_1)
+@READLINE_TRUE@	src/libshared-glib.la $(am__DEPENDENCIES_1)
 am__tools_obex_server_tool_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 	gobex/gobex-defs.h gobex/gobex-defs.c gobex/gobex-packet.c \
 	gobex/gobex-packet.h gobex/gobex-header.c gobex/gobex-header.h \
@@ -1752,7 +1752,7 @@ am__tools_obex_server_tool_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 tools_obex_server_tool_OBJECTS = $(am_tools_obex_server_tool_OBJECTS)
 @READLINE_TRUE@tools_obex_server_tool_DEPENDENCIES =  \
 @READLINE_TRUE@	lib/libbluetooth-internal.la \
-@READLINE_TRUE@	$(am__DEPENDENCIES_1)
+@READLINE_TRUE@	src/libshared-glib.la $(am__DEPENDENCIES_1)
 am__tools_obexctl_SOURCES_DIST = tools/obexctl.c
 @READLINE_TRUE@am_tools_obexctl_OBJECTS = tools/obexctl.$(OBJEXT)
 tools_obexctl_OBJECTS = $(am_tools_obexctl_OBJECTS)
@@ -1907,7 +1907,8 @@ am__unit_test_gobex_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 @OBEX_TRUE@am_unit_test_gobex_OBJECTS = $(am__objects_30) \
 @OBEX_TRUE@	unit/util.$(OBJEXT) unit/test-gobex.$(OBJEXT)
 unit_test_gobex_OBJECTS = $(am_unit_test_gobex_OBJECTS)
-@OBEX_TRUE@unit_test_gobex_DEPENDENCIES = $(am__DEPENDENCIES_1)
+@OBEX_TRUE@unit_test_gobex_DEPENDENCIES = src/libshared-glib.la \
+@OBEX_TRUE@	$(am__DEPENDENCIES_1)
 am__unit_test_gobex_apparam_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 	gobex/gobex-defs.h gobex/gobex-defs.c gobex/gobex-packet.c \
 	gobex/gobex-packet.h gobex/gobex-header.c gobex/gobex-header.h \
@@ -1920,7 +1921,7 @@ am__unit_test_gobex_apparam_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 unit_test_gobex_apparam_OBJECTS =  \
 	$(am_unit_test_gobex_apparam_OBJECTS)
 @OBEX_TRUE@unit_test_gobex_apparam_DEPENDENCIES =  \
-@OBEX_TRUE@	$(am__DEPENDENCIES_1)
+@OBEX_TRUE@	src/libshared-glib.la $(am__DEPENDENCIES_1)
 am__unit_test_gobex_header_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 	gobex/gobex-defs.h gobex/gobex-defs.c gobex/gobex-packet.c \
 	gobex/gobex-packet.h gobex/gobex-header.c gobex/gobex-header.h \
@@ -1932,7 +1933,7 @@ am__unit_test_gobex_header_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 @OBEX_TRUE@	unit/test-gobex-header.$(OBJEXT)
 unit_test_gobex_header_OBJECTS = $(am_unit_test_gobex_header_OBJECTS)
 @OBEX_TRUE@unit_test_gobex_header_DEPENDENCIES =  \
-@OBEX_TRUE@	$(am__DEPENDENCIES_1)
+@OBEX_TRUE@	src/libshared-glib.la $(am__DEPENDENCIES_1)
 am__unit_test_gobex_packet_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 	gobex/gobex-defs.h gobex/gobex-defs.c gobex/gobex-packet.c \
 	gobex/gobex-packet.h gobex/gobex-header.c gobex/gobex-header.h \
@@ -1944,7 +1945,7 @@ am__unit_test_gobex_packet_SOURCES_DIST = gobex/gobex.h gobex/gobex.c \
 @OBEX_TRUE@	unit/test-gobex-packet.$(OBJEXT)
 unit_test_gobex_packet_OBJECTS = $(am_unit_test_gobex_packet_OBJECTS)
 @OBEX_TRUE@unit_test_gobex_packet_DEPENDENCIES =  \
-@OBEX_TRUE@	$(am__DEPENDENCIES_1)
+@OBEX_TRUE@	src/libshared-glib.la $(am__DEPENDENCIES_1)
 am__unit_test_gobex_transfer_SOURCES_DIST = gobex/gobex.h \
 	gobex/gobex.c gobex/gobex-defs.h gobex/gobex-defs.c \
 	gobex/gobex-packet.c gobex/gobex-packet.h gobex/gobex-header.c \
@@ -1958,7 +1959,7 @@ am__unit_test_gobex_transfer_SOURCES_DIST = gobex/gobex.h \
 unit_test_gobex_transfer_OBJECTS =  \
 	$(am_unit_test_gobex_transfer_OBJECTS)
 @OBEX_TRUE@unit_test_gobex_transfer_DEPENDENCIES =  \
-@OBEX_TRUE@	$(am__DEPENDENCIES_1)
+@OBEX_TRUE@	src/libshared-glib.la $(am__DEPENDENCIES_1)
 am_unit_test_hfp_OBJECTS = unit/test-hfp.$(OBJEXT)
 unit_test_hfp_OBJECTS = $(am_unit_test_hfp_OBJECTS)
 unit_test_hfp_DEPENDENCIES = src/libshared-glib.la \
@@ -2111,7 +2112,6 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	android/hardware/$(DEPDIR)/android_tester-hardware.Po \
 	android/hardware/$(DEPDIR)/haltest-hardware.Po \
 	attrib/$(DEPDIR)/att.Po attrib/$(DEPDIR)/bluetoothd-att.Po \
-	attrib/$(DEPDIR)/bluetoothd-gatt-service.Po \
 	attrib/$(DEPDIR)/bluetoothd-gatt.Po \
 	attrib/$(DEPDIR)/bluetoothd-gattrib.Po \
 	attrib/$(DEPDIR)/gatt.Po attrib/$(DEPDIR)/gattrib.Po \
@@ -2298,7 +2298,6 @@ am__depfiles_remade = android/$(DEPDIR)/a2dp-sink.Po \
 	src/$(DEPDIR)/bluetoothd-adv_monitor.Po \
 	src/$(DEPDIR)/bluetoothd-advertising.Po \
 	src/$(DEPDIR)/bluetoothd-agent.Po \
-	src/$(DEPDIR)/bluetoothd-attrib-server.Po \
 	src/$(DEPDIR)/bluetoothd-backtrace.Po \
 	src/$(DEPDIR)/bluetoothd-battery.Po \
 	src/$(DEPDIR)/bluetoothd-dbus-common.Po \
@@ -3178,11 +3177,11 @@ AM_CFLAGS = $(MISC_CFLAGS) $(WARNING_CFLAGS) $(UDEV_CFLAGS) $(LIBEBOOK_CFLAGS) \
 				$(LIBEDATASERVER_CFLAGS) $(ell_cflags)
 
 AM_LDFLAGS = $(MISC_LDFLAGS)
+confdir = $(sysconfdir)/bluetooth
+statedir = $(localstatedir)/lib/bluetooth
 @DATAFILES_TRUE@dbusdir = $(DBUS_CONFDIR)/dbus-1/system.d
 @DATAFILES_TRUE@dbus_DATA = src/bluetooth.conf $(am__append_56)
-@DATAFILES_TRUE@confdir = $(sysconfdir)/bluetooth
 @DATAFILES_TRUE@conf_DATA = 
-@DATAFILES_TRUE@statedir = $(localstatedir)/lib/bluetooth
 @DATAFILES_TRUE@state_DATA = 
 @SYSTEMD_TRUE@systemdsystemunitdir = $(SYSTEMD_SYSTEMUNITDIR)
 @SYSTEMD_TRUE@systemdsystemunit_DATA = src/bluetooth.service \
@@ -3364,8 +3363,7 @@ src_libshared_mainloop_la_CFLAGS = $(AM_CFLAGS)
 @LIBSHARED_ELL_TRUE@src_libshared_ell_la_CFLAGS = $(AM_CFLAGS)
 attrib_sources = attrib/att.h attrib/att-database.h attrib/att.c \
 		attrib/gatt.h attrib/gatt.c \
-		attrib/gattrib.h attrib/gattrib.c \
-		attrib/gatt-service.h attrib/gatt-service.c
+		attrib/gattrib.h attrib/gattrib.c
 
 btio_sources = btio/btio.h btio/btio.c
 gobex_sources = gobex/gobex.h gobex/gobex.c \
@@ -3409,7 +3407,6 @@ src_bluetoothd_SOURCES = $(builtin_sources) \
 			src/rfkill.c src/btd.h src/sdpd.h \
 			src/sdpd-server.c src/sdpd-request.c \
 			src/sdpd-service.c src/sdpd-database.c \
-			src/attrib-server.h src/attrib-server.c \
 			src/gatt-database.h src/gatt-database.c \
 			src/sdp-xml.h src/sdp-xml.c \
 			src/sdp-client.h src/sdp-client.c \
@@ -3510,7 +3507,7 @@ unit_tests = $(am__append_55) unit/test-eir unit/test-uuid \
 @MONITOR_TRUE@				monitor/broadcom.h monitor/broadcom.c \
 @MONITOR_TRUE@				monitor/msft.h monitor/msft.c \
 @MONITOR_TRUE@				monitor/jlink.h monitor/jlink.c \
-@MONITOR_TRUE@				monitor/tty.h
+@MONITOR_TRUE@				monitor/tty.h monitor/emulator.h
 
 @MONITOR_TRUE@monitor_btmon_LDADD = lib/libbluetooth-internal.la \
 @MONITOR_TRUE@				src/libshared-mainloop.la $(UDEV_LIBS) -ldl
@@ -3699,7 +3696,9 @@ unit_tests = $(am__append_55) unit/test-eir unit/test-uuid \
 @TOOLS_TRUE@tools_mpris_proxy_SOURCES = tools/mpris-proxy.c
 @TOOLS_TRUE@tools_mpris_proxy_LDADD = gdbus/libgdbus-internal.la $(GLIB_LIBS) $(DBUS_LIBS)
 @TOOLS_TRUE@tools_gatt_service_SOURCES = tools/gatt-service.c
-@TOOLS_TRUE@tools_gatt_service_LDADD = $(GLIB_LIBS) $(DBUS_LIBS) gdbus/libgdbus-internal.la
+@TOOLS_TRUE@tools_gatt_service_LDADD = gdbus/libgdbus-internal.la \
+@TOOLS_TRUE@			   src/libshared-mainloop.la $(GLIB_LIBS) $(DBUS_LIBS)
+
 @TOOLS_TRUE@profiles_iap_iapd_SOURCES = profiles/iap/main.c
 @TOOLS_TRUE@profiles_iap_iapd_LDADD = gdbus/libgdbus-internal.la $(GLIB_LIBS) $(DBUS_LIBS)
 @MESH_TRUE@@TOOLS_TRUE@tools_meshctl_SOURCES = tools/meshctl.c \
@@ -3794,12 +3793,14 @@ unit_tests = $(am__append_55) unit/test-eir unit/test-uuid \
 @READLINE_TRUE@						tools/obex-client-tool.c
 
 @READLINE_TRUE@tools_obex_client_tool_LDADD = lib/libbluetooth-internal.la \
-@READLINE_TRUE@						$(GLIB_LIBS) -lreadline
+@READLINE_TRUE@			       src/libshared-glib.la $(GLIB_LIBS) -lreadline
 
 @READLINE_TRUE@tools_obex_server_tool_SOURCES = $(gobex_sources) $(btio_sources) \
 @READLINE_TRUE@						tools/obex-server-tool.c
 
-@READLINE_TRUE@tools_obex_server_tool_LDADD = lib/libbluetooth-internal.la $(GLIB_LIBS)
+@READLINE_TRUE@tools_obex_server_tool_LDADD = lib/libbluetooth-internal.la \
+@READLINE_TRUE@			       src/libshared-glib.la $(GLIB_LIBS)
+
 @READLINE_TRUE@tools_bluetooth_player_SOURCES = tools/bluetooth-player.c
 @READLINE_TRUE@tools_bluetooth_player_LDADD = gdbus/libgdbus-internal.la \
 @READLINE_TRUE@				src/libshared-glib.la \
@@ -3807,7 +3808,7 @@ unit_tests = $(am__append_55) unit/test-eir unit/test-uuid \
 
 @READLINE_TRUE@tools_obexctl_SOURCES = tools/obexctl.c
 @READLINE_TRUE@tools_obexctl_LDADD = gdbus/libgdbus-internal.la src/libshared-glib.la \
-@READLINE_TRUE@				$(GLIB_LIBS) $(DBUS_LIBS) -lreadline
+@READLINE_TRUE@			$(GLIB_LIBS) $(DBUS_LIBS) -lreadline
 
 @READLINE_TRUE@tools_btmgmt_SOURCES = tools/btmgmt.c src/uuid-helper.c client/display.c
 @READLINE_TRUE@tools_btmgmt_LDADD = lib/libbluetooth-internal.la src/libshared-mainloop.la \
@@ -3891,6 +3892,7 @@ unit_tests = $(am__append_55) unit/test-eir unit/test-uuid \
 
 @OBEX_TRUE@obexd_src_obexd_LDADD = lib/libbluetooth-internal.la \
 @OBEX_TRUE@			gdbus/libgdbus-internal.la \
+@OBEX_TRUE@			src/libshared-glib.la \
 @OBEX_TRUE@			$(ICAL_LIBS) $(DBUS_LIBS) $(LIBEBOOK_LIBS) \
 @OBEX_TRUE@			$(LIBEDATASERVER_LIBS) $(GLIB_LIBS) -ldl
 
@@ -4208,23 +4210,23 @@ unit_test_gdbus_client_LDADD = gdbus/libgdbus-internal.la \
 @OBEX_TRUE@unit_test_gobex_SOURCES = $(gobex_sources) unit/util.c unit/util.h \
 @OBEX_TRUE@						unit/test-gobex.c
 
-@OBEX_TRUE@unit_test_gobex_LDADD = $(GLIB_LIBS)
+@OBEX_TRUE@unit_test_gobex_LDADD = src/libshared-glib.la $(GLIB_LIBS)
 @OBEX_TRUE@unit_test_gobex_packet_SOURCES = $(gobex_sources) unit/util.c unit/util.h \
 @OBEX_TRUE@						unit/test-gobex-packet.c
 
-@OBEX_TRUE@unit_test_gobex_packet_LDADD = $(GLIB_LIBS)
+@OBEX_TRUE@unit_test_gobex_packet_LDADD = src/libshared-glib.la $(GLIB_LIBS)
 @OBEX_TRUE@unit_test_gobex_header_SOURCES = $(gobex_sources) unit/util.c unit/util.h \
 @OBEX_TRUE@						unit/test-gobex-header.c
 
-@OBEX_TRUE@unit_test_gobex_header_LDADD = $(GLIB_LIBS)
+@OBEX_TRUE@unit_test_gobex_header_LDADD = src/libshared-glib.la $(GLIB_LIBS)
 @OBEX_TRUE@unit_test_gobex_transfer_SOURCES = $(gobex_sources) unit/util.c unit/util.h \
 @OBEX_TRUE@						unit/test-gobex-transfer.c
 
-@OBEX_TRUE@unit_test_gobex_transfer_LDADD = $(GLIB_LIBS)
+@OBEX_TRUE@unit_test_gobex_transfer_LDADD = src/libshared-glib.la $(GLIB_LIBS)
 @OBEX_TRUE@unit_test_gobex_apparam_SOURCES = $(gobex_sources) unit/util.c unit/util.h \
 @OBEX_TRUE@						unit/test-gobex-apparam.c
 
-@OBEX_TRUE@unit_test_gobex_apparam_LDADD = $(GLIB_LIBS)
+@OBEX_TRUE@unit_test_gobex_apparam_LDADD = src/libshared-glib.la $(GLIB_LIBS)
 unit_test_lib_SOURCES = unit/test-lib.c
 unit_test_lib_LDADD = src/libshared-glib.la \
 				lib/libbluetooth-internal.la $(GLIB_LIBS)
@@ -4292,6 +4294,9 @@ MAINTAINERCLEANFILES = Makefile.in \
 
 SED_PROCESS = $(AM_V_GEN)$(MKDIR_P) $(dir $@) && \
 		$(SED) -e 's,@pkglibexecdir\@,$(pkglibexecdir),g' \
+		       -e 's,@libexecdir\@,$(libexecdir),g' \
+		       -e 's,@statedir\@,$(statedir),g' \
+		       -e 's,@confdir\@,$(confdir),g' \
 		< $< > $@
 
 @RUN_RST2MAN_FALSE@RST2MAN_PROCESS = $(AM_V_GEN)test -f $@ || \
@@ -5814,8 +5819,6 @@ attrib/bluetoothd-gatt.$(OBJEXT): attrib/$(am__dirstamp) \
 	attrib/$(DEPDIR)/$(am__dirstamp)
 attrib/bluetoothd-gattrib.$(OBJEXT): attrib/$(am__dirstamp) \
 	attrib/$(DEPDIR)/$(am__dirstamp)
-attrib/bluetoothd-gatt-service.$(OBJEXT): attrib/$(am__dirstamp) \
-	attrib/$(DEPDIR)/$(am__dirstamp)
 btio/bluetoothd-btio.$(OBJEXT): btio/$(am__dirstamp) \
 	btio/$(DEPDIR)/$(am__dirstamp)
 src/bluetoothd-main.$(OBJEXT): src/$(am__dirstamp) \
@@ -5833,8 +5836,6 @@ src/bluetoothd-sdpd-request.$(OBJEXT): src/$(am__dirstamp) \
 src/bluetoothd-sdpd-service.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/bluetoothd-sdpd-database.$(OBJEXT): src/$(am__dirstamp) \
-	src/$(DEPDIR)/$(am__dirstamp)
-src/bluetoothd-attrib-server.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/bluetoothd-gatt-database.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
@@ -6756,7 +6757,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@android/hardware/$(DEPDIR)/haltest-hardware.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@attrib/$(DEPDIR)/att.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@attrib/$(DEPDIR)/bluetoothd-att.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@attrib/$(DEPDIR)/bluetoothd-gatt-service.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@attrib/$(DEPDIR)/bluetoothd-gatt.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@attrib/$(DEPDIR)/bluetoothd-gattrib.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@attrib/$(DEPDIR)/gatt.Po@am__quote@ # am--include-marker
@@ -7009,7 +7009,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-adv_monitor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-advertising.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-agent.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-attrib-server.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-backtrace.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-battery.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/bluetoothd-dbus-common.Po@am__quote@ # am--include-marker
@@ -9920,20 +9919,6 @@ attrib/bluetoothd-gattrib.obj: attrib/gattrib.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o attrib/bluetoothd-gattrib.obj `if test -f 'attrib/gattrib.c'; then $(CYGPATH_W) 'attrib/gattrib.c'; else $(CYGPATH_W) '$(srcdir)/attrib/gattrib.c'; fi`
 
-attrib/bluetoothd-gatt-service.o: attrib/gatt-service.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT attrib/bluetoothd-gatt-service.o -MD -MP -MF attrib/$(DEPDIR)/bluetoothd-gatt-service.Tpo -c -o attrib/bluetoothd-gatt-service.o `test -f 'attrib/gatt-service.c' || echo '$(srcdir)/'`attrib/gatt-service.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) attrib/$(DEPDIR)/bluetoothd-gatt-service.Tpo attrib/$(DEPDIR)/bluetoothd-gatt-service.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='attrib/gatt-service.c' object='attrib/bluetoothd-gatt-service.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o attrib/bluetoothd-gatt-service.o `test -f 'attrib/gatt-service.c' || echo '$(srcdir)/'`attrib/gatt-service.c
-
-attrib/bluetoothd-gatt-service.obj: attrib/gatt-service.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT attrib/bluetoothd-gatt-service.obj -MD -MP -MF attrib/$(DEPDIR)/bluetoothd-gatt-service.Tpo -c -o attrib/bluetoothd-gatt-service.obj `if test -f 'attrib/gatt-service.c'; then $(CYGPATH_W) 'attrib/gatt-service.c'; else $(CYGPATH_W) '$(srcdir)/attrib/gatt-service.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) attrib/$(DEPDIR)/bluetoothd-gatt-service.Tpo attrib/$(DEPDIR)/bluetoothd-gatt-service.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='attrib/gatt-service.c' object='attrib/bluetoothd-gatt-service.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o attrib/bluetoothd-gatt-service.obj `if test -f 'attrib/gatt-service.c'; then $(CYGPATH_W) 'attrib/gatt-service.c'; else $(CYGPATH_W) '$(srcdir)/attrib/gatt-service.c'; fi`
-
 btio/bluetoothd-btio.o: btio/btio.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT btio/bluetoothd-btio.o -MD -MP -MF btio/$(DEPDIR)/bluetoothd-btio.Tpo -c -o btio/bluetoothd-btio.o `test -f 'btio/btio.c' || echo '$(srcdir)/'`btio/btio.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) btio/$(DEPDIR)/bluetoothd-btio.Tpo btio/$(DEPDIR)/bluetoothd-btio.Po
@@ -10059,20 +10044,6 @@ src/bluetoothd-sdpd-database.obj: src/sdpd-database.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/sdpd-database.c' object='src/bluetoothd-sdpd-database.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/bluetoothd-sdpd-database.obj `if test -f 'src/sdpd-database.c'; then $(CYGPATH_W) 'src/sdpd-database.c'; else $(CYGPATH_W) '$(srcdir)/src/sdpd-database.c'; fi`
-
-src/bluetoothd-attrib-server.o: src/attrib-server.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/bluetoothd-attrib-server.o -MD -MP -MF src/$(DEPDIR)/bluetoothd-attrib-server.Tpo -c -o src/bluetoothd-attrib-server.o `test -f 'src/attrib-server.c' || echo '$(srcdir)/'`src/attrib-server.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/bluetoothd-attrib-server.Tpo src/$(DEPDIR)/bluetoothd-attrib-server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/attrib-server.c' object='src/bluetoothd-attrib-server.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/bluetoothd-attrib-server.o `test -f 'src/attrib-server.c' || echo '$(srcdir)/'`src/attrib-server.c
-
-src/bluetoothd-attrib-server.obj: src/attrib-server.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/bluetoothd-attrib-server.obj -MD -MP -MF src/$(DEPDIR)/bluetoothd-attrib-server.Tpo -c -o src/bluetoothd-attrib-server.obj `if test -f 'src/attrib-server.c'; then $(CYGPATH_W) 'src/attrib-server.c'; else $(CYGPATH_W) '$(srcdir)/src/attrib-server.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/bluetoothd-attrib-server.Tpo src/$(DEPDIR)/bluetoothd-attrib-server.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/attrib-server.c' object='src/bluetoothd-attrib-server.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/bluetoothd-attrib-server.obj `if test -f 'src/attrib-server.c'; then $(CYGPATH_W) 'src/attrib-server.c'; else $(CYGPATH_W) '$(srcdir)/src/attrib-server.c'; fi`
 
 src/bluetoothd-gatt-database.o: src/gatt-database.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(src_bluetoothd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/bluetoothd-gatt-database.o -MD -MP -MF src/$(DEPDIR)/bluetoothd-gatt-database.Tpo -c -o src/bluetoothd-gatt-database.o `test -f 'src/gatt-database.c' || echo '$(srcdir)/'`src/gatt-database.c
@@ -11526,7 +11497,6 @@ distclean: distclean-am
 	-rm -f android/hardware/$(DEPDIR)/haltest-hardware.Po
 	-rm -f attrib/$(DEPDIR)/att.Po
 	-rm -f attrib/$(DEPDIR)/bluetoothd-att.Po
-	-rm -f attrib/$(DEPDIR)/bluetoothd-gatt-service.Po
 	-rm -f attrib/$(DEPDIR)/bluetoothd-gatt.Po
 	-rm -f attrib/$(DEPDIR)/bluetoothd-gattrib.Po
 	-rm -f attrib/$(DEPDIR)/gatt.Po
@@ -11779,7 +11749,6 @@ distclean: distclean-am
 	-rm -f src/$(DEPDIR)/bluetoothd-adv_monitor.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-advertising.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-agent.Po
-	-rm -f src/$(DEPDIR)/bluetoothd-attrib-server.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-backtrace.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-battery.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-dbus-common.Po
@@ -12168,7 +12137,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f android/hardware/$(DEPDIR)/haltest-hardware.Po
 	-rm -f attrib/$(DEPDIR)/att.Po
 	-rm -f attrib/$(DEPDIR)/bluetoothd-att.Po
-	-rm -f attrib/$(DEPDIR)/bluetoothd-gatt-service.Po
 	-rm -f attrib/$(DEPDIR)/bluetoothd-gatt.Po
 	-rm -f attrib/$(DEPDIR)/bluetoothd-gattrib.Po
 	-rm -f attrib/$(DEPDIR)/gatt.Po
@@ -12421,7 +12389,6 @@ maintainer-clean: maintainer-clean-am
 	-rm -f src/$(DEPDIR)/bluetoothd-adv_monitor.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-advertising.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-agent.Po
-	-rm -f src/$(DEPDIR)/bluetoothd-attrib-server.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-backtrace.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-battery.Po
 	-rm -f src/$(DEPDIR)/bluetoothd-dbus-common.Po

@@ -116,6 +116,63 @@ LIB_EXPORT struct l_settings *l_settings_new(void)
 	return settings;
 }
 
+static void copy_key_value_foreach(void *data, void *user_data)
+{
+	struct setting_data *s = data;
+	struct l_queue *settings = user_data;
+	struct setting_data *copy = l_new(struct setting_data, 1);
+
+	copy->key = l_strdup(s->key);
+	copy->value = l_strdup(s->value);
+
+	l_queue_push_head(settings, copy);
+}
+
+static void copy_group_foreach(void *data, void *user_data)
+{
+	struct group_data *group = data;
+	struct l_queue *groups = user_data;
+	struct group_data *copy = l_new(struct group_data, 1);
+
+	copy->name = l_strdup(group->name);
+	copy->settings = l_queue_new();
+
+	l_queue_push_head(groups, copy);
+
+	l_queue_foreach(group->settings, copy_key_value_foreach,
+				copy->settings);
+}
+
+static void copy_embedded_foreach(void *data, void *user_data)
+{
+	struct embedded_group_data *embedded = data;
+	struct l_queue *groups = user_data;
+	struct embedded_group_data *copy;
+
+	copy = l_memdup(embedded, sizeof(struct embedded_group_data) +
+			embedded->len + 1);
+	copy->name = l_strdup(embedded->name);
+
+	l_queue_push_tail(groups, copy);
+}
+
+LIB_EXPORT struct l_settings *l_settings_clone(
+					const struct l_settings *settings)
+{
+	struct l_settings *copy;
+
+	if (unlikely(!settings))
+		return NULL;
+
+	copy = l_settings_new();
+
+	l_queue_foreach(settings->groups, copy_group_foreach, copy->groups);
+	l_queue_foreach(settings->embedded_groups, copy_embedded_foreach,
+				copy->embedded_groups);
+
+	return copy;
+}
+
 LIB_EXPORT void l_settings_free(struct l_settings *settings)
 {
 	if (unlikely(!settings))
@@ -1061,7 +1118,8 @@ LIB_EXPORT bool l_settings_set_int(struct l_settings *settings,
 }
 
 LIB_EXPORT bool l_settings_get_uint(const struct l_settings *settings,
-					const char *group_name, const char *key,
+					const char *group_name,
+					const char *key,
 					unsigned int *out)
 {
 	const char *value = l_settings_get_value(settings, group_name, key);
@@ -1072,7 +1130,8 @@ LIB_EXPORT bool l_settings_get_uint(const struct l_settings *settings,
 	if (!value)
 		return false;
 
-	if (*value == '\0')
+	/* Do not allow '+' or '-' or empty string */
+	if (!l_ascii_isdigit(*value))
 		goto error;
 
 	errno = 0;
@@ -1154,7 +1213,8 @@ LIB_EXPORT bool l_settings_set_int64(struct l_settings *settings,
 }
 
 LIB_EXPORT bool l_settings_get_uint64(const struct l_settings *settings,
-					const char *group_name, const char *key,
+					const char *group_name,
+					const char *key,
 					uint64_t *out)
 {
 	const char *value = l_settings_get_value(settings, group_name, key);
@@ -1164,7 +1224,8 @@ LIB_EXPORT bool l_settings_get_uint64(const struct l_settings *settings,
 	if (!value)
 		return false;
 
-	if (*value == '\0')
+	/* Do not allow '+' or '-' or empty string */
+	if (!l_ascii_isdigit(*value))
 		goto error;
 
 	errno = 0;
@@ -1499,4 +1560,14 @@ LIB_EXPORT const char *l_settings_get_embedded_value(
 		*out_type = group->type;
 
 	return group->data;
+}
+
+LIB_EXPORT bool l_settings_remove_embedded_groups(struct l_settings *settings)
+{
+	if (unlikely(!settings))
+		return false;
+
+	l_queue_clear(settings->embedded_groups, embedded_group_destroy);
+
+	return true;
 }

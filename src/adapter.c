@@ -62,7 +62,6 @@
 #include "attrib/gattrib.h"
 #include "attrib/att.h"
 #include "attrib/gatt.h"
-#include "attrib-server.h"
 #include "gatt-database.h"
 #include "advertising.h"
 #include "adv_monitor.h"
@@ -311,15 +310,6 @@ struct btd_adapter {
 	GSList *profiles;
 
 	struct oob_handler *oob_handler;
-
-	unsigned int load_ltks_id;
-	unsigned int load_ltks_timeout;
-
-	unsigned int confirm_name_id;
-	unsigned int confirm_name_timeout;
-
-	unsigned int pair_device_id;
-	unsigned int pair_device_timeout;
 
 	unsigned int db_id;		/* Service event handler for GATT db */
 
@@ -827,10 +817,6 @@ static void local_name_changed_callback(uint16_t index, uint16_t length,
 
 	g_dbus_emit_property_changed(dbus_conn, adapter->path,
 						ADAPTER_INTERFACE, "Alias");
-
-	attrib_gap_set(adapter, GATT_CHARAC_DEVICE_NAME,
-				(const uint8_t *) adapter->current_alias,
-					strlen(adapter->current_alias));
 }
 
 static void set_local_name_complete(uint8_t status, uint16_t length,
@@ -4139,21 +4125,6 @@ static void load_link_keys(struct btd_adapter *adapter, GSList *keys,
 							adapter->dev_id);
 }
 
-static bool load_ltks_timeout(gpointer user_data)
-{
-	struct btd_adapter *adapter = user_data;
-
-	btd_error(adapter->dev_id, "Loading LTKs timed out for hci%u",
-							adapter->dev_id);
-
-	adapter->load_ltks_timeout = 0;
-
-	mgmt_cancel(adapter->mgmt, adapter->load_ltks_id);
-	adapter->load_ltks_id = 0;
-
-	return FALSE;
-}
-
 static void load_ltks_complete(uint8_t status, uint16_t length,
 					const void *param, void *user_data)
 {
@@ -4164,11 +4135,6 @@ static void load_ltks_complete(uint8_t status, uint16_t length,
 				"Failed to load LTKs for hci%u: %s (0x%02x)",
 				adapter->dev_id, mgmt_errstr(status), status);
 	}
-
-	adapter->load_ltks_id = 0;
-
-	timeout_remove(adapter->load_ltks_timeout);
-	adapter->load_ltks_timeout = 0;
 
 	DBG("LTKs loaded for hci%u", adapter->dev_id);
 }
@@ -4242,27 +4208,18 @@ static void load_ltks(struct btd_adapter *adapter, GSList *keys)
 		}
 	}
 
-	adapter->load_ltks_id = mgmt_send(adapter->mgmt,
-					MGMT_OP_LOAD_LONG_TERM_KEYS,
-					adapter->dev_id, cp_size, cp,
-					load_ltks_complete, adapter, NULL);
-
-	g_free(cp);
-
-	if (adapter->load_ltks_id == 0) {
-		btd_error(adapter->dev_id, "Failed to load LTKs for hci%u",
-							adapter->dev_id);
-		return;
-	}
-
 	/*
 	 * This timeout handling is needed since the kernel is stupid
 	 * and forgets to send a command complete response. However in
 	 * case of failures it does send a command status.
 	 */
-	adapter->load_ltks_timeout = timeout_add_seconds(2,
-						load_ltks_timeout, adapter,
-						NULL);
+	if (!mgmt_send_timeout(adapter->mgmt, MGMT_OP_LOAD_LONG_TERM_KEYS,
+			adapter->dev_id, cp_size, cp, load_ltks_complete,
+			adapter, NULL, 2))
+		btd_error(adapter->dev_id, "Failed to load LTKs for hci%u",
+							adapter->dev_id);
+
+	g_free(cp);
 }
 
 static void load_irks_complete(uint8_t status, uint16_t length,
@@ -4719,7 +4676,7 @@ static void load_devices(struct btd_adapter *adapter)
 		if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 			error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-			g_error_free(gerr);
+			g_clear_error(&gerr);
 		}
 
 		key_info = get_key_info(key_file, entry->d_name);
@@ -5615,15 +5572,6 @@ static void adapter_free(gpointer user_data)
 		adapter->passive_scan_timeout = 0;
 	}
 
-	if (adapter->load_ltks_timeout > 0)
-		timeout_remove(adapter->load_ltks_timeout);
-
-	if (adapter->confirm_name_timeout > 0)
-		timeout_remove(adapter->confirm_name_timeout);
-
-	if (adapter->pair_device_timeout > 0)
-		timeout_remove(adapter->pair_device_timeout);
-
 	if (adapter->auth_idle_id)
 		g_source_remove(adapter->auth_idle_id);
 
@@ -5714,7 +5662,7 @@ static void convert_names_entry(char *key, char *value, void *user_data)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 	g_key_file_set_string(key_file, "General", "Name", value);
 
@@ -5947,7 +5895,7 @@ static void convert_entry(char *key, char *value, void *user_data)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	set_device_type(key_file, type);
@@ -6053,7 +6001,7 @@ static void store_sdp_record(char *local, char *peer, int handle, char *value)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	sprintf(handle_str, "0x%8.8X", handle);
@@ -6137,7 +6085,7 @@ static void convert_sdp_entry(char *key, char *value, void *user_data)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	store_attribute_uuid(key_file, start, end, prim_uuid, uuid);
@@ -6197,7 +6145,7 @@ static void convert_primaries_entry(char *key, char *value, void *user_data)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	for (service = services; *service; service++) {
@@ -6222,7 +6170,7 @@ static void convert_primaries_entry(char *key, char *value, void *user_data)
 	if (!g_file_set_contents(filename, data, length, &gerr)) {
 		error("Unable set contents for %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	if (device_type < 0)
@@ -6237,7 +6185,7 @@ static void convert_primaries_entry(char *key, char *value, void *user_data)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 	set_device_type(key_file, device_type);
 
@@ -6293,7 +6241,7 @@ static void convert_ccc_entry(char *key, char *value, void *user_data)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	sprintf(group, "%hu", handle);
@@ -6349,7 +6297,7 @@ static void convert_gatt_entry(char *key, char *value, void *user_data)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	sprintf(group, "%hu", handle);
@@ -6404,7 +6352,7 @@ static void convert_proximity_entry(char *key, char *value, void *user_data)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	g_key_file_set_string(key_file, alert, "Level", value);
@@ -6608,7 +6556,7 @@ static void load_config(struct btd_adapter *adapter)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	/* Get alias */
@@ -6751,21 +6699,6 @@ const bdaddr_t *btd_adapter_get_address(struct btd_adapter *adapter)
 	return &adapter->bdaddr;
 }
 
-static bool confirm_name_timeout(gpointer user_data)
-{
-	struct btd_adapter *adapter = user_data;
-
-	btd_error(adapter->dev_id, "Confirm name timed out for hci%u",
-							adapter->dev_id);
-
-	adapter->confirm_name_timeout = 0;
-
-	mgmt_cancel(adapter->mgmt, adapter->confirm_name_id);
-	adapter->confirm_name_id = 0;
-
-	return FALSE;
-}
-
 static void confirm_name_complete(uint8_t status, uint16_t length,
 					const void *param, void *user_data)
 {
@@ -6775,12 +6708,8 @@ static void confirm_name_complete(uint8_t status, uint16_t length,
 		btd_error(adapter->dev_id,
 				"Failed to confirm name for hci%u: %s (0x%02x)",
 				adapter->dev_id, mgmt_errstr(status), status);
+		return;
 	}
-
-	adapter->confirm_name_id = 0;
-
-	timeout_remove(adapter->confirm_name_timeout);
-	adapter->confirm_name_timeout = 0;
 
 	DBG("Confirm name complete for hci%u", adapter->dev_id);
 }
@@ -6795,49 +6724,21 @@ static void confirm_name(struct btd_adapter *adapter, const bdaddr_t *bdaddr,
 	DBG("hci%d bdaddr %s name_known %u", adapter->dev_id, addr,
 								name_known);
 
-	/*
-	 * If the kernel does not answer the confirm name command with
-	 * a command complete or command status in time, this might
-	 * race against another device found event that also requires
-	 * to confirm the name. If there is a pending command, just
-	 * cancel it to be safe here.
-	 */
-	if (adapter->confirm_name_id > 0) {
-		btd_warn(adapter->dev_id,
-				"Found pending confirm name for hci%u",
-							adapter->dev_id);
-		mgmt_cancel(adapter->mgmt, adapter->confirm_name_id);
-	}
-
-	if (adapter->confirm_name_timeout > 0) {
-		timeout_remove(adapter->confirm_name_timeout);
-		adapter->confirm_name_timeout = 0;
-	}
-
 	memset(&cp, 0, sizeof(cp));
 	bacpy(&cp.addr.bdaddr, bdaddr);
 	cp.addr.type = bdaddr_type;
 	cp.name_known = name_known;
-
-	adapter->confirm_name_id = mgmt_reply(adapter->mgmt,
-					MGMT_OP_CONFIRM_NAME,
-					adapter->dev_id, sizeof(cp), &cp,
-					confirm_name_complete, adapter, NULL);
-
-	if (adapter->confirm_name_id == 0) {
-		btd_error(adapter->dev_id, "Failed to confirm name for hci%u",
-							adapter->dev_id);
-		return;
-	}
 
 	/*
 	 * This timeout handling is needed since the kernel is stupid
 	 * and forgets to send a command complete response. However in
 	 * case of failures it does send a command status.
 	 */
-	adapter->confirm_name_timeout = timeout_add_seconds(2,
-						confirm_name_timeout, adapter,
-						NULL);
+	if (!mgmt_reply_timeout(adapter->mgmt, MGMT_OP_CONFIRM_NAME,
+				adapter->dev_id, sizeof(cp), &cp,
+				confirm_name_complete, adapter, NULL, 2))
+		btd_error(adapter->dev_id, "Failed to confirm name for hci%u",
+							adapter->dev_id);
 }
 
 static void adapter_msd_notify(struct btd_adapter *adapter,
@@ -6991,7 +6892,7 @@ void btd_adapter_update_found_device(struct btd_adapter *adapter,
 	bool duplicate = false;
 	struct queue *matched_monitors = NULL;
 
-	if (!btd_adv_monitor_offload_supported(adapter->adv_monitor_manager)) {
+	if (!btd_adv_monitor_offload_enabled(adapter->adv_monitor_manager)) {
 		if (bdaddr_type != BDADDR_BREDR)
 			ad = bt_ad_new_with_data(data_len, data);
 
@@ -8111,21 +8012,6 @@ static void free_pair_device_data(void *user_data)
 	g_free(data);
 }
 
-static bool pair_device_timeout(gpointer user_data)
-{
-	struct pair_device_data *data = user_data;
-	struct btd_adapter *adapter = data->adapter;
-
-	btd_error(adapter->dev_id, "Pair device timed out for hci%u",
-							adapter->dev_id);
-
-	adapter->pair_device_timeout = 0;
-
-	adapter_cancel_bonding(adapter, &data->bdaddr, data->addr_type);
-
-	return FALSE;
-}
-
 static void pair_device_complete(uint8_t status, uint16_t length,
 					const void *param, void *user_data)
 {
@@ -8134,13 +8020,6 @@ static void pair_device_complete(uint8_t status, uint16_t length,
 	struct btd_adapter *adapter = data->adapter;
 
 	DBG("%s (0x%02x)", mgmt_errstr(status), status);
-
-	adapter->pair_device_id = 0;
-
-	if (adapter->pair_device_timeout > 0) {
-		timeout_remove(adapter->pair_device_timeout);
-		adapter->pair_device_timeout = 0;
-	}
 
 	/* Workaround for a kernel bug
 	 *
@@ -8169,12 +8048,6 @@ static void pair_device_complete(uint8_t status, uint16_t length,
 int adapter_create_bonding(struct btd_adapter *adapter, const bdaddr_t *bdaddr,
 					uint8_t addr_type, uint8_t io_cap)
 {
-	if (adapter->pair_device_id > 0) {
-		btd_error(adapter->dev_id,
-			"Unable pair since another pairing is in progress");
-		return -EBUSY;
-	}
-
 	suspend_discovery(adapter);
 
 	return adapter_bonding_attempt(adapter, bdaddr, addr_type, io_cap);
@@ -8206,27 +8079,20 @@ int adapter_bonding_attempt(struct btd_adapter *adapter, const bdaddr_t *bdaddr,
 	bacpy(&data->bdaddr, bdaddr);
 	data->addr_type = addr_type;
 
-	id = mgmt_send(adapter->mgmt, MGMT_OP_PAIR_DEVICE,
+	/* Due to a bug in the kernel it is possible that a LE pairing
+	 * request never times out. Therefore, add a timer to clean up
+	 * if no response arrives
+	 */
+	id = mgmt_send_timeout(adapter->mgmt, MGMT_OP_PAIR_DEVICE,
 				adapter->dev_id, sizeof(cp), &cp,
 				pair_device_complete, data,
-				free_pair_device_data);
-
+				free_pair_device_data, BONDING_TIMEOUT);
 	if (id == 0) {
 		btd_error(adapter->dev_id, "Failed to pair %s for hci%u",
 							addr, adapter->dev_id);
 		free_pair_device_data(data);
 		return -EIO;
 	}
-
-	adapter->pair_device_id = id;
-
-	/* Due to a bug in the kernel it is possible that a LE pairing
-	 * request never times out. Therefore, add a timer to clean up
-	 * if no response arrives
-	 */
-	adapter->pair_device_timeout = timeout_add_seconds(BONDING_TIMEOUT,
-						pair_device_timeout, data,
-						NULL);
 
 	return 0;
 }
@@ -8348,11 +8214,15 @@ static void store_link_key(struct btd_adapter *adapter,
 
 	snprintf(filename, PATH_MAX, STORAGEDIR "/%s/%s/info",
 			btd_adapter_get_storage_dir(adapter), device_addr);
+	create_file(filename, 0600);
+
 	key_file = g_key_file_new();
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
 		g_error_free(gerr);
+		g_key_file_free(key_file);
+		return;
 	}
 
 	for (i = 0; i < 16; i++)
@@ -8362,8 +8232,6 @@ static void store_link_key(struct btd_adapter *adapter,
 
 	g_key_file_set_integer(key_file, "LinkKey", "Type", type);
 	g_key_file_set_integer(key_file, "LinkKey", "PINLength", pin_length);
-
-	create_file(filename, 0600);
 
 	str = g_key_file_to_data(key_file, &length, NULL);
 	if (!g_file_set_contents(filename, str, length, &gerr)) {
@@ -8445,7 +8313,7 @@ static void store_ltk_group(struct btd_adapter *adapter, const bdaddr_t *peer,
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	for (i = 0; i < 16; i++)
@@ -8611,7 +8479,7 @@ static void store_csrk(struct btd_adapter *adapter, const bdaddr_t *peer,
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	for (i = 0; i < 16; i++)
@@ -8789,7 +8657,7 @@ static void store_conn_param(struct btd_adapter *adapter, const bdaddr_t *peer,
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	g_key_file_set_integer(key_file, "ConnectionParameters",
@@ -9108,6 +8976,11 @@ static int adapter_register(struct btd_adapter *adapter)
 		agent_unref(agent);
 	}
 
+	if (g_dbus_get_flags() & G_DBUS_FLAG_ENABLE_EXPERIMENTAL) {
+		adapter->battery_provider_manager =
+			btd_battery_provider_manager_create(adapter);
+	}
+
 	/* Don't start GATT database and advertising managers on
 	 * non-LE controllers.
 	 */
@@ -9140,11 +9013,6 @@ static int adapter_register(struct btd_adapter *adapter)
 			btd_info(adapter->dev_id, "Adv Monitor Manager "
 					"skipped, LE unavailable");
 		}
-	}
-
-	if (g_dbus_get_flags() & G_DBUS_FLAG_ENABLE_EXPERIMENTAL) {
-		adapter->battery_provider_manager =
-			btd_battery_provider_manager_create(adapter);
 	}
 
 	db = btd_gatt_database_get_db(adapter->database);
@@ -9448,7 +9316,7 @@ static void remove_keys(struct btd_adapter *adapter,
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	if (type == BDADDR_BREDR) {
@@ -9550,7 +9418,7 @@ static bool get_static_addr(struct btd_adapter *adapter)
 								&gerr)) {
 		error("Unable to load key file from %s: (%s)",
 					STORAGEDIR "/addresses", gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 	addrs = g_key_file_get_string_list(file, "Static", mfg, &len, NULL);
 	if (addrs) {
@@ -9939,6 +9807,16 @@ static void read_info_complete(uint8_t status, uint16_t length,
 			goto failed;
 		}
 	} else {
+		struct btd_adapter *tmp;
+
+		tmp = adapter_find(&rp->bdaddr);
+		if (tmp) {
+			btd_error(adapter->dev_id,
+				"Bluetooth address for index %u match index %u",
+				adapter->dev_id, tmp->dev_id);
+			goto failed;
+		}
+
 		bacpy(&adapter->bdaddr, &rp->bdaddr);
 		if (!(adapter->supported_settings & MGMT_SETTING_LE))
 			adapter->bdaddr_type = BDADDR_BREDR;
@@ -10209,6 +10087,13 @@ static void index_added(uint16_t index, uint16_t length, const void *param,
 			"Ignoring index added for an already existing adapter");
 		return;
 	}
+
+	/* Check if at maximum adapters allowed in the system then ignore the
+	 * adapter.
+	 */
+	if (btd_opts.max_adapters &&
+			btd_opts.max_adapters == g_slist_length(adapters))
+		return;
 
 	reset_adv_monitors(index);
 

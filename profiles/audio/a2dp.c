@@ -244,6 +244,15 @@ static struct a2dp_setup_cb *setup_cb_new(struct a2dp_setup *setup)
 	cb->setup = setup;
 	cb->id = ++cb_id;
 
+	return cb;
+}
+
+static struct a2dp_setup_cb *setup_cb_add(struct a2dp_setup *setup)
+{
+	struct a2dp_setup_cb *cb;
+
+	cb = setup_cb_new(setup);
+
 	setup->cb = g_slist_append(setup->cb, cb);
 	return cb;
 }
@@ -832,7 +841,7 @@ static void store_remote_seps(struct a2dp_channel *chan)
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	data = g_key_file_get_string(key_file, "Endpoints", "LastUsed",
@@ -1006,7 +1015,7 @@ static void store_last_used(struct a2dp_channel *chan, uint8_t lseid,
 	if (!g_key_file_load_from_file(key_file, filename, 0, &gerr)) {
 		error("Unable to load key file from %s: (%s)", filename,
 								gerr->message);
-		g_error_free(gerr);
+		g_clear_error(&gerr);
 	}
 
 	sprintf(value, "%02hhx:%02hhx", lseid, rseid);
@@ -1840,7 +1849,7 @@ static int a2dp_reconfig(struct a2dp_channel *chan, const char *sender,
 	if (!setup)
 		return -ENOMEM;
 
-	cb_data = setup_cb_new(setup);
+	cb_data = setup_cb_add(setup);
 	cb_data->config_cb = reconfig_cb;
 	cb_data->user_data = user_data;
 
@@ -2878,12 +2887,17 @@ unsigned int a2dp_discover(struct avdtp *session, a2dp_discover_cb_t cb,
 	if (!setup)
 		return 0;
 
+	/* Don't add cb since avdtp_discover can end up disconnecting the
+	 * session causing the cb to be freed.
+	 */
 	cb_data = setup_cb_new(setup);
 	cb_data->discover_cb = cb;
 	cb_data->user_data = user_data;
 
-	if (avdtp_discover(session, discover_cb, setup) == 0)
+	if (avdtp_discover(session, discover_cb, setup) == 0) {
+		setup->cb = g_slist_append(setup->cb, cb_data);
 		return cb_data->id;
+	}
 
 	setup_cb_free(cb_data);
 	return 0;
@@ -2911,7 +2925,7 @@ unsigned int a2dp_select_capabilities(struct avdtp *session,
 	if (!setup)
 		return 0;
 
-	cb_data = setup_cb_new(setup);
+	cb_data = setup_cb_add(setup);
 	cb_data->select_cb = cb;
 	cb_data->user_data = user_data;
 
@@ -2984,7 +2998,7 @@ unsigned int a2dp_config(struct avdtp *session, struct a2dp_sep *sep,
 	if (!setup)
 		return 0;
 
-	cb_data = setup_cb_new(setup);
+	cb_data = setup_cb_add(setup);
 	cb_data->config_cb = cb;
 	cb_data->user_data = user_data;
 
@@ -3075,7 +3089,7 @@ unsigned int a2dp_resume(struct avdtp *session, struct a2dp_sep *sep,
 	if (!setup)
 		return 0;
 
-	cb_data = setup_cb_new(setup);
+	cb_data = setup_cb_add(setup);
 	cb_data->resume_cb = cb;
 	cb_data->user_data = user_data;
 
@@ -3133,7 +3147,7 @@ unsigned int a2dp_suspend(struct avdtp *session, struct a2dp_sep *sep,
 	if (!setup)
 		return 0;
 
-	cb_data = setup_cb_new(setup);
+	cb_data = setup_cb_add(setup);
 	cb_data->suspend_cb = cb;
 	cb_data->user_data = user_data;
 

@@ -534,12 +534,17 @@ LIB_EXPORT struct l_ecc_point *l_ecc_point_from_data(
 {
 	struct l_ecc_point *p;
 	size_t bytes = curve->ndigits * 8;
+	uint64_t tmp[L_ECC_MAX_DIGITS];
+	bool sub;
 
 	if (!data)
 		return NULL;
 
-	/* In all cases there should be an X coordinate in data */
-	if (len < bytes)
+	/* Verify the data length matches a full point or X coordinate */
+	if (type == L_ECC_POINT_TYPE_FULL) {
+		if (len != bytes * 2)
+			return NULL;
+	} else if (len != bytes)
 		return NULL;
 
 	p = l_ecc_point_new(curve);
@@ -553,26 +558,19 @@ LIB_EXPORT struct l_ecc_point *l_ecc_point_from_data(
 
 		break;
 	case L_ECC_POINT_TYPE_COMPRESSED_BIT0:
-		if (!_ecc_compute_y(curve, p->y, p->x))
-			goto failed;
-
-		if (!(p->y[0] & 1))
-			_vli_mod_sub(p->y, curve->p, p->y, curve->p,
-						curve->ndigits);
-		break;
 	case L_ECC_POINT_TYPE_COMPRESSED_BIT1:
 		if (!_ecc_compute_y(curve, p->y, p->x))
 			goto failed;
 
-		if (p->y[0] & 1)
-			_vli_mod_sub(p->y, curve->p, p->y, curve->p,
-						curve->ndigits);
+		sub = secure_select(type == L_ECC_POINT_TYPE_COMPRESSED_BIT0,
+					!(p->y[0] & 1), p->y[0] & 1);
+
+		_vli_mod_sub(tmp, curve->p, p->y, curve->p, curve->ndigits);
+
+		l_secure_select(sub, tmp, p->y, p->y, curve->ndigits * 8);
 
 		break;
 	case L_ECC_POINT_TYPE_FULL:
-		if (len < bytes * 2)
-			goto failed;
-
 		_ecc_be2native(p->y, (void *) data + bytes, curve->ndigits);
 
 		if (!ecc_valid_point(p))
@@ -732,6 +730,11 @@ LIB_EXPORT ssize_t l_ecc_point_get_y(const struct l_ecc_point *p, void *y,
 	_ecc_native2be(y, p->y, p->curve->ndigits);
 
 	return p->curve->ndigits * 8;
+}
+
+LIB_EXPORT bool l_ecc_point_y_isodd(const struct l_ecc_point *p)
+{
+	return p->y[0] & 1;
 }
 
 LIB_EXPORT ssize_t l_ecc_point_get_data(const struct l_ecc_point *p, void *buf,
