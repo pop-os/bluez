@@ -1,4 +1,4 @@
-bluez (5.64-0ubuntu1) UNRELEASED; urgency=medium
+bluez (5.64-0ubuntu1) jammy; urgency=medium
 
   * New upstream release 5.64 (LP: #1965740):
     - Fix issue with handling A2DP discover procedure.
