@@ -1,0 +1,157 @@
+If device uses RPA it shall only enable wakeup if RPA Resolution has
+been enabled otherwise it cannot be programmed in the acceptlist which
+can cause suspend to fail.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215768
+---
+ src/adapter.c | 34 ++++++++++++++++++++++++++++------
+ src/adapter.h | 10 ++++++++++
+ src/device.c  | 14 ++++++++++++++
+ src/device.h  |  1 +
+ 4 files changed, 53 insertions(+), 6 deletions(-)
+
+Index: bluez/src/adapter.c
+===================================================================
+--- bluez.orig/src/adapter.c
++++ bluez/src/adapter.c
+@@ -4748,6 +4748,9 @@ static void load_devices(struct btd_adap
+ 		if (!device)
+ 			goto free;
+ 
++		if (irk_info)
++			device_set_rpa(device, true);
++
+ 		btd_device_set_temporary(device, false);
+ 		adapter_add_device(adapter, device);
+ 
+@@ -9552,8 +9555,9 @@ static bool set_blocked_keys(struct btd_
+ 						adapter, NULL);
+ }
+ 
+-#define EXP_FEAT(_uuid, _func) \
++#define EXP_FEAT(_flag, _uuid, _func) \
+ { \
++	.flag = _flag, \
+ 	.uuid = _uuid, \
+ 	.func = _func, \
+ }
+@@ -9675,15 +9679,18 @@ static void codec_offload_func(struct bt
+ }
+ 
+ static const struct exp_feat {
++	uint32_t flag;
+ 	const struct mgmt_exp_uuid *uuid;
+ 	void (*func)(struct btd_adapter *adapter, uint8_t action);
+ } exp_table[] = {
+-	EXP_FEAT(&debug_uuid, exp_debug_func),
+-	EXP_FEAT(&le_simult_central_peripheral_uuid,
++	EXP_FEAT(EXP_FEAT_DEBUG, &debug_uuid, exp_debug_func),
++	EXP_FEAT(EXP_FEAT_LE_SIMULT_ROLES, &le_simult_central_peripheral_uuid,
+ 		 le_simult_central_peripheral_func),
+-	EXP_FEAT(&quality_report_uuid, quality_report_func),
+-	EXP_FEAT(&rpa_resolution_uuid, rpa_resolution_func),
+-	EXP_FEAT(&codec_offload_uuid, codec_offload_func),
++	EXP_FEAT(EXP_FEAT_BQR, &quality_report_uuid, quality_report_func),
++	EXP_FEAT(EXP_FEAT_RPA_RESOLUTION, &rpa_resolution_uuid,
++		rpa_resolution_func),
++	EXP_FEAT(EXP_FEAT_CODEC_OFFLOAD, &codec_offload_uuid,
++		codec_offload_func),
+ };
+ 
+ static void read_exp_features_complete(uint8_t status, uint16_t length,
+@@ -10437,3 +10444,18 @@ bool btd_has_kernel_features(uint32_t fe
+ {
+ 	return (kernel_features & features) ? true : false;
+ }
++
++bool btd_adapter_has_exp_feature(struct btd_adapter *adapter, uint32_t feature)
++{
++	size_t i;
++
++	for (i = 0; i < ARRAY_SIZE(exp_table); i++) {
++		const struct exp_feat *feat = &exp_table[i];
++
++		if ((feat->flag & feature) && queue_find(adapter->exps, NULL,
++							feat->uuid->val))
++			return true;
++	}
++
++	return false;
++}
+Index: bluez/src/adapter.h
+===================================================================
+--- bluez.orig/src/adapter.h
++++ bluez/src/adapter.h
+@@ -254,6 +254,16 @@ void btd_adapter_for_each_device(struct
+ 
+ bool btd_le_connect_before_pairing(void);
+ 
++enum experimental_features {
++	EXP_FEAT_DEBUG			= 1 << 0,
++	EXP_FEAT_LE_SIMULT_ROLES	= 1 << 1,
++	EXP_FEAT_BQR			= 1 << 2,
++	EXP_FEAT_RPA_RESOLUTION		= 1 << 3,
++	EXP_FEAT_CODEC_OFFLOAD		= 1 << 4,
++};
++
++bool btd_adapter_has_exp_feature(struct btd_adapter *adapter, uint32_t feature);
++
+ enum kernel_features {
+ 	KERNEL_CONN_CONTROL		= 1 << 0,
+ 	KERNEL_BLOCKED_KEYS_SUPPORTED	= 1 << 1,
+Index: bluez/src/device.c
+===================================================================
+--- bluez.orig/src/device.c
++++ bluez/src/device.c
+@@ -178,6 +178,7 @@ struct btd_device {
+ 	uint8_t		conn_bdaddr_type;
+ 	bdaddr_t	bdaddr;
+ 	uint8_t		bdaddr_type;
++	bool		rpa;
+ 	char		*path;
+ 	bool		bredr;
+ 	bool		le;
+@@ -1431,6 +1432,12 @@ static bool device_get_wake_support(stru
+ 
+ void device_set_wake_support(struct btd_device *device, bool wake_support)
+ {
++	if (device->rpa && !btd_adapter_has_exp_feature(device->adapter,
++						EXP_FEAT_RPA_RESOLUTION)) {
++		warn("Unable to set wake_support without RPA resolution");
++		return;
++	}
++
+ 	device->wake_support = wake_support;
+ 
+ 	/* If wake configuration has not been made yet, set the initial
+@@ -4558,11 +4565,18 @@ void device_set_class(struct btd_device
+ 						DEVICE_INTERFACE, "Icon");
+ }
+ 
++void device_set_rpa(struct btd_device *device, bool value)
++{
++	device->rpa = value;
++}
++
+ void device_update_addr(struct btd_device *device, const bdaddr_t *bdaddr,
+ 							uint8_t bdaddr_type)
+ {
+ 	bool auto_connect = device->auto_connect;
+ 
++	device_set_rpa(device, true);
++
+ 	if (!bacmp(bdaddr, &device->bdaddr) &&
+ 					bdaddr_type == device->bdaddr_type)
+ 		return;
+Index: bluez/src/device.h
+===================================================================
+--- bluez.orig/src/device.h
++++ bluez/src/device.h
+@@ -28,6 +28,7 @@ bool device_name_known(struct btd_device
+ bool device_is_name_resolve_allowed(struct btd_device *device);
+ void device_name_resolve_fail(struct btd_device *device);
+ void device_set_class(struct btd_device *device, uint32_t class);
++void device_set_rpa(struct btd_device *device, bool value);
+ void device_update_addr(struct btd_device *device, const bdaddr_t *bdaddr,
+ 							uint8_t bdaddr_type);
+ void device_set_bredr_support(struct btd_device *device);
