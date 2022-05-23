@@ -1,3 +1,9 @@
+bluez (5.64-0ubuntu1pop0) jammy; urgency=medium
+
+  * Pop!_OS patches
+
+ -- Jeremy Soller <jeremy@system76.com>  Mon, 23 May 2022 11:22:01 -0600
+
 bluez (5.64-0ubuntu1) jammy; urgency=medium
 
   * New upstream release 5.64 (LP: #1965740):
