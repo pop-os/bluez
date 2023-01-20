@@ -14,5 +14,7 @@ raspi-bcm43xx-load-firmware.patch
 raspi-bcm43xx-3wire.patch
 raspi-cypress-305-bdaddr.patch
 
+a2dp-fix-defaulting-to-low-quality.patch
+
 # Pop!_OS patches
 fix-suspend.patch
