@@ -1,0 +1,28 @@
+Description: a2dp: Always invalidate the cache if its configuration fails
+Origin: Upstream commit 62e591578e3f948e187aacf44ede4286fad37ad7 (in v5.65)
+Bug: https://github.com/bluez/bluez/issues/313
+Bug-Ubuntu: https://launchpad.net/bugs/1988364
+Last-Update: 2023-01-16
+
+diff --git a/profiles/audio/a2dp.c b/profiles/audio/a2dp.c
+index d66c22b2b..c3ac432a7 100644
+--- a/profiles/audio/a2dp.c
++++ b/profiles/audio/a2dp.c
+@@ -872,12 +872,10 @@ static void store_remote_seps(struct a2dp_channel *chan)
+ static void invalidate_remote_cache(struct a2dp_setup *setup,
+ 						struct avdtp_error *err)
+ {
+-	if (err->category == AVDTP_ERRNO ||
+-			err->err.error_code != AVDTP_UNSUPPORTED_CONFIGURATION)
++	if (err->category == AVDTP_ERRNO)
+ 		return;
+ 
+-	/* Attempt to unregister Remote SEP if configuration
+-	 * fails with Unsupported Configuration and it was
++	/* Attempt to unregister Remote SEP if configuration fails and it was
+ 	 * loaded from cache.
+ 	 */
+ 	if (setup->rsep && setup->rsep->from_cache) {
+-- 
+2.38.1
+

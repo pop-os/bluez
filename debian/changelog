@@ -1,3 +1,9 @@
+bluez (5.64-0ubuntu1pop1) jammy; urgency=medium
+
+  * https://git.launchpad.net/~bluetooth/bluez/plain/debian/patches/a2dp-Always-invalidate-the-cache-if-its-configuratio.patch?h=jammy&id=ec33a54311f9948497438bd754ec2a03b9739f21
+
+ -- Michael Murphy <michael@mmurphy.dev>  Fri, 20 Jan 2023 15:14:41 +0100
+
 bluez (5.64-0ubuntu1pop0) jammy; urgency=medium
 
   * Pop!_OS patches
